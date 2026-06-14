@@ -1,0 +1,358 @@
+[
+  {
+    "id": "quran_1",
+    "title": "Sciences du Coran",
+    "category": "Coran",
+    "description": "Testez vos connaissances sur la révélation et la structure du Saint Coran.",
+    "questions": [
+      {
+        "id": "q_c0",
+        "question": "Combien y a-t-il de sourates dans le Coran ?",
+        "options": [
+          "110",
+          "112",
+          "114",
+          "120"
+        ],
+        "correctOptionIndex": 2,
+        "explanation": "Le Coran est composé de 114 sourates."
+      },
+      {
+        "id": "q_c1",
+        "question": "Quelle est la plus longue sourate du Coran ?",
+        "options": [
+          "Al-Imran",
+          "Al-Baqarah",
+          "An-Nisa",
+          "Al-Ma'idah"
+        ],
+        "correctOptionIndex": 1,
+        "explanation": "La sourate Al-Baqarah (La Vache) est la plus longue avec 286 versets."
+      },
+      {
+        "id": "q_c2",
+        "question": "Quelle est la plus courte sourate du Coran ?",
+        "options": [
+          "Al-Ikhlas",
+          "Al-Kawthar",
+          "Al-Asr",
+          "An-Nas"
+        ],
+        "correctOptionIndex": 1,
+        "explanation": "La sourate Al-Kawthar est la plus courte avec 3 versets."
+      },
+      {
+        "id": "q_c3",
+        "question": "Quelle sourate ne commence pas par la Basmala ?",
+        "options": [
+          "Al-Anfal",
+          "At-Tawbah",
+          "Yunus",
+          "Hud"
+        ],
+        "correctOptionIndex": 1,
+        "explanation": "La sourate At-Tawbah (Le Repentir) est la seule à ne pas commencer par Bismillah ir-Rahman ir-Rahim."
+      },
+      {
+        "id": "q_c4",
+        "question": "Dans quelle sourate trouve-t-on le verset du Trône (Ayat al-Kursi) ?",
+        "options": [
+          "Al-Fatiha",
+          "Al-Imran",
+          "Al-Baqarah",
+          "An-Nur"
+        ],
+        "correctOptionIndex": 2,
+        "explanation": "Ayat al-Kursi est le verset 255 de la sourate Al-Baqarah."
+      },
+      {
+        "id": "q_c5",
+        "question": "Quelle sourate est appelée 'Le Cœur du Coran' ?",
+        "options": [
+          "Ar-Rahman",
+          "Yasin",
+          "Al-Mulk",
+          "Al-Kahf"
+        ],
+        "correctOptionIndex": 1,
+        "explanation": "Le Prophète ﷺ a dit que toute chose a un cœur et que le cœur du Coran est la sourate Yasin."
+      },
+      {
+        "id": "q_c6",
+        "question": "Combien de Hizb y a-t-il dans le Coran ?",
+        "options": [
+          "30",
+          "60",
+          "114",
+          "120"
+        ],
+        "correctOptionIndex": 1,
+        "explanation": "Le Coran est divisé en 30 Juz' et 60 Hizb."
+      }
+    ]
+  },
+  {
+    "id": "prophets_1",
+    "title": "Histoire des Prophètes",
+    "category": "Prophètes",
+    "description": "Connaissez-vous l'histoire des messagers d'Allah ?",
+    "questions": [
+      {
+        "id": "q_p0",
+        "question": "Qui est le premier Prophète ?",
+        "options": [
+          "Nuh (Noé)",
+          "Ibrahim (Abraham)",
+          "Adam",
+          "Musa (Moïse)"
+        ],
+        "correctOptionIndex": 2,
+        "explanation": "Adam (que la paix soit sur lui) est le premier homme et le premier prophète."
+      },
+      {
+        "id": "q_p1",
+        "question": "À quel prophète la Tawrat (Torah) a-t-elle été révélée ?",
+        "options": [
+          "Isa (Jésus)",
+          "Musa (Moïse)",
+          "Dawud (David)",
+          "Ibrahim (Abraham)"
+        ],
+        "correctOptionIndex": 1,
+        "explanation": "La Tawrat a été révélée à Musa (Moïse)."
+      },
+      {
+        "id": "q_p2",
+        "question": "Quel prophète a construit l'Arche ?",
+        "options": [
+          "Yunus (Jonas)",
+          "Nuh (Noé)",
+          "Lut (Loth)",
+          "Shu'ayb"
+        ],
+        "correctOptionIndex": 1,
+        "explanation": "Nuh a construit l'arche sur l'ordre d'Allah pour sauver les croyants du déluge."
+      },
+      {
+        "id": "q_p3",
+        "question": "Quel prophète a été avalé par une baleine ?",
+        "options": [
+          "Musa (Moïse)",
+          "Yunus (Jonas)",
+          "Ayyub (Job)",
+          "Ilyas (Élie)"
+        ],
+        "correctOptionIndex": 1,
+        "explanation": "Yunus (Jonas) a été avalé par un grand poisson après avoir quitté son peuple sans la permission d'Allah."
+      },
+      {
+        "id": "q_p4",
+        "question": "Qui est connu comme l'Ami intime d'Allah (Khalilullah) ?",
+        "options": [
+          "Muhammad ﷺ",
+          "Musa (Moïse)",
+          "Isa (Jésus)",
+          "Ibrahim (Abraham)"
+        ],
+        "correctOptionIndex": 3,
+        "explanation": "Ibrahim (Abraham) est appelé Khalilullah, l'ami intime d'Allah."
+      }
+    ]
+  },
+  {
+    "id": "fiqh_1",
+    "title": "Les Piliers de l'Islam et le Fiqh",
+    "category": "Fiqh",
+    "description": "Questions sur la pratique de l'Islam au quotidien.",
+    "questions": [
+      {
+        "id": "q_f0",
+        "question": "Quel est le premier pilier de l'Islam ?",
+        "options": [
+          "La Prière (Salat)",
+          "Le Jeûne (Siyam)",
+          "L'Attestation de foi (Chahada)",
+          "L'Aumône (Zakat)"
+        ],
+        "correctOptionIndex": 2,
+        "explanation": "L'attestation de foi (Chahada) est la base de l'Islam."
+      },
+      {
+        "id": "q_f1",
+        "question": "Combien de prières obligatoires y a-t-il par jour ?",
+        "options": [
+          "3",
+          "4",
+          "5",
+          "6"
+        ],
+        "correctOptionIndex": 2,
+        "explanation": "Il y a 5 prières obligatoires (Fajr, Dhuhr, Asr, Maghrib, Isha)."
+      },
+      {
+        "id": "q_f2",
+        "question": "Durant quel mois islamique les musulmans doivent-ils jeûner ?",
+        "options": [
+          "Shawwal",
+          "Ramadan",
+          "Muharram",
+          "Rajab"
+        ],
+        "correctOptionIndex": 1,
+        "explanation": "Le jeûne obligatoire a lieu pendant le mois de Ramadan."
+      },
+      {
+        "id": "q_f3",
+        "question": "Vers quelle direction les musulmans se tournent-ils pour prier ?",
+        "options": [
+          "Jérusalem",
+          "La Mecque (Kaaba)",
+          "Médine",
+          "L'Est"
+        ],
+        "correctOptionIndex": 1,
+        "explanation": "La Qibla est la direction de la Kaaba à La Mecque."
+      },
+      {
+        "id": "q_f4",
+        "question": "Lequel de ces actes annule les ablutions (Wudu) ?",
+        "options": [
+          "Manger de la viande (sauf chameau)",
+          "Dormir profondément",
+          "Parler pendant les ablutions",
+          "Boire de l'eau"
+        ],
+        "correctOptionIndex": 1,
+        "explanation": "Le sommeil profond où l'on perd conscience annule les ablutions."
+      }
+    ]
+  },
+  {
+    "id": "mega_mixed_1",
+    "title": "Le Mega Quiz Islamique (Extensif)",
+    "category": "Général",
+    "description": "Une très grande série de questions variées pour tester votre culture islamique générale et approfondir vos connaissances de base. Ce quiz comporte des dizaines de questions pour vous entraîner longtemps !",
+    "questions": [
+      {
+        "id": "q_m0",
+        "question": "Quel ange est chargé de transmettre la révélation ?",
+        "options": [
+          "Mikail",
+          "Israfil",
+          "Jibril (Gabriel)",
+          "Malik"
+        ],
+        "correctOptionIndex": 2,
+        "explanation": "Jibril est l'ange de la révélation."
+      },
+      {
+        "id": "q_m1",
+        "question": "Quelle bataille fut la première grande bataille de l'Islam ?",
+        "options": [
+          "Bataille d'Uhud",
+          "Bataille de Badr",
+          "Bataille des Coalisés",
+          "Bataille de Khaybar"
+        ],
+        "correctOptionIndex": 1,
+        "explanation": "La bataille de Badr a eu lieu en l'an 2 de l'hégire."
+      },
+      {
+        "id": "q_m2",
+        "question": "Qui était le premier Calife de l'Islam ?",
+        "options": [
+          "Umar ibn al-Khattab",
+          "Ali ibn Abi Talib",
+          "Abu Bakr As-Siddiq",
+          "Uthman ibn Affan"
+        ],
+        "correctOptionIndex": 2,
+        "explanation": "Abu Bakr fut le premier calife après la mort du Prophète ﷺ."
+      },
+      {
+        "id": "q_m3",
+        "question": "Dans quelle ville le Prophète Muhammad ﷺ est-il né ?",
+        "options": [
+          "Médine",
+          "Jérusalem",
+          "Taïf",
+          "La Mecque"
+        ],
+        "correctOptionIndex": 3,
+        "explanation": "Il est né à La Mecque vers l'an 570."
+      },
+      {
+        "id": "q_m4",
+        "question": "Comment s'appelle le mois qui précède Ramadan ?",
+        "options": [
+          "Shawwal",
+          "Sha'ban",
+          "Rajab",
+          "Muharram"
+        ],
+        "correctOptionIndex": 1,
+        "explanation": "Sha'ban est le 8ème mois, juste avant Ramadan."
+      },
+      {
+        "id": "q_m5",
+        "question": "Qui a construit la Kaaba originellement (selon la tradition) ?",
+        "options": [
+          "Ibrahim et Ismail",
+          "Muhammad ﷺ",
+          "Adam",
+          "Sulayman (Salomon)"
+        ],
+        "correctOptionIndex": 0,
+        "explanation": "Ibrahim et son fils Ismail ont élevé les fondations de la Kaaba."
+      },
+      {
+        "id": "q_m6",
+        "question": "Quelle femme fut la première à accepter l'Islam ?",
+        "options": [
+          "Aisha",
+          "Khadija",
+          "Fatima",
+          "Sumayya"
+        ],
+        "correctOptionIndex": 1,
+        "explanation": "Khadija bint Khuwaylid, la première épouse du Prophète, fut la première croyante."
+      },
+      {
+        "id": "q_m7",
+        "question": "Dans quelle grotte le Coran a-t-il commencé à être révélé ?",
+        "options": [
+          "Thawr",
+          "Hira",
+          "Safa",
+          "Marwa"
+        ],
+        "correctOptionIndex": 1,
+        "explanation": "Le Prophète ﷺ a reçu la première révélation dans la grotte de Hira."
+      },
+      {
+        "id": "q_m8",
+        "question": "Qui a été surnommé l'épée d'Allah (Sayfullah) ?",
+        "options": [
+          "Ali ibn Abi Talib",
+          "Hamza ibn Abdul-Muttalib",
+          "Khalid ibn al-Walid",
+          "Umar ibn al-Khattab"
+        ],
+        "correctOptionIndex": 2,
+        "explanation": "Khalid ibn al-Walid fut surnommé ainsi par le Prophète ﷺ pour son génie militaire."
+      },
+      {
+        "id": "q_m9",
+        "question": "Sur quelle montagne l'Arche de Nuh s'est-elle posée ?",
+        "options": [
+          "Mont Sinaï",
+          "Mont Arafat",
+          "Mont Joudi",
+          "Mont Uhud"
+        ],
+        "correctOptionIndex": 2,
+        "explanation": "Le Coran mentionne que l'Arche s'est immobilisée sur le mont Joudi."
+      }
+    ]
+  }
+]
