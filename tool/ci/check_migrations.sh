@@ -29,13 +29,17 @@ for path in "$dir"/*.sql; do
 done
 
 if [[ -n "$base" ]] && git rev-parse --verify --quiet "$base" >/dev/null; then
-  while IFS=$'\t' read -r status file _; do
+  while IFS=$'\t' read -r status file newfile; do
     [[ -z "$status" ]] && continue
     case "$status" in
       A) ;; # nouvelle migration : OK
-      *) err "$file" "Migration existante modifiée/supprimée (statut ${status}) : créer une nouvelle migration à la place (ADR-0010)." ;;
+      R100)
+        # Renommage pur (contenu identique) : seule façon de corriger une version
+        # dupliquée (REL-001). Les bases déjà migrées doivent être réparées.
+        echo "::warning file=${newfile},title=migrations::Migration renommée sans changement de contenu (${file} -> ${newfile}) : prévoir 'supabase migration repair' sur les bases déjà migrées (docs/SUPABASE_SETUP.md)." ;;
+      *) err "${newfile:-$file}" "Migration existante modifiée/supprimée (statut ${status}) : créer une nouvelle migration à la place (ADR-0010)." ;;
     esac
-  done < <(git diff --name-status "$base"...HEAD -- "$dir")
+  done < <(git diff --name-status -M100% "$base"...HEAD -- "$dir")
 fi
 
 echo "Migrations : ${#seen[@]} version(s), ${errors} erreur(s)."

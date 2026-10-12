@@ -13,7 +13,9 @@ Supabase »). Résultat : deux migrations de même version, une migration non ex
 
 1. `supabase/migrations/` est l'**unique** source de vérité du schéma.
 2. Nom : `AAAAMMJJHHMMSS_description_snake_case.sql`, généré par `supabase migration new <nom>`. Version unique (contrôle CI).
-3. Une migration mergée n'est **jamais modifiée** ; on corrige par une nouvelle migration.
+3. Une migration mergée n'est **jamais modifiée** ; on corrige par une nouvelle migration. Seule exception :
+   le **renommage pur** (contenu identique) pour corriger une version dupliquée, accompagné de la procédure
+   `supabase migration repair` (cas de REL-001).
 4. Migrations idempotentes autant que possible (`if not exists`, `drop policy if exists`, `on conflict do nothing`).
 5. Pas de données de démo dans les migrations : `supabase/seed.sql` (local/CI uniquement).
 6. Changements destructifs (drop colonne/table, rename) en **deux releases** : dépréciation, puis suppression
