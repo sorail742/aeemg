@@ -41,8 +41,10 @@ create policy "Modifier un accusé"
   using (auth.uid() = user_id);
 
 -- 4. Ajouter les buckets de stockage pour les médias
-insert into storage.buckets (id, name, public) values ('chat_images', 'chat_images', true);
-insert into storage.buckets (id, name, public) values ('chat_audio', 'chat_audio', true);
+insert into storage.buckets (id, name, public) values ('chat_images', 'chat_images', true)
+on conflict (id) do nothing;
+insert into storage.buckets (id, name, public) values ('chat_audio', 'chat_audio', true)
+on conflict (id) do nothing;
 
 create policy "Images de chat lisibles"
   on storage.objects for select

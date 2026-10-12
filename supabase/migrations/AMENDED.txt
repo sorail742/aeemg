@@ -1,0 +1,7 @@
+# Migrations déjà appliquées modifiées volontairement (exception à ADR-0010, cf. ADR-0022).
+# Une ligne par fichier : <nom du fichier> <ticket>. Seules des modifications rendant la
+# migration rejouable sans changer le schéma final sont autorisées.
+20260409000000_fix_policies.sql REL-003
+20260611202500_phase6_advanced_messaging.sql REL-003
+20260613210000_phase7_messaging_fixes.sql REL-003
+20260614000100_phase9_admin_fixes.sql REL-002
