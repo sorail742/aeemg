@@ -2,12 +2,15 @@
 
 -- Groupes visibles par tout utilisateur connecté (pas seulement les membres)
 drop policy if exists "Groupes lisibles par membres" on public.chat_groups;
+-- Déjà créée par phase1_mvp : la supprimer pour rendre la migration rejouable (REL-003).
+drop policy if exists "Groupes visibles aux utilisateurs connectés" on public.chat_groups;
 create policy "Groupes visibles aux utilisateurs connectés"
   on public.chat_groups for select
   using (auth.uid() is not null);
 
 -- Annonces visibles même sans connexion (accueil visiteur)
 drop policy if exists "Annonces lisibles par utilisateurs connectés" on public.announcements;
+drop policy if exists "Annonces publiques" on public.announcements;
 create policy "Annonces publiques"
   on public.announcements for select
   using (true);

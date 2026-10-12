@@ -2,7 +2,7 @@
 
 -- 1. Table des réactions aux messages
 CREATE TABLE IF NOT EXISTS public.message_reactions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     message_id UUID NOT NULL REFERENCES public.messages(id) ON DELETE CASCADE,
     user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
     emoji TEXT NOT NULL,
@@ -26,7 +26,7 @@ CREATE POLICY "Supprimer sa réaction"
 
 -- 2. Table des invitations de groupe
 CREATE TABLE IF NOT EXISTS public.group_invitations (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     group_id UUID NOT NULL REFERENCES public.chat_groups(id) ON DELETE CASCADE,
     phone_number TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'pending',
@@ -62,5 +62,7 @@ $$;
 -- Ajouter les nouvelles tables au Realtime
 DO $$ BEGIN
   alter publication supabase_realtime add table public.message_reactions;
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+DO $$ BEGIN
   alter publication supabase_realtime add table public.group_invitations;
 EXCEPTION WHEN duplicate_object THEN null; END $$;
