@@ -17,11 +17,27 @@ class MessagesRepository {
         .toList();
   }
 
+  /// Inscription opportuniste à l'ouverture d'une conversation. Le serveur ne
+  /// l'accepte que pour les groupes publics (SEC-003) : un refus (groupe privé,
+  /// conversation directe, déjà membre) n'est pas une erreur pour l'utilisateur.
   Future<void> joinGroup(String groupId, String userId) async {
-    await _client?.from('chat_group_members').upsert({
-      'group_id': groupId,
-      'user_id': userId,
-    });
+    try {
+      await _client?.from('chat_group_members').upsert({
+        'group_id': groupId,
+        'user_id': userId,
+      }, ignoreDuplicates: true);
+    } on PostgrestException {
+      // Groupe non public : l'accès passe par un admin du groupe.
+    }
+  }
+
+  /// L'utilisateur courant peut-il gérer les membres du groupe (owner/admin du
+  /// groupe ou staff) ? Calculé côté serveur par `is_group_admin`.
+  Future<bool> canManageGroup(String groupId) async {
+    final client = _client;
+    if (client == null) return false;
+    final result = await client.rpc('is_group_admin', params: {'g': groupId});
+    return result == true;
   }
 
   Stream<List<ChatMessage>> watchMessages(String groupId) {

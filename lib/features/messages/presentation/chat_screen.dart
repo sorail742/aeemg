@@ -738,6 +738,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   void _showGroupOptions() {
+    final canManage =
+        ref.read(canManageGroupProvider(widget.groupId)).valueOrNull ?? false;
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -762,14 +764,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 ),
               ),
               const Divider(color: Colors.white12, height: 1),
-              _OptionTile(
-                icon: Icons.person_add,
-                label: 'Ajouter un membre/numéro',
-                onTap: () {
-                  Navigator.pop(context);
-                  _showAddMemberDialog();
-                },
-              ),
+              // Réservé aux admins du groupe et au staff (SEC-003).
+              if (canManage)
+                _OptionTile(
+                  icon: Icons.person_add,
+                  label: 'Ajouter un membre/numéro',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _showAddMemberDialog();
+                  },
+                ),
               _OptionTile(
                 icon: Icons.group,
                 label: 'Voir les membres',
@@ -893,6 +897,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Widget build(BuildContext context) {
     final messagesAsync = ref.watch(messagesStreamProvider(widget.groupId));
     final user = ref.watch(currentUserProvider);
+    // Précharge le droit de gestion pour le menu des options du groupe.
+    ref.watch(canManageGroupProvider(widget.groupId));
 
     if (user != null && !_joinAttempted) {
       _joinAttempted = true;
