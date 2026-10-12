@@ -37,16 +37,25 @@ transaction**, crée des policies comparant `role IN ('admin','staff')` → Post
 ---
 
 ### REL-003 — Rendre toutes les migrations rejouables sur une base vierge
-**Type** : Fiabilité · **Priorité** : P1 · **Estimation** : S · **Composant** : supabase/db
+**Type** : Fiabilité · **Priorité** : P0 · **Estimation** : S · **Composant** : supabase/db
 **Dépendances** : REL-001, REL-002
 
-**Contexte**
+**Contexte** — Rejeu constaté en CI et sur PostgreSQL local : `20260409000000_fix_policies` échoue
+(policy « Groupes visibles aux utilisateurs connectés » déjà créée par `phase1_mvp`), puis `phase7`
+(`uuid_generate_v4`) et `phase9` (REL-002).
+- `fix_policies` : `create policy` d'un nom déjà créé par la phase 1 sans `drop policy if exists` préalable.
 - `phase6` : `insert into storage.buckets` sans `on conflict do nothing`.
 - `phase7` : `uuid_generate_v4()` (extension `uuid-ossp`, schéma `extensions` non garanti dans le `search_path`) alors que le reste utilise `gen_random_uuid()`.
 - `phase7` : un seul bloc `DO ... EXCEPTION` pour deux `alter publication` → si la 1re table est déjà publiée, la 2e ne l'est jamais.
 - `phase1`/`phase2`/`fix_policies` : données de démo insérées dans les migrations (cf. DEL-012).
 
+**Décision préalable** — Corriger ces migrations impose de **modifier des migrations déjà appliquées**
+(contraire à ADR-0010). Options : (a) les rendre idempotentes en place (`drop policy if exists`,
+`gen_random_uuid()`), sans effet sur les bases déjà migrées qui ne les rejouent pas ; (b) remplacer
+l'historique par une migration de base (squash) générée depuis la production (`supabase db dump`).
+
 **Critères d'acceptation**
+- [ ] Décision (a) ou (b) tracée dans un ADR qui amende ADR-0010
 - [ ] `gen_random_uuid()` partout
 - [ ] Un bloc `DO` par `alter publication`
 - [ ] Job CI : `supabase db reset` sur base vierge + `supabase db lint --level warning` sans erreur
