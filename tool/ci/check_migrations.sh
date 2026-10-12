@@ -37,6 +37,13 @@ if [[ -n "$base" ]] && git rev-parse --verify --quiet "$base" >/dev/null; then
         # Renommage pur (contenu identique) : seule façon de corriger une version
         # dupliquée (REL-001). Les bases déjà migrées doivent être réparées.
         echo "::warning file=${newfile},title=migrations::Migration renommée sans changement de contenu (${file} -> ${newfile}) : prévoir 'supabase migration repair' sur les bases déjà migrées (docs/SUPABASE_SETUP.md)." ;;
+      M)
+        # Modification déclarée dans AMENDED.txt (exception ADR-0022) : avertissement seulement.
+        if grep -qE "^$(basename "$file")[[:space:]]+[A-Z]+-[0-9]{3}" "$dir/AMENDED.txt" 2>/dev/null; then
+          echo "::warning file=${file},title=migrations::Migration appliquée modifiée (déclarée dans AMENDED.txt, ADR-0022) : vérifier que le schéma final est inchangé."
+        else
+          err "$file" "Migration existante modifiée (statut M) : créer une nouvelle migration, ou déclarer l'exception dans supabase/migrations/AMENDED.txt (ADR-0022)."
+        fi ;;
       *) err "${newfile:-$file}" "Migration existante modifiée/supprimée (statut ${status}) : créer une nouvelle migration à la place (ADR-0010)." ;;
     esac
   done < <(git diff --name-status -M100% "$base"...HEAD -- "$dir")

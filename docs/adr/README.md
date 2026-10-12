@@ -47,3 +47,4 @@ Obligatoire si la PR :
 | [0019](./0019-conventions-edge-functions.md) | Conventions des Edge Functions (Deno) | Accepté |
 | [0020](./0020-strategie-hors-ligne.md) | Stratégie hors ligne : cache en lecture, file d'envoi | Proposé |
 | [0021](./0021-workflow-git.md) | Workflow Git : trunk-based, branches courtes, squash merge | Accepté |
+| [0022](./0022-migrations-historiques-rejouables.md) | Rendre rejouables les migrations historiques (amende 0010) | Accepté |
