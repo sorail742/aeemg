@@ -779,9 +779,8 @@ class _MembersTab extends ConsumerWidget {
     final membersAsync = ref.watch(adminMembersProvider);
     final repo = ref.read(adminRepositoryProvider);
 
-    return RefreshIndicator(
-      color: AppColors.emerald,
-      onRefresh: () async => ref.invalidate(adminMembersProvider),
+    return Scaffold(
+      backgroundColor: Colors.transparent,
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: AppColors.emerald,
         elevation: 6,
@@ -789,7 +788,10 @@ class _MembersTab extends ConsumerWidget {
         label: const Text('Créer membre', style: TextStyle(color: AppColors.white, fontWeight: FontWeight.bold)),
         onPressed: () => _showCreateUserDialog(context),
       ),
-      body: membersAsync.when(
+      body: RefreshIndicator(
+        color: AppColors.emerald,
+        onRefresh: () async => ref.invalidate(adminMembersProvider),
+        child: membersAsync.when(
         loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald)),
         error: (e, _) => Center(child: Text('Erreur : $e', style: const TextStyle(color: AppColors.error))),
         data: (members) {
@@ -868,8 +870,8 @@ class _MembersTab extends ConsumerWidget {
             },
           );
         },
+        ),
       ),
-    );
     );
   }
 }
@@ -1600,6 +1602,7 @@ class _IslamTab extends ConsumerWidget {
         ),
       ),
     );
+  }
 }
 
 void _showCreateUserDialog(BuildContext context) {

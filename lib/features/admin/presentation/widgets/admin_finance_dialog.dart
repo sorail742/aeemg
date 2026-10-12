@@ -101,7 +101,7 @@ class _AdminFinanceDialogState extends ConsumerState<AdminFinanceDialog> {
               children: [
                 Expanded(
                   child: DropdownButtonFormField<int>(
-                    value: _selectedMonth,
+                    initialValue: _selectedMonth,
                     dropdownColor: AppColors.cardSurfaceLight,
                     decoration: InputDecoration(
                       labelText: 'Mois',
@@ -117,7 +117,7 @@ class _AdminFinanceDialogState extends ConsumerState<AdminFinanceDialog> {
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: DropdownButtonFormField<int>(
-                    value: _selectedYear,
+                    initialValue: _selectedYear,
                     dropdownColor: AppColors.cardSurfaceLight,
                     decoration: InputDecoration(
                       labelText: 'Année',

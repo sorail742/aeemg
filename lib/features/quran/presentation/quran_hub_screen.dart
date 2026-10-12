@@ -34,7 +34,7 @@ class _QuranHubScreenState extends ConsumerState<QuranHubScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _searchController.addListener(_onSearchChanged);
   }
 
@@ -92,7 +92,6 @@ class _QuranHubScreenState extends ConsumerState<QuranHubScreen>
             Tab(text: 'Sourates'),
             Tab(text: 'Mushaf'),
             Tab(text: 'Juz'),
-            Tab(text: 'Hizb'),
             Tab(text: 'Signets'),
           ],
         ),
@@ -198,12 +197,6 @@ class _QuranHubScreenState extends ConsumerState<QuranHubScreen>
                   ),
                   _JuzTab(
                     onOpenJuz: (n) => context.push('/quran/juz/$n'),
-                  ),
-                  _HizbTab(
-                    onOpenHizb: (surah, ayah) => context.push(
-                      '/quran/surah/$surah',
-                      extra: ayah,
-                    ),
                   ),
                   bookmarksAsync.when(
                     loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald)),
@@ -425,71 +418,6 @@ class _JuzTab extends StatelessWidget {
     );
   }
 }
-class _HizbTab extends StatelessWidget {
-  const _HizbTab({required this.onOpenHizb});
-
-  final void Function(int surah, int ayah) onOpenHizb;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      itemCount: 60, // Total Ahzab
-      itemBuilder: (context, index) {
-        final hizbNumber = index + 1;
-        final quarter = (hizbNumber - 1) * 4 + 1;
-        final data = q.getSurahAndVersesFromHizbQuarter(quarter);
-        final surahNumber = data.keys.first;
-        final ayahNumber = data[surahNumber]!.first;
-
-        return Padding(
-          padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-          child: AeemgCard(
-            onTap: () => onOpenHizb(surahNumber, ayahNumber),
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.smMd,
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: AppColors.gold.withValues(alpha: 0.15),
-                    border: Border.all(color: AppColors.gold.withValues(alpha: 0.3)),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    '$hizbNumber',
-                    style: AppTypography.h3.copyWith(color: AppColors.gold),
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('Hizb $hizbNumber', style: AppTypography.h3),
-                      Text(
-                        '${q.getSurahNameFrench(surahNumber)} : Verset $ayahNumber',
-                        style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
-                      ),
-                    ],
-                  ),
-                ),
-                const Icon(Icons.chevron_right, color: AppColors.textTertiary),
-              ],
-            ),
-          ).animate(delay: Duration(milliseconds: 20 * (index < 20 ? index : 0))).fade().slideY(begin: 0.05),
-        );
-      },
-    );
-  }
-}
-
 class _BookmarksTab extends StatelessWidget {
   const _BookmarksTab({
     required this.bookmarks,

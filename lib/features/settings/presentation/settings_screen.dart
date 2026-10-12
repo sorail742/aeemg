@@ -98,7 +98,7 @@ class SettingsScreen extends ConsumerWidget {
                       Switch(
                         value: true,
                         onChanged: (v) {},
-                        activeColor: AppColors.emerald,
+                        activeThumbColor: AppColors.emerald,
                         activeTrackColor: AppColors.emerald.withValues(alpha: 0.3),
                       ),
                     ],
@@ -153,7 +153,7 @@ class SettingsScreen extends ConsumerWidget {
                               .upsert(user.id, updated);
                           ref.invalidate(notificationPreferencesProvider);
                         },
-                        activeColor: AppColors.emerald,
+                        activeThumbColor: AppColors.emerald,
                         activeTrackColor: AppColors.emerald.withValues(alpha: 0.3),
                       ),
                     ],
