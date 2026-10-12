@@ -16,7 +16,8 @@ final announcementsProvider = FutureProvider<List<Announcement>>((ref) async {
   return ref.read(messagesRepositoryProvider).fetchAnnouncements();
 });
 
-final messagesStreamProvider =
-    StreamProvider.family<List<ChatMessage>, String>((ref, groupId) {
-  return ref.read(messagesRepositoryProvider).watchMessages(groupId);
-});
+final messagesStreamProvider = StreamProvider.family<List<ChatMessage>, String>(
+  (ref, groupId) {
+    return ref.read(messagesRepositoryProvider).watchMessages(groupId);
+  },
+);

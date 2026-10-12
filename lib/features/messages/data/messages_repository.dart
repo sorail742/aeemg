@@ -57,7 +57,7 @@ class MessagesRepository {
   Stream<List<MessageReceipt>> watchMessageReceipts(String groupId) {
     final client = _client;
     if (client == null) return Stream.value([]);
-    // We only watch receipts for messages in this group. 
+    // We only watch receipts for messages in this group.
     // This is a bit complex in Supabase stream, so we'll just watch all receipts and filter in UI, or wait for realtime.
     return client
         .from('message_receipts')
@@ -96,7 +96,10 @@ class MessagesRepository {
         .toList();
   }
 
-  Future<void> markAnnouncementRead(String announcementId, String userId) async {
+  Future<void> markAnnouncementRead(
+    String announcementId,
+    String userId,
+  ) async {
     await _client?.from('announcement_reads').upsert({
       'announcement_id': announcementId,
       'user_id': userId,
@@ -105,10 +108,10 @@ class MessagesRepository {
 
   /// Soft-delete a message (sets is_deleted = true)
   Future<void> deleteMessage(String messageId) async {
-    await _client?.from('messages').update({
-      'is_deleted': true,
-      'content': 'Ce message a été supprimé',
-    }).eq('id', messageId);
+    await _client
+        ?.from('messages')
+        .update({'is_deleted': true, 'content': 'Ce message a été supprimé'})
+        .eq('id', messageId);
   }
 
   /// Add or toggle an emoji reaction on a message
@@ -163,4 +166,3 @@ class MessagesRepository {
     });
   }
 }
-
