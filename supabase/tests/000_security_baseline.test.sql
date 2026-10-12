@@ -53,18 +53,15 @@ select set_config('request.jwt.claims',
   '{"sub":"00000000-0000-0000-0000-0000000000a1","role":"authenticated"}', true);
 set local role authenticated;
 
-update public.profiles
-   set role = 'super_admin'
- where id = '00000000-0000-0000-0000-0000000000a1';
-
-reset role;
-
-select todo('SEC-001 : la policy update de profiles autorise la modification du rôle', 1);
-select is(
-  (select role::text from public.profiles where id = '00000000-0000-0000-0000-0000000000a1'),
-  'member',
+select throws_ok(
+  $$update public.profiles set role = 'super_admin'
+     where id = '00000000-0000-0000-0000-0000000000a1'$$,
+  '42501',
+  null,
   'Un membre ne peut pas modifier son propre rôle'
 );
+
+reset role;
 
 select * from finish();
 rollback;

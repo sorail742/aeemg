@@ -1,5 +1,15 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+/// Action d'administration refusée par le serveur (droits insuffisants, règle métier).
+class AdminActionDenied implements Exception {
+  AdminActionDenied(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
+}
+
 class BetaFeedbackSummary {
   const BetaFeedbackSummary({
     required this.count,
@@ -90,8 +100,17 @@ class AdminRepository {
     return (res as List? ?? []).cast<Map<String, dynamic>>();
   }
 
+  /// Change le rôle via la RPC `set_member_role`, qui applique les règles
+  /// d'ADR-0008 côté serveur (SEC-001). Lève [AdminActionDenied] en cas de refus.
   Future<void> updateMemberRole(String userId, String role) async {
-    await _client?.from('profiles').update({'role': role}).eq('id', userId);
+    try {
+      await _client?.rpc(
+        'set_member_role',
+        params: {'target': userId, 'new_role': role},
+      );
+    } on PostgrestException catch (e) {
+      throw AdminActionDenied(e.message);
+    }
   }
 
   Future<void> deleteMember(String userId) async {

@@ -1095,11 +1095,24 @@ class _MembersTab extends ConsumerWidget {
                                     ref.invalidate(adminMembersProvider);
                                   }
                                 } else {
-                                  await repo.updateMemberRole(
-                                    m['id'] as String,
-                                    val,
+                                  final messenger = ScaffoldMessenger.of(
+                                    context,
                                   );
-                                  ref.invalidate(adminMembersProvider);
+                                  try {
+                                    await repo.updateMemberRole(
+                                      m['id'] as String,
+                                      val,
+                                    );
+                                    ref.invalidate(adminMembersProvider);
+                                  } on AdminActionDenied catch (e) {
+                                    messenger.showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Changement de rôle refusé : ${e.message}',
+                                        ),
+                                      ),
+                                    );
+                                  }
                                 }
                               },
                               itemBuilder: (_) => [

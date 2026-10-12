@@ -8,6 +8,7 @@
 
 ### SEC-001 — Empêcher un membre de modifier son propre rôle (escalade de privilèges)
 **Type** : Sécurité · **Priorité** : P0 · **Estimation** : M · **Composant** : supabase/db
+**Statut** : ✅ Livré — migration `20261012160000_sec001_protect_profile_role.sql` (trigger + RPC `set_member_role`), tests pgTAP `001_sec001_member_roles.test.sql`
 **Dépendances** : REL-002
 
 **Contexte** — La policy `"Mise a jour de son propre profil"` (`20260407000000_initial_schema.sql`)
