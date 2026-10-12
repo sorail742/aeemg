@@ -66,6 +66,8 @@ Résumé de l'[ADR-0021](../adr/0021-workflow-git.md) :
 
 ### Auteur
 - PR **petite** : ≤ 400 lignes modifiées (hors générés) ; au-delà, justification dans la description.
+  Au-delà de 1000 lignes la CI bloque, sauf label `taille-justifiee` posé par le Tech Lead
+  (mise en place d'outillage, renommage ou reformatage mécanique).
 - Remplit le modèle de PR (lien ticket, captures avant/après pour l'UI, plan de test, impact sécurité/migration).
 - Relit lui-même son diff avant de demander une revue ; CI verte avant de solliciter les relecteurs.
 - Ouvre la PR en **Draft** tant qu'elle n'est pas prête.

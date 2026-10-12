@@ -225,3 +225,26 @@ consommation data qui croissent sans limite (contrainte 3G du CDC §7.1 : < 3 s)
 - [ ] Les messages texte et RSVP sont mis en file locale et envoyés au retour du réseau (idempotence par UUID client)
 - [ ] État visuel « en attente d'envoi » / « échec »
 - [ ] Tests unitaires de la file (persistance, rejeu, déduplication)
+
+---
+
+### REL-016 — Rétablir la compilation de l'application (build cassé sur `main`)
+**Type** : Fiabilité · **Priorité** : P0 · **Estimation** : S · **Composant** : flutter
+
+**Contexte** — Le commit initial de `main` ne compile pas (CI « Flutter CI » déjà en échec) ; constaté par
+les jobs `analyze`, `test`, `android` de la PR de mise en place de la CI :
+- `lib/features/admin/presentation/admin_screen.dart` : la classe `_IslamTab` n'est pas fermée (accolade
+  manquante après sa méthode `build`, ~l. 1602), donc `_showCreateUserDialog` / `_showEventDialog` sont lus
+  comme des membres de la classe ; l'onglet Membres (~l. 782) passe `floatingActionButton`/`body` à un
+  `RefreshIndicator` (paramètres de `Scaffold`) et contient une parenthèse `);` en trop (~l. 872).
+- `lib/features/quran/presentation/quran_hub_screen.dart:441` appelle `q.getSurahAndVersesFromHizbQuarter`,
+  qui n'existe pas dans le paquet `quran` (1.4.1, dernière version) : il faut une table des débuts de hizb
+  (données validées par le référent) ou masquer l'onglet Hizb.
+- `test/widget_test.dart` échoue au chargement pour la même raison.
+
+**Critères d'acceptation**
+- [ ] `flutter analyze` sans erreur ni warning (les `info` restent suivies par AMEL-006)
+- [ ] `flutter test` vert ; `flutter build apk --debug` et `flutter build web` verts en CI
+- [ ] L'onglet Membres de l'admin s'affiche (bouton « Créer membre » + liste rafraîchissable)
+- [ ] Onglet Hizb : soit 60 hizb corrects (vérifiés sur 3 hizb de référence par le référent), soit masqué avec ticket de suivi
+

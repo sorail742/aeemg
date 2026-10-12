@@ -3,7 +3,7 @@ name: pr-quality
 
 on:
   pull_request:
-    types: [opened, edited, synchronize, reopened, ready_for_review]
+    types: [opened, edited, synchronize, reopened, ready_for_review, labeled, unlabeled]
 
 permissions:
   contents: read
@@ -74,6 +74,9 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           MAX_LINES: ${{ vars.PR_MAX_LINES || '1000' }}
+          # Label posé par le Tech Lead pour une PR volontairement grosse et justifiée
+          # (mise en place d'outillage, renommage mécanique) — REGLES_EQUIPE §5.
+          SIZE_EXCEPTION: ${{ contains(github.event.pull_request.labels.*.name, 'taille-justifiee') }}
         run: |
           # Fichiers générés, lockfiles, assets et documentation exclus du calcul.
           changed=$(git diff --numstat "$BASE_SHA"...HEAD -- . \
@@ -81,8 +84,10 @@ jobs:
             | awk '{a+=$1; d+=$2} END {print a+d+0}')
           echo "Lignes modifiées (hors générés/docs) : $changed"
           echo "### Taille de la PR : $changed lignes (cible ≤ 400, maximum $MAX_LINES)" >> "$GITHUB_STEP_SUMMARY"
-          if (( changed > MAX_LINES )); then
-            echo "::error::PR trop grosse ($changed lignes > $MAX_LINES) : la découper (ADR-0021)."
+          if (( changed > MAX_LINES )) && [[ "$SIZE_EXCEPTION" == "true" ]]; then
+            echo "::warning::PR de $changed lignes (> $MAX_LINES) acceptée via le label taille-justifiee."
+          elif (( changed > MAX_LINES )); then
+            echo "::error::PR trop grosse ($changed lignes > $MAX_LINES) : la découper (ADR-0021) ou demander le label taille-justifiee au Tech Lead."
             exit 1
           elif (( changed > 400 )); then
             echo "::warning::PR de $changed lignes (> 400) : justifier la taille dans la description."

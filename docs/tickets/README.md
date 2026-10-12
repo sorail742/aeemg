@@ -13,7 +13,7 @@ dépendances. Un ticket n'est « Terminé » que si ses critères **et** la
 | Fichier | Préfixe | Contenu | Nb |
 |---|---|---|---|
 | [01-securite.md](./01-securite.md) | `SEC` | Failles RLS, Storage, Edge Functions, données perso, release | 26 |
-| [02-fiabilite-robustesse.md](./02-fiabilite-robustesse.md) | `REL` | Migrations cassées, idempotence, intégrité, erreurs | 15 |
+| [02-fiabilite-robustesse.md](./02-fiabilite-robustesse.md) | `REL` | Build cassé, migrations cassées, idempotence, intégrité, erreurs | 16 |
 | [03-suppressions.md](./03-suppressions.md) | `DEL` | Code mort, doublons, fichiers à retirer | 12 (dont 1 livré) |
 | [04-ameliorations.md](./04-ameliorations.md) | `AMEL` | Architecture, perf, compatibilité, i18n, a11y, tests | 25 |
 | [05-fonctionnalites.md](./05-fonctionnalites.md) | `FEAT` | Fonctionnalités du cahier des charges non implémentées | 43 |
@@ -91,7 +91,7 @@ S'applique à **tous** les tickets en plus de leurs critères propres :
 
 ## Ordre de traitement recommandé
 
-1. **Sprint 0 — Assainissement (bloquant prod)** : REL-001, REL-002, SEC-001, SEC-003, SEC-004, SEC-006, SEC-008, SEC-010, SEC-020, OPS-001, OPS-002
+1. **Sprint 0 — Assainissement (bloquant prod)** : REL-016, REL-001, REL-002, SEC-001, SEC-003, SEC-004, SEC-006, SEC-008, SEC-010, SEC-020, OPS-001, OPS-002
 2. **Sprint 1 — Sécurité & fiabilité** : reste des `SEC` P1, REL-004/005/007/012, AMEL-011, AMEL-012, DEL-001
 3. **Sprint 2 — Conformité stores** : FEAT-037, FEAT-038, FEAT-043, FEAT-001, SEC-022, SEC-025
 4. **Sprints suivants** : `FEAT` par module (Finances → Dons → Événements → Membres → Mosquée → Islamique), `AMEL` en continu (≈ 20 % de la capacité de chaque sprint réservée à la dette)

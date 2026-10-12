@@ -53,7 +53,9 @@ jobs:
 
   dependency-review:
     name: dependency-review
-    if: github.event_name == 'pull_request'
+    # Nécessite « Dependency graph » activé dans Settings → Code security (OPS-004),
+    # puis la variable de dépôt DEPENDENCY_REVIEW=true.
+    if: github.event_name == 'pull_request' && vars.DEPENDENCY_REVIEW == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:

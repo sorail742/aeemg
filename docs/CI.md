@@ -32,6 +32,9 @@ Tous les workflows sont dans `.github/workflows/`. Chaque job couvre un ou plusi
 
 Les nouveaux contrôles révèlent des problèmes **existants** ; c'est voulu. À la mise en place :
 
+- **`flutter / analyze`, `flutter / test`, `compatibility / android`, `web (wasm)` échouent** : le code de `main`
+  ne compile pas (déjà rouge avant cette CI) — ticket P0 REL-016.
+
 - `supabase / migrations-lint` et `supabase / db` **échouent** tant que REL-001 (versions de migration dupliquées)
   et REL-002 (enum `staff` utilisé dans la même transaction) ne sont pas corrigés → ce sont des tickets P0.
 - `policy-checks` passe mais émet ~40 **avertissements** (fichiers > 400 lignes, `dart:io`, `.env` en asset,
@@ -51,7 +54,8 @@ sans modifier les workflows :
 | `WEB_BUDGET_KB` | `0` (rapport) | Budget gzip de `main.dart.js` | Après mesure initiale (AMEL-010) |
 | `FORMAT_SCOPE` | `changed` | `all` = tout le dépôt | Après AMEL-024 |
 | `POLICY_ERROR_RULES` | `secrets forbidden-files service-role` | Règles de `policy-checks` bloquantes | Ajouter `env-asset` (SEC-019), `dart-io` (AMEL-011), `file-size` (AMEL-001), `presentation-supabase` (AMEL-002), `raw-error` (REL-008), `todo-ticket`, `no-print` |
-| `PR_MAX_LINES` | `1000` | Taille max d'une PR | Réduire à 600 quand l'équipe est rodée |
+| `PR_MAX_LINES` | `1000` | Taille max d'une PR (contournable par le label `taille-justifiee`) | Réduire à 600 quand l'équipe est rodée |
+| `DEPENDENCY_REVIEW` | absent | `true` active le job `dependency-review` | Dès que « Dependency graph » est activé (OPS-004) |
 
 Pour un test pgTAP `todo()` : retirer le `todo()` dans la PR qui corrige la faille.
 
