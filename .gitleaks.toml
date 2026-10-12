@@ -1,0 +1,13 @@
+# Configuration gitleaks (job CI security / secrets).
+# Étend les règles par défaut ; n'ajouter à l'allowlist que des faux positifs
+# vérifiés, avec un commentaire.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Placeholders documentaires (pas de vraies clés)"
+regexes = [
+  # Ex. docs/BETA_LAUNCH.md : "Authorization: Bearer VOTRE_SERVICE_ROLE_KEY"
+  '''VOTRE_[A-Z_]+''',
+  '''votre-cle-[a-z-]+''',
+]

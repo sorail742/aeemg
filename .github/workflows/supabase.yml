@@ -1,0 +1,57 @@
+# Base de données : conventions de migrations, rejeu complet sur base vierge, lint, tests RLS (pgTAP).
+name: supabase
+
+on:
+  push:
+    branches: [main]
+    paths: ['supabase/**', '.github/workflows/supabase.yml', 'tool/ci/check_migrations.sh']
+  pull_request:
+    paths: ['supabase/**', '.github/workflows/supabase.yml', 'tool/ci/check_migrations.sh']
+  schedule:
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  migrations-lint:
+    name: migrations-lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      # Format des noms, versions uniques, aucune migration existante modifiée (ADR-0010).
+      - run: tool/ci/check_migrations.sh "${{ github.event_name == 'pull_request' && format('origin/{0}', github.base_ref) || '' }}"
+
+  db:
+    name: db (reset + lint + pgTAP)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [migrations-lint]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Démarrer Supabase local (services utiles uniquement)
+        run: supabase start -x studio,imgproxy,inbucket,edge-runtime,logflare,vector,supavisor
+      # Applique toutes les migrations sur une base vierge : détecte les migrations
+      # non exécutables (REL-002) ou non rejouables (REL-003).
+      - name: Rejouer toutes les migrations
+        run: supabase db reset --local
+      - name: Rejouer une seconde fois (idempotence)
+        run: supabase db reset --local
+      - name: Lint du schéma (search_path, sécurité, performance)
+        run: supabase db lint --local --level warning --fail-on error
+      - name: Tests pgTAP (RLS, fonctions, triggers)
+        run: supabase test db --local
+      - name: Arrêter Supabase
+        if: always()
+        run: supabase stop --no-backup

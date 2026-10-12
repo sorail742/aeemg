@@ -1,17 +1,42 @@
-# aeemg
+# AEEMG Connect
 
-A new Flutter project.
+Plateforme numérique de gestion communautaire de l'**Association des Élèves et Étudiants Musulmans de Guinée** :
+messagerie, événements, finances, dons, mosquée, rappels islamiques, Coran et calendrier.
+Application **Flutter** (Android, iOS, Web) adossée à **Supabase** (PostgreSQL + RLS, Auth, Realtime, Storage, Edge Functions).
 
-## Getting Started
+## Documentation
 
-This project is a starting point for a Flutter application.
+| Sujet | Lien |
+|---|---|
+| Cahier des charges | [docs/CAHIER_DES_CHARGES.md](docs/CAHIER_DES_CHARGES.md) |
+| Backlog (tickets + règles de validité) | [docs/tickets/](docs/tickets/README.md) |
+| Décisions d'architecture (ADR) | [docs/adr/](docs/adr/README.md) |
+| Règles de travail en équipe | [docs/team/REGLES_EQUIPE.md](docs/team/REGLES_EQUIPE.md) |
+| Contribuer | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| Intégration continue | [docs/CI.md](docs/CI.md) |
+| Sécurité | [SECURITY.md](SECURITY.md) |
+| Supabase (installation, auth) | [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md), [docs/SUPABASE_AUTH.md](docs/SUPABASE_AUTH.md) |
+| Design system | [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md) |
+| Administration | [docs/ADMIN_GUIDE.md](docs/ADMIN_GUIDE.md) |
 
-A few resources to get you started if this is your first Flutter project:
+## Structure
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+```
+lib/
+  core/       configuration, routing, thème, l10n, utilitaires
+  shared/     modèles et widgets partagés (design system : shared/widgets/ds)
+  features/   une fonctionnalité par dossier : data/ + presentation/
+supabase/
+  migrations/ schéma versionné (source de vérité)
+  functions/  Edge Functions Deno (SMS, paiements, rappels)
+  tests/      tests pgTAP (RLS)
+docs/         cahier des charges, ADR, tickets, guides
+tool/         scripts (CI, import des tickets)
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Démarrage
+
+Voir [CONTRIBUTING.md](CONTRIBUTING.md#démarrage-rapide).
+
+> ⚠️ Avant toute mise en production, traiter les tickets **P0** du backlog (failles RLS, migrations cassées,
+> signature Android) — voir l'ordre recommandé dans [docs/tickets/README.md](docs/tickets/README.md#ordre-de-traitement-recommandé).

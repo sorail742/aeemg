@@ -1,0 +1,30 @@
+name: 🗑️ Suppression
+description: Retirer du code mort, un fichier, une dépendance, une table/colonne
+title: "[DEL] "
+labels: ["type:suppression", "needs-triage"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: 'Élément à supprimer'
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: 'Justification'
+    validations:
+      required: true
+  - type: textarea
+    id: usages
+    attributes:
+      label: 'Usages restants'
+      description: "Résultat d'un grep / analyse des références"
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: Règles de validité
+      options:
+        - label: Aucune référence restante dans le dépôt
+        - label: "Suppression de schéma en 2 temps (dépréciation puis suppression) si des apps installées l'utilisent"
+        - label: CI verte après suppression

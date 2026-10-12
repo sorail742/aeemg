@@ -1,0 +1,39 @@
+# Analyse statique de sécurité (SAST) : Edge Functions TypeScript et workflows GitHub Actions.
+# Dart n'est pas supporté par CodeQL : il est couvert par `flutter analyze` et policy-checks.
+name: codeql
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - 'supabase/functions/**'
+      - '.github/workflows/**'
+  schedule:
+    - cron: '0 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: codeql (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript, actions]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-extended
+      - uses: github/codeql-action/analyze@v3
+        with:
+          category: /language:${{ matrix.language }}
