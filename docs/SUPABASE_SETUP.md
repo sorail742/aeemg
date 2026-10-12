@@ -67,6 +67,30 @@ supabase link --project-ref fuumkjatgczkbxdpjduo
 supabase db push
 ```
 
+### Réparer l'historique après le renommage de la migration phase 9 (REL-001)
+
+Les migrations `phase8_admin_fixes` et `phase9_admin_fixes` portaient la même version
+`20260614000000` ; la phase 9 est désormais `20260614000100_phase9_admin_fixes.sql`.
+Sur une base **déjà migrée**, vérifier d'abord ce que la CLI croit avoir appliqué :
+
+```bash
+supabase migration list --linked
+```
+
+- Si le contenu de la phase 9 est **déjà présent** en base (appliqué via `APPLY_ALL.sql` ou le
+  Dashboard) mais que `20260614000100` apparaît comme non appliquée, l'enregistrer sans la rejouer :
+
+  ```bash
+  supabase migration repair --status applied 20260614000100 --linked
+  ```
+
+- Si la phase 9 n'a **jamais** été exécutée, ne rien réparer : `supabase db push` l'appliquera.
+  (Attention : elle échoue tant que REL-002 n'est pas corrigé — enum `staff` utilisé dans la même
+  transaction que sa création.)
+
+En cas de doute, vérifier en SQL que les policies `Staff can create events` existent sur
+`public.events` : si oui, la phase 9 est déjà appliquée.
+
 ---
 
 ## 5. Vérifier
