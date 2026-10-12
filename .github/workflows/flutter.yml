@@ -1,21 +1,121 @@
-name: Flutter CI
+# Qualité de l'application Flutter : format, analyse statique, tests + couverture, build web + budget.
+name: flutter
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
-    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Seuil de couverture (ADR-0014, AMEL-007) : variable de dépôt COVERAGE_MIN, relevée progressivement.
+  COVERAGE_MIN: ${{ vars.COVERAGE_MIN || '0' }}
+  # Budget main.dart.js gzip en Ko (AMEL-010) : 0 = rapport seulement.
+  WEB_BUDGET_KB: ${{ vars.WEB_BUDGET_KB || '0' }}
 
 jobs:
-  build:
+  format:
+    name: format
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      # Tant que AMEL-024 (reformatage global) n'est pas livré, seuls les fichiers
+      # modifiés sont vérifiés. Passer FORMAT_SCOPE=all (variable de dépôt) ensuite.
+      - name: dart format (fichiers modifiés ou tout le dépôt)
+        env:
+          FORMAT_SCOPE: ${{ vars.FORMAT_SCOPE || 'changed' }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ "$FORMAT_SCOPE" = "all" ]; then
+            dart format --output=none --set-exit-if-changed lib test
+            exit 0
+          fi
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            echo "Pas de base de comparaison : vérification ignorée."; exit 0
+          fi
+          files=$(git diff --name-only --diff-filter=ACMR "$BASE_SHA"...HEAD -- '*.dart' | grep -vE '\.(g|freezed)\.dart$' || true)
+          if [ -z "$files" ]; then echo "Aucun fichier Dart modifié."; exit 0; fi
+          echo "$files"
+          echo "$files" | xargs dart format --output=none --set-exit-if-changed
+
+  analyze:
+    name: analyze
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
-      - run: cp .env.example .env
+          cache: true
+      - run: cp .env.example .env # requis tant que .env est un asset (SEC-019)
       - run: flutter pub get
       - run: flutter analyze
-      - run: flutter test
+      - name: Dépendances obsolètes (rapport)
+        run: flutter pub outdated --no-dev-dependencies --no-up-to-date || true
+
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: cp .env.example .env
+      - run: flutter pub get
+      # Ordre aléatoire : détecte les tests dépendants les uns des autres (robustesse).
+      - run: flutter test --coverage --test-randomize-ordering-seed random --reporter expanded
+      - run: tool/ci/check_coverage.sh "$COVERAGE_MIN"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-lcov
+          path: coverage/lcov.info
+          retention-days: 14
+          if-no-files-found: ignore
+
+  build-web:
+    name: build-web
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [analyze]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: cp .env.example .env
+      - run: flutter pub get
       - run: flutter build web --release
+      - run: tool/ci/check_size_budget.sh "$WEB_BUDGET_KB"
+
+  policy-checks:
+    name: policy-checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      # Sécurité (secrets, fichiers interdits) et maintenabilité (taille de fichiers,
+      # dart:io, TODO sans ticket…). Les règles passent de « warn » à « error » à
+      # mesure que les tickets correspondants sont livrés (cf. docs/CI.md).
+      - run: tool/ci/check_repo_policies.sh
+        env:
+          ERROR_RULES: ${{ vars.POLICY_ERROR_RULES || 'secrets forbidden-files service-role' }}

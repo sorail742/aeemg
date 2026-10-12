@@ -1,0 +1,50 @@
+name: 🐞 Bug
+description: Un comportement incorrect de l'application ou du backend
+title: "[BUG] "
+labels: ["type:bug", "needs-triage"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: 'Description'
+      description: 'Que se passe-t-il ?'
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 'Étapes de reproduction'
+      placeholder: "1. Aller sur…\n2. Appuyer sur…\n3. Constater…"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 'Résultat attendu'
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: 'Plateforme'
+      multiple: true
+      options: [Android, iOS, Web, Backend / Supabase]
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: 'Version de l''app'
+      placeholder: "1.1.0+2"
+  - type: dropdown
+    id: severity
+    attributes:
+      label: 'Gravité'
+      options: ["P0 - bloquant / perte de données / sécurité", "P1 - majeur", "P2 - gênant", "P3 - mineur"]
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 'Captures / logs'
+      description: "⚠️ Masquez toute donnée personnelle (téléphone, email, noms)."

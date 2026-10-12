@@ -1,0 +1,31 @@
+name: 🔧 Amélioration / dette technique
+description: Refactoring, performance, compatibilité, accessibilité, tests…
+title: "[AMEL] "
+labels: ["type:amelioration", "needs-triage"]
+body:
+  - type: textarea
+    id: current
+    attributes:
+      label: 'Situation actuelle'
+      description: 'Fichiers concernés et problème constaté'
+    validations:
+      required: true
+  - type: textarea
+    id: target
+    attributes:
+      label: 'Cible'
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 'Critères d''acceptation'
+      value: "- [ ] \n- [ ] Aucun changement fonctionnel non voulu (tests avant/après)\n"
+    validations:
+      required: true
+  - type: dropdown
+    id: quality
+    attributes:
+      label: 'Attribut qualité'
+      multiple: true
+      options: [Maintenabilité, Performance, Fiabilité, Robustesse, Compatibilité, Accessibilité, Sécurité, Testabilité]

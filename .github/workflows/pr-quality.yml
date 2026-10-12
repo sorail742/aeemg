@@ -1,0 +1,94 @@
+# Hygiène des Pull Requests : titre Conventional Commit, nom de branche, lien ticket, taille.
+name: pr-quality
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, ready_for_review, labeled, unlabeled]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  title:
+    name: title
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # Le titre devient le message du commit squashé (ADR-0016, ADR-0021).
+      - uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            sec
+            perf
+            refactor
+            test
+            docs
+            ci
+            build
+            chore
+            revert
+            style
+          requireScope: false
+          subjectPattern: ^.{5,100}$
+          subjectPatternError: Le sujet doit faire entre 5 et 100 caractères.
+
+  conventions:
+    name: conventions
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Nom de branche
+        env:
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          pattern='^(feat|fix|sec|perf|refactor|test|docs|ci|build|chore|hotfix|revert|style)/[A-Za-z0-9._-]+$'
+          bots='^(dependabot|renovate|claude)/'
+          if [[ "$BRANCH" =~ $pattern || "$BRANCH" =~ $bots ]]; then
+            echo "Branche conforme : $BRANCH"
+          else
+            echo "::error::Branche « $BRANCH » non conforme. Attendu : <type>/<ID-TICKET>-<description> (docs/team/REGLES_EQUIPE.md §4)."
+            exit 1
+          fi
+      - name: Référence au ticket
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+          BODY: ${{ github.event.pull_request.body }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          if [[ "$AUTHOR" == "dependabot[bot]" ]]; then exit 0; fi
+          if printf '%s\n%s' "$TITLE" "$BODY" | grep -qE '(\b(SEC|REL|DEL|AMEL|FEAT|OPS)-[0-9]{3}\b|#[0-9]+)'; then
+            echo "Ticket référencé."
+          else
+            echo "::error::Aucun ticket référencé (ID type SEC-001 ou #123) dans le titre ou la description."
+            exit 1
+          fi
+      - name: Taille de la PR
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          MAX_LINES: ${{ vars.PR_MAX_LINES || '1000' }}
+          # Label posé par le Tech Lead pour une PR volontairement grosse et justifiée
+          # (mise en place d'outillage, renommage mécanique) — REGLES_EQUIPE §5.
+          SIZE_EXCEPTION: ${{ contains(github.event.pull_request.labels.*.name, 'taille-justifiee') }}
+        run: |
+          # Fichiers générés, lockfiles, assets et documentation exclus du calcul.
+          changed=$(git diff --numstat "$BASE_SHA"...HEAD -- . \
+            ':!*.lock' ':!*.g.dart' ':!*.freezed.dart' ':!assets/**' ':!docs/**' ':!**/*.md' \
+            | awk '{a+=$1; d+=$2} END {print a+d+0}')
+          echo "Lignes modifiées (hors générés/docs) : $changed"
+          echo "### Taille de la PR : $changed lignes (cible ≤ 400, maximum $MAX_LINES)" >> "$GITHUB_STEP_SUMMARY"
+          if (( changed > MAX_LINES )) && [[ "$SIZE_EXCEPTION" == "true" ]]; then
+            echo "::warning::PR de $changed lignes (> $MAX_LINES) acceptée via le label taille-justifiee."
+          elif (( changed > MAX_LINES )); then
+            echo "::error::PR trop grosse ($changed lignes > $MAX_LINES) : la découper (ADR-0021) ou demander le label taille-justifiee au Tech Lead."
+            exit 1
+          elif (( changed > 400 )); then
+            echo "::warning::PR de $changed lignes (> 400) : justifier la taille dans la description."
+          fi

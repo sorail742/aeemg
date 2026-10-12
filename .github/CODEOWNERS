@@ -1,0 +1,44 @@
+# Propriétaires du code — revue obligatoire d'au moins 1 propriétaire (ruleset OPS-001).
+# Remplacer les logins ci-dessous par ceux des membres de l'équipe (OPS-002).
+# Rôles : docs/team/REGLES_EQUIPE.md §1. Chaque chemin doit avoir ≥ 2 propriétaires.
+# La dernière règle qui correspond l'emporte.
+
+*                                   @sorail742
+
+# Tech Lead — architecture, configuration, décisions
+/lib/core/                          @sorail742
+/docs/adr/                          @sorail742
+/pubspec.yaml                       @sorail742
+/analysis_options.yaml              @sorail742
+
+# Communication (Dev 2 + Dev 3)
+/lib/features/messages/             @sorail742
+/lib/features/social/               @sorail742
+/lib/features/notifications/        @sorail742
+
+# Communauté (Dev 3 + Dev 2)
+/lib/features/events/               @sorail742
+/lib/features/agenda/               @sorail742
+/lib/features/members/              @sorail742
+/lib/features/islamic/              @sorail742
+/lib/features/quran/                @sorail742
+/lib/features/hadith/               @sorail742
+
+# Gestion (Dev 5 + Dev 4)
+/lib/features/finance/              @sorail742
+/lib/features/donations/            @sorail742
+/lib/features/mosque/               @sorail742
+/lib/features/admin/                @sorail742
+
+# Backend & sécurité (Dev 4 + Tech Lead) — revue du référent sécurité obligatoire
+/supabase/                          @sorail742
+/lib/features/auth/                 @sorail742
+/SECURITY.md                        @sorail742
+
+# QA / DevOps (Dev 6 + Dev 1)
+/.github/                           @sorail742
+/tool/                              @sorail742
+/test/                              @sorail742
+/android/                           @sorail742
+/ios/                               @sorail742
+/web/                               @sorail742

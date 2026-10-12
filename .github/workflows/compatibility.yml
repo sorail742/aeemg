@@ -1,0 +1,133 @@
+# Compatibilité : builds Android / iOS / Web(Wasm), version Flutter suivante, tests sur émulateur.
+name: compatibility
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - 'pubspec.*'
+      - 'android/**'
+      - 'ios/**'
+      - 'web/**'
+      - 'lib/**'
+      - '.github/workflows/compatibility.yml'
+  schedule:
+    - cron: '0 2 * * *' # chaque nuit (02:00 UTC = 02:00 Conakry)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    name: android (${{ matrix.channel }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        channel: [stable, beta]
+    # La version beta anticipe les ruptures de la prochaine version de Flutter : informative.
+    continue-on-error: ${{ matrix.channel == 'beta' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ matrix.channel }}
+          cache: true
+      - run: cp .env.example .env
+      - run: flutter pub get
+      - run: flutter build apk --debug
+      - name: Taille de l'APK
+        run: |
+          ls -la build/app/outputs/flutter-apk/
+          du -h build/app/outputs/flutter-apk/*.apk | tee -a "$GITHUB_STEP_SUMMARY"
+
+  web-wasm:
+    name: web (wasm)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Informatif tant que AMEL-011 (suppression de dart:io) n'est pas livré.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: cp .env.example .env
+      - run: flutter pub get
+      - run: flutter build web --wasm --release
+
+  ios:
+    name: ios (no codesign)
+    # macOS coûte 10× plus de minutes : uniquement sur main, la nuit ou à la demande.
+    if: github.event_name != 'pull_request'
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: cp .env.example .env
+      - run: flutter pub get
+      - run: flutter build ios --release --no-codesign
+
+  android-integration:
+    name: android integration (API ${{ matrix.api-level }})
+    # Activé automatiquement dès que le dossier integration_test/ existe (OPS-010).
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        api-level: [24, 34]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Présence de tests d'intégration
+        id: detect
+        run: |
+          if compgen -G "integration_test/*.dart" > /dev/null; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Aucun test dans integration_test/ : job ignoré (OPS-010)."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-java@v4
+        if: steps.detect.outputs.present == 'true'
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        if: steps.detect.outputs.present == 'true'
+        with:
+          channel: stable
+          cache: true
+      - if: steps.detect.outputs.present == 'true'
+        run: cp .env.example .env && flutter pub get
+      - name: Activer KVM
+        if: steps.detect.outputs.present == 'true'
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: reactivecircus/android-emulator-runner@v2
+        if: steps.detect.outputs.present == 'true'
+        with:
+          api-level: ${{ matrix.api-level }}
+          arch: x86_64
+          target: ${{ matrix.api-level >= 30 && 'google_apis' || 'default' }}
+          script: flutter test integration_test

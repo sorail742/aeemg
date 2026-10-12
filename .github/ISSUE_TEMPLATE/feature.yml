@@ -1,0 +1,34 @@
+name: ✨ Fonctionnalité
+description: Nouvelle fonctionnalité (prévue au cahier des charges ou nouvelle demande)
+title: "[FEAT] "
+labels: ["type:fonctionnalite", "needs-triage"]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: 'Besoin utilisateur'
+      description: "En tant que <rôle>, je veux <action> afin de <bénéfice>."
+    validations:
+      required: true
+  - type: input
+    id: cdc
+    attributes:
+      label: 'Référence cahier des charges'
+      placeholder: "§3.3 Finances"
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 'Critères d''acceptation (règles de validité)'
+      description: 'Liste de règles vérifiables'
+      value: "- [ ] \n- [ ] \n"
+    validations:
+      required: true
+  - type: textarea
+    id: security
+    attributes:
+      label: 'Données, rôles et sécurité'
+      description: 'Qui peut lire/écrire quoi ? Données personnelles concernées ?'
+  - type: textarea
+    id: notes
+    attributes:
+      label: 'Maquettes / notes techniques / dépendances'
