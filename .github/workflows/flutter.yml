@@ -33,6 +33,9 @@ jobs:
         with:
           channel: stable
           cache: true
+      # Sans package_config.json, dart format ne connaît pas la version de langage du
+      # pubspec (^3.12) et applique l'ancien style : résultat différent du poste local.
+      - run: flutter pub get
       # Tant que AMEL-024 (reformatage global) n'est pas livré, seuls les fichiers
       # modifiés sont vérifiés. Passer FORMAT_SCOPE=all (variable de dépôt) ensuite.
       - name: dart format (fichiers modifiés ou tout le dépôt)
