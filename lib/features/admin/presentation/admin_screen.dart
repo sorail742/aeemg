@@ -7,6 +7,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/ds/aeemg_card.dart';
+import '../../../shared/widgets/ds/aeemg_buttons.dart';
 import '../../../shared/widgets/ds/islamic_background.dart';
 import '../../../core/providers/supabase_provider.dart';
 import '../../members/presentation/providers/members_provider.dart';
