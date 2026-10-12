@@ -231,7 +231,7 @@ class _PrefTile extends StatelessWidget {
             Switch(
               value: value,
               onChanged: onChanged,
-              activeColor: AppColors.emerald,
+              activeThumbColor: AppColors.emerald,
               activeTrackColor: AppColors.emerald.withValues(alpha: 0.3),
             ),
           ],

@@ -235,14 +235,12 @@ class _MenuTile extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.onTap,
-    this.badge,
     this.highlight = false,
   });
 
   final IconData icon;
   final String title;
   final VoidCallback onTap;
-  final String? badge;
   final bool highlight;
 
   @override
@@ -269,23 +267,6 @@ class _MenuTile extends StatelessWidget {
             ),
             const SizedBox(width: AppSpacing.md),
             Expanded(child: Text(title, style: AppTypography.body)),
-            if (badge != null)
-              Container(
-                margin: const EdgeInsets.only(right: AppSpacing.smMd),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AppColors.error,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  badge!,
-                  style: AppTypography.caption.copyWith(
-                    color: AppColors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 10,
-                  ),
-                ),
-              ),
             const Icon(Icons.chevron_right, color: AppColors.textTertiary, size: 20),
           ],
         ),

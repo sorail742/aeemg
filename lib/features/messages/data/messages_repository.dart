@@ -49,8 +49,8 @@ class MessagesRepository {
       'sender_id': senderId,
       'content': content,
       'message_type': messageType,
-      if (mediaUrl != null) 'media_url': mediaUrl,
-      if (replyToId != null) 'reply_to_id': replyToId,
+      'media_url': ?mediaUrl,
+      'reply_to_id': ?replyToId,
     });
   }
 

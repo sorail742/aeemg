@@ -586,24 +586,21 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         if (phone.isEmpty) return;
 
                         setStateDialog(() => isLoading = true);
+                        final messenger = ScaffoldMessenger.of(context);
                         try {
                           // TODO: Dans une vraie app, on chercherait l'ID de l'utilisateur par son téléphone.
                           // Si l'utilisateur n'existe pas, on l'invite via invitePhoneNumber.
                           // Pour simuler cela, on appelle l'invitation.
                           await ref.read(messagesRepositoryProvider).invitePhoneNumber(widget.groupId, phone);
                           
-                          if (mounted) {
-                            Navigator.pop(ctx);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Invitation envoyée au numéro.')),
-                            );
-                          }
+                          if (ctx.mounted) Navigator.pop(ctx);
+                          messenger.showSnackBar(
+                            const SnackBar(content: Text('Invitation envoyée au numéro.')),
+                          );
                         } catch (e) {
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Erreur: $e')),
-                            );
-                          }
+                          messenger.showSnackBar(
+                            SnackBar(content: Text('Erreur: $e')),
+                          );
                         } finally {
                           setStateDialog(() => isLoading = false);
                         }
@@ -991,7 +988,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         height: 250,
                         child: EmojiPicker(
                           textEditingController: _controller,
-                          onEmojiSelected: (_, __) => setState(() {}),
+                          onEmojiSelected: (_, _) => setState(() {}),
                           config: const Config(
                             emojiViewConfig: EmojiViewConfig(backgroundColor: Color(0xFF1F2C34)),
                             categoryViewConfig: CategoryViewConfig(

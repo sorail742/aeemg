@@ -179,7 +179,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       Switch(
                         value: _isPublic,
                         onChanged: (v) => setState(() => _isPublic = v),
-                        activeColor: AppColors.emerald,
+                        activeThumbColor: AppColors.emerald,
                         activeTrackColor: AppColors.emerald.withValues(alpha: 0.3),
                       ),
                     ],
