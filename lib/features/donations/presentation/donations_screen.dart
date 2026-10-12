@@ -9,7 +9,6 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/async_value_widget.dart';
-import '../../../shared/widgets/ds/aeemg_buttons.dart';
 import '../../../shared/widgets/ds/aeemg_card.dart';
 import '../../../shared/widgets/ds/islamic_background.dart';
 import '../../auth/presentation/providers/auth_provider.dart';
@@ -302,7 +301,7 @@ class _CampaignsTab extends ConsumerWidget {
           content: Text(
             [
               result['message'] as String? ?? 'Paiement Orange Money initié.',
-              if (hint != null) hint,
+              ?hint,
             ].join('\n'),
           ),
           backgroundColor: AppColors.emerald,

@@ -113,7 +113,7 @@ class _AdminIslamicDialogState extends ConsumerState<AdminIslamicDialog> {
               ),
               const SizedBox(height: AppSpacing.xl),
               DropdownButtonFormField<String>(
-                value: _contentType,
+                initialValue: _contentType,
                 dropdownColor: AppColors.cardSurfaceLight,
                 decoration: _deco('Type de contenu', icon: Icons.category),
                 items: _types.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value, style: const TextStyle(color: AppColors.white)))).toList(),

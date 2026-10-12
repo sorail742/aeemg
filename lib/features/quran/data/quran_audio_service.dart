@@ -65,8 +65,7 @@ class QuranAudioService extends ChangeNotifier {
     );
     notifyListeners();
     
-    final playlist = ConcatenatingAudioSource(children: sources);
-    await _player.setAudioSource(playlist);
+    await _player.setAudioSources(sources);
     await _player.play();
   }
 
