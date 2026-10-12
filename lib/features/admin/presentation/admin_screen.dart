@@ -32,7 +32,9 @@ final adminMembersProvider = FutureProvider<List<Map<String, dynamic>>>((ref) {
   return ref.read(adminRepositoryProvider).fetchAllMembers();
 });
 
-final adminAnnouncementsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) {
+final adminAnnouncementsProvider = FutureProvider<List<Map<String, dynamic>>>((
+  ref,
+) {
   return ref.read(adminRepositoryProvider).fetchAnnouncements();
 });
 
@@ -40,7 +42,9 @@ final adminEventsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) {
   return ref.read(adminRepositoryProvider).fetchEvents();
 });
 
-final adminDonationsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) {
+final adminDonationsProvider = FutureProvider<List<Map<String, dynamic>>>((
+  ref,
+) {
   return ref.read(adminRepositoryProvider).fetchDonations();
 });
 
@@ -52,62 +56,81 @@ final adminIslamicProvider = FutureProvider<List<Map<String, dynamic>>>((ref) {
   return ref.read(adminRepositoryProvider).fetchIslamicContents();
 });
 
-final adminMonthlyReportsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) {
+final adminMonthlyReportsProvider = FutureProvider<List<Map<String, dynamic>>>((
+  ref,
+) {
   return ref.read(adminRepositoryProvider).fetchMonthlyReports();
 });
 
 // ── Sections de navigation ────────────────────────────────────
-enum AdminSection {
-  dashboard,
-  members,
-  infos,
-  finances,
-  moderation,
-  islam,
-}
+enum AdminSection { dashboard, members, infos, finances, moderation, islam }
 
 extension AdminSectionExtension on AdminSection {
   String get label {
     switch (this) {
-      case AdminSection.dashboard: return 'Tableau de bord';
-      case AdminSection.members: return 'Membres';
-      case AdminSection.infos: return 'Événements & Infos';
-      case AdminSection.finances: return 'Finances';
-      case AdminSection.moderation: return 'Modération';
-      case AdminSection.islam: return 'Contenu Islamique';
+      case AdminSection.dashboard:
+        return 'Tableau de bord';
+      case AdminSection.members:
+        return 'Membres';
+      case AdminSection.infos:
+        return 'Événements & Infos';
+      case AdminSection.finances:
+        return 'Finances';
+      case AdminSection.moderation:
+        return 'Modération';
+      case AdminSection.islam:
+        return 'Contenu Islamique';
     }
   }
 
   IconData get icon {
     switch (this) {
-      case AdminSection.dashboard: return Icons.dashboard_outlined;
-      case AdminSection.members: return Icons.people_outline;
-      case AdminSection.infos: return Icons.campaign_outlined;
-      case AdminSection.finances: return Icons.account_balance_wallet_outlined;
-      case AdminSection.moderation: return Icons.gpp_maybe_outlined;
-      case AdminSection.islam: return Icons.auto_stories_outlined;
+      case AdminSection.dashboard:
+        return Icons.dashboard_outlined;
+      case AdminSection.members:
+        return Icons.people_outline;
+      case AdminSection.infos:
+        return Icons.campaign_outlined;
+      case AdminSection.finances:
+        return Icons.account_balance_wallet_outlined;
+      case AdminSection.moderation:
+        return Icons.gpp_maybe_outlined;
+      case AdminSection.islam:
+        return Icons.auto_stories_outlined;
     }
   }
 
   IconData get iconFilled {
     switch (this) {
-      case AdminSection.dashboard: return Icons.dashboard;
-      case AdminSection.members: return Icons.people;
-      case AdminSection.infos: return Icons.campaign;
-      case AdminSection.finances: return Icons.account_balance_wallet;
-      case AdminSection.moderation: return Icons.gpp_maybe;
-      case AdminSection.islam: return Icons.auto_stories;
+      case AdminSection.dashboard:
+        return Icons.dashboard;
+      case AdminSection.members:
+        return Icons.people;
+      case AdminSection.infos:
+        return Icons.campaign;
+      case AdminSection.finances:
+        return Icons.account_balance_wallet;
+      case AdminSection.moderation:
+        return Icons.gpp_maybe;
+      case AdminSection.islam:
+        return Icons.auto_stories;
     }
   }
 
   Color get color {
     switch (this) {
-      case AdminSection.dashboard: return AppColors.emerald;
-      case AdminSection.members: return const Color(0xFF3A86FF);
-      case AdminSection.infos: return AppColors.gold;
-      case AdminSection.finances: return AppColors.emerald;
-      case AdminSection.moderation: return AppColors.error;
-      case AdminSection.islam: return AppColors.gold;
+      case AdminSection.dashboard:
+        return AppColors.emerald;
+      case AdminSection.members:
+        return const Color(0xFF3A86FF);
+      case AdminSection.infos:
+        return AppColors.gold;
+      case AdminSection.finances:
+        return AppColors.emerald;
+      case AdminSection.moderation:
+        return AppColors.error;
+      case AdminSection.islam:
+        return AppColors.gold;
     }
   }
 }
@@ -166,12 +189,18 @@ class _AdminScreenState extends ConsumerState<AdminScreen>
 
   Widget _buildCurrentSection() {
     switch (_currentSection) {
-      case AdminSection.dashboard: return _StatsTab();
-      case AdminSection.members: return _MembersTab();
-      case AdminSection.infos: return _InfosTab();
-      case AdminSection.finances: return _FinancesTab();
-      case AdminSection.moderation: return _ModerationTab();
-      case AdminSection.islam: return _IslamTab();
+      case AdminSection.dashboard:
+        return _StatsTab();
+      case AdminSection.members:
+        return _MembersTab();
+      case AdminSection.infos:
+        return _InfosTab();
+      case AdminSection.finances:
+        return _FinancesTab();
+      case AdminSection.moderation:
+        return _ModerationTab();
+      case AdminSection.islam:
+        return _IslamTab();
     }
   }
 
@@ -182,8 +211,12 @@ class _AdminScreenState extends ConsumerState<AdminScreen>
     return Scaffold(
       backgroundColor: AppColors.background,
       body: profileAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald)),
-        error: (e, _) => Center(child: Text('$e', style: const TextStyle(color: AppColors.error))),
+        loading: () => const Center(
+          child: CircularProgressIndicator(color: AppColors.emerald),
+        ),
+        error: (e, _) => Center(
+          child: Text('$e', style: const TextStyle(color: AppColors.error)),
+        ),
         data: (profile) {
           if (profile == null || !profile.isStaff) {
             return IslamicBackground(
@@ -198,12 +231,19 @@ class _AdminScreenState extends ConsumerState<AdminScreen>
                         shape: BoxShape.circle,
                         color: AppColors.error.withValues(alpha: 0.1),
                       ),
-                      child: const Icon(Icons.lock_outline, color: AppColors.error, size: 64),
+                      child: const Icon(
+                        Icons.lock_outline,
+                        color: AppColors.error,
+                        size: 64,
+                      ),
                     ).animate().scale(curve: Curves.easeOutBack),
                     const SizedBox(height: 20),
                     Text('Accès réservé', style: AppTypography.h1),
                     const SizedBox(height: 8),
-                    Text('Cette section est réservée au staff AEEMG.', style: AppTypography.bodySmall),
+                    Text(
+                      'Cette section est réservée au staff AEEMG.',
+                      style: AppTypography.bodySmall,
+                    ),
                   ],
                 ),
               ),
@@ -236,11 +276,15 @@ class _AdminScreenState extends ConsumerState<AdminScreen>
                 AnimatedBuilder(
                   animation: _sidebarAnimation,
                   builder: (context, _) {
-                    if (_sidebarAnimation.value == 0) return const SizedBox.shrink();
+                    if (_sidebarAnimation.value == 0) {
+                      return const SizedBox.shrink();
+                    }
                     return GestureDetector(
                       onTap: _toggleSidebar,
                       child: Container(
-                        color: Colors.black.withValues(alpha: _sidebarAnimation.value * 0.6),
+                        color: Colors.black.withValues(
+                          alpha: _sidebarAnimation.value * 0.6,
+                        ),
                       ),
                     );
                   },
@@ -250,7 +294,8 @@ class _AdminScreenState extends ConsumerState<AdminScreen>
                 AnimatedBuilder(
                   animation: _sidebarAnimation,
                   builder: (context, child) {
-                    final offset = -_sidebarWidth * (1 - _sidebarAnimation.value);
+                    final offset =
+                        -_sidebarWidth * (1 - _sidebarAnimation.value);
                     return Transform.translate(
                       offset: Offset(offset, 0),
                       child: child,
@@ -339,7 +384,11 @@ class _AdminAppBar extends StatelessWidget {
               color: currentSection.color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(currentSection.iconFilled, color: currentSection.color, size: 18),
+            child: Icon(
+              currentSection.iconFilled,
+              color: currentSection.color,
+              size: 18,
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -354,7 +403,9 @@ class _AdminAppBar extends StatelessWidget {
                 ),
                 Text(
                   'Administration AEEMG',
-                  style: AppTypography.caption.copyWith(color: AppColors.textSecondary),
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ],
             ),
@@ -450,11 +501,19 @@ class _AdminSidebar extends StatelessWidget {
                             color: AppColors.gold.withValues(alpha: 0.2),
                             border: Border.all(color: AppColors.gold, width: 2),
                           ),
-                          child: const Icon(Icons.admin_panel_settings, color: AppColors.gold, size: 26),
+                          child: const Icon(
+                            Icons.admin_panel_settings,
+                            color: AppColors.gold,
+                            size: 26,
+                          ),
                         ),
                         const Spacer(),
                         IconButton(
-                          icon: const Icon(Icons.close, color: AppColors.textSecondary, size: 20),
+                          icon: const Icon(
+                            Icons.close,
+                            color: AppColors.textSecondary,
+                            size: 20,
+                          ),
                           onPressed: onClose,
                         ),
                       ],
@@ -466,7 +525,10 @@ class _AdminSidebar extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.emerald.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(6),
@@ -501,7 +563,9 @@ class _AdminSidebar extends StatelessWidget {
               const SizedBox(height: AppSpacing.sm),
               Expanded(
                 child: ListView(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                  ),
                   children: AdminSection.values.map((section) {
                     final isActive = currentSection == section;
                     return Padding(
@@ -511,21 +575,28 @@ class _AdminSidebar extends StatelessWidget {
                         borderRadius: BorderRadius.circular(14),
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 13,
+                          ),
                           decoration: BoxDecoration(
                             color: isActive
                                 ? section.color.withValues(alpha: 0.15)
                                 : Colors.transparent,
                             borderRadius: BorderRadius.circular(14),
                             border: isActive
-                                ? Border.all(color: section.color.withValues(alpha: 0.3))
+                                ? Border.all(
+                                    color: section.color.withValues(alpha: 0.3),
+                                  )
                                 : Border.all(color: Colors.transparent),
                           ),
                           child: Row(
                             children: [
                               Icon(
                                 isActive ? section.iconFilled : section.icon,
-                                color: isActive ? section.color : AppColors.textSecondary,
+                                color: isActive
+                                    ? section.color
+                                    : AppColors.textSecondary,
                                 size: 22,
                               ),
                               const SizedBox(width: 14),
@@ -533,8 +604,12 @@ class _AdminSidebar extends StatelessWidget {
                                 child: Text(
                                   section.label,
                                   style: AppTypography.body.copyWith(
-                                    color: isActive ? AppColors.white : AppColors.textSecondary,
-                                    fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                                    color: isActive
+                                        ? AppColors.white
+                                        : AppColors.textSecondary,
+                                    fontWeight: isActive
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
                                     fontSize: 14,
                                   ),
                                 ),
@@ -563,11 +638,17 @@ class _AdminSidebar extends StatelessWidget {
                 padding: const EdgeInsets.all(AppSpacing.md),
                 child: Row(
                   children: [
-                    const Icon(Icons.shield_outlined, color: AppColors.textTertiary, size: 18),
+                    const Icon(
+                      Icons.shield_outlined,
+                      color: AppColors.textTertiary,
+                      size: 18,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'AEEMG Admin Panel',
-                      style: AppTypography.caption.copyWith(color: AppColors.textTertiary),
+                      style: AppTypography.caption.copyWith(
+                        color: AppColors.textTertiary,
+                      ),
                     ),
                   ],
                 ),
@@ -582,25 +663,29 @@ class _AdminSidebar extends StatelessWidget {
 
 // ── Helpers ────────────────────────────────────────────────────
 Widget _emptyTile(String text) => Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.xl),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.textTertiary.withValues(alpha: 0.1),
-              ),
-              child: const Icon(Icons.inbox_outlined, size: 48, color: AppColors.textTertiary),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            Text(text, style: const TextStyle(color: AppColors.textSecondary)),
-          ],
+  child: Padding(
+    padding: const EdgeInsets.all(AppSpacing.xl),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: AppColors.textTertiary.withValues(alpha: 0.1),
+          ),
+          child: const Icon(
+            Icons.inbox_outlined,
+            size: 48,
+            color: AppColors.textTertiary,
+          ),
         ),
-      ),
-    );
+        const SizedBox(height: AppSpacing.md),
+        Text(text, style: const TextStyle(color: AppColors.textSecondary)),
+      ],
+    ),
+  ),
+);
 
 class _ConfirmDialog extends StatelessWidget {
   final String title;
@@ -613,15 +698,24 @@ class _ConfirmDialog extends StatelessWidget {
       backgroundColor: AppColors.cardSurface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       title: Text(title, style: const TextStyle(color: AppColors.white)),
-      content: Text(content, style: const TextStyle(color: AppColors.textSecondary)),
+      content: Text(
+        content,
+        style: const TextStyle(color: AppColors.textSecondary),
+      ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
-          child: const Text('Annuler', style: TextStyle(color: AppColors.textSecondary)),
+          child: const Text(
+            'Annuler',
+            style: TextStyle(color: AppColors.textSecondary),
+          ),
         ),
         TextButton(
           onPressed: () => Navigator.pop(context, true),
-          child: const Text('Confirmer', style: TextStyle(color: AppColors.error)),
+          child: const Text(
+            'Confirmer',
+            style: TextStyle(color: AppColors.error),
+          ),
         ),
       ],
     );
@@ -647,8 +741,13 @@ class _StatsTab extends ConsumerWidget {
         padding: const EdgeInsets.all(AppSpacing.md),
         children: [
           statsAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald)),
-            error: (e, _) => Text('Erreur : $e', style: const TextStyle(color: AppColors.error)),
+            loading: () => const Center(
+              child: CircularProgressIndicator(color: AppColors.emerald),
+            ),
+            error: (e, _) => Text(
+              'Erreur : $e',
+              style: const TextStyle(color: AppColors.error),
+            ),
             data: (s) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -662,10 +761,34 @@ class _StatsTab extends ConsumerWidget {
                   mainAxisSpacing: AppSpacing.sm,
                   childAspectRatio: 1.4,
                   children: [
-                    _StatCard(icon: Icons.people, label: 'Membres', value: '${s.totalMembers}', sub: '+${s.newMembersThisMonth} ce mois', color: const Color(0xFF3A86FF)),
-                    _StatCard(icon: Icons.chat_bubble, label: 'Messages', value: '${s.totalMessages}', sub: 'Total envoyés', color: AppColors.emerald),
-                    _StatCard(icon: Icons.event, label: 'Événements', value: '${s.upcomingEvents}', sub: 'À venir', color: AppColors.gold),
-                    _StatCard(icon: Icons.volunteer_activism, label: 'Dons', value: '${s.totalDonations.toStringAsFixed(0)} GNF', sub: 'Total collecté', color: AppColors.error),
+                    _StatCard(
+                      icon: Icons.people,
+                      label: 'Membres',
+                      value: '${s.totalMembers}',
+                      sub: '+${s.newMembersThisMonth} ce mois',
+                      color: const Color(0xFF3A86FF),
+                    ),
+                    _StatCard(
+                      icon: Icons.chat_bubble,
+                      label: 'Messages',
+                      value: '${s.totalMessages}',
+                      sub: 'Total envoyés',
+                      color: AppColors.emerald,
+                    ),
+                    _StatCard(
+                      icon: Icons.event,
+                      label: 'Événements',
+                      value: '${s.upcomingEvents}',
+                      sub: 'À venir',
+                      color: AppColors.gold,
+                    ),
+                    _StatCard(
+                      icon: Icons.volunteer_activism,
+                      label: 'Dons',
+                      value: '${s.totalDonations.toStringAsFixed(0)} GNF',
+                      sub: 'Total collecté',
+                      color: AppColors.error,
+                    ),
                   ],
                 ),
               ],
@@ -675,8 +798,12 @@ class _StatsTab extends ConsumerWidget {
           Text('Retours Beta', style: AppTypography.h2),
           const SizedBox(height: AppSpacing.md),
           feedbackAsync.when(
-            loading: () => const LinearProgressIndicator(color: AppColors.emerald),
-            error: (e, _) => Text('Erreur : $e', style: const TextStyle(color: AppColors.error)),
+            loading: () =>
+                const LinearProgressIndicator(color: AppColors.emerald),
+            error: (e, _) => Text(
+              'Erreur : $e',
+              style: const TextStyle(color: AppColors.error),
+            ),
             data: (summary) {
               if (summary.count == 0) return _emptyTile('Aucun retour beta.');
               return Column(
@@ -687,43 +814,79 @@ class _StatsTab extends ConsumerWidget {
                       children: [
                         const Icon(Icons.star, color: AppColors.gold, size: 32),
                         const SizedBox(width: AppSpacing.md),
-                        Text('${summary.averageRating.toStringAsFixed(1)} / 5', style: AppTypography.h1),
+                        Text(
+                          '${summary.averageRating.toStringAsFixed(1)} / 5',
+                          style: AppTypography.h1,
+                        ),
                         const Spacer(),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.emerald.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: Text('${summary.count} avis', style: const TextStyle(color: AppColors.emerald, fontWeight: FontWeight.bold)),
+                          child: Text(
+                            '${summary.count} avis',
+                            style: const TextStyle(
+                              color: AppColors.emerald,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  ...summary.recent.take(5).map((item) => Padding(
-                        padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                        child: AeemgCard(
-                          padding: const EdgeInsets.all(AppSpacing.md),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  ...List.generate(5, (i) => Icon(Icons.star, size: 14, color: i < (item['rating'] as int? ?? 0) ? AppColors.gold : Colors.white24)),
-                                  const Spacer(),
-                                  Text(
-                                    DateFormat('d MMM', 'fr').format(DateTime.parse(item['created_at'] as String)),
-                                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: AppSpacing.sm),
-                              Text(item['message'] as String? ?? 'Aucun commentaire', style: AppTypography.bodySmall),
-                            ],
+                  ...summary.recent
+                      .take(5)
+                      .map(
+                        (item) => Padding(
+                          padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                          child: AeemgCard(
+                            padding: const EdgeInsets.all(AppSpacing.md),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    ...List.generate(
+                                      5,
+                                      (i) => Icon(
+                                        Icons.star,
+                                        size: 14,
+                                        color: i < (item['rating'] as int? ?? 0)
+                                            ? AppColors.gold
+                                            : Colors.white24,
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    Text(
+                                      DateFormat('d MMM', 'fr').format(
+                                        DateTime.parse(
+                                          item['created_at'] as String,
+                                        ),
+                                      ),
+                                      style: const TextStyle(
+                                        color: AppColors.textSecondary,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: AppSpacing.sm),
+                                Text(
+                                  item['message'] as String? ??
+                                      'Aucun commentaire',
+                                  style: AppTypography.bodySmall,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      )),
+                      ),
                 ],
               );
             },
@@ -741,7 +904,13 @@ class _StatCard extends StatelessWidget {
   final String sub;
   final Color color;
 
-  const _StatCard({required this.icon, required this.label, required this.value, required this.sub, required this.color});
+  const _StatCard({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.sub,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -755,16 +924,33 @@ class _StatCard extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 child: Icon(icon, color: color, size: 16),
               ),
               const SizedBox(width: 8),
-              Expanded(child: Text(label, style: AppTypography.caption.copyWith(color: AppColors.textSecondary), overflow: TextOverflow.ellipsis)),
+              Expanded(
+                child: Text(
+                  label,
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 8),
           Text(value, style: AppTypography.h2.copyWith(fontSize: 20)),
-          Text(sub, style: const TextStyle(color: AppColors.textSecondary, fontSize: 10)),
+          Text(
+            sub,
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 10,
+            ),
+          ),
         ],
       ),
     );
@@ -786,91 +972,177 @@ class _MembersTab extends ConsumerWidget {
         backgroundColor: AppColors.emerald,
         elevation: 6,
         icon: const Icon(Icons.person_add, color: AppColors.white),
-        label: const Text('Créer membre', style: TextStyle(color: AppColors.white, fontWeight: FontWeight.bold)),
+        label: const Text(
+          'Créer membre',
+          style: TextStyle(color: AppColors.white, fontWeight: FontWeight.bold),
+        ),
         onPressed: () => _showCreateUserDialog(context),
       ),
       body: RefreshIndicator(
         color: AppColors.emerald,
         onRefresh: () async => ref.invalidate(adminMembersProvider),
         child: membersAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald)),
-        error: (e, _) => Center(child: Text('Erreur : $e', style: const TextStyle(color: AppColors.error))),
-        data: (members) {
-          if (members.isEmpty) return _emptyTile('Aucun membre trouvé.');
-          return ListView.builder(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            itemCount: members.length,
-            itemBuilder: (context, i) {
-              final m = members[i];
-              final role = m['role'] as String? ?? 'member';
-              return Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                child: AeemgCard(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 20,
-                        backgroundColor: AppColors.emerald.withValues(alpha: 0.15),
-                        backgroundImage: m['avatar_url'] != null ? NetworkImage(m['avatar_url'] as String) : null,
-                        child: m['avatar_url'] == null
-                            ? Text((m['full_name'] as String? ?? 'U')[0].toUpperCase(), style: const TextStyle(color: AppColors.emerald, fontWeight: FontWeight.bold))
-                            : null,
-                      ),
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+          loading: () => const Center(
+            child: CircularProgressIndicator(color: AppColors.emerald),
+          ),
+          error: (e, _) => Center(
+            child: Text(
+              'Erreur : $e',
+              style: const TextStyle(color: AppColors.error),
+            ),
+          ),
+          data: (members) {
+            if (members.isEmpty) return _emptyTile('Aucun membre trouvé.');
+            return ListView.builder(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              itemCount: members.length,
+              itemBuilder: (context, i) {
+                final m = members[i];
+                final role = m['role'] as String? ?? 'member';
+                return Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                      child: AeemgCard(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.md,
+                          vertical: AppSpacing.sm,
+                        ),
+                        child: Row(
                           children: [
-                            Text(m['full_name'] as String? ?? 'Inconnu', style: AppTypography.h3),
-                            Text(m['phone'] as String? ?? m['email'] as String? ?? '', style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary)),
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundColor: AppColors.emerald.withValues(
+                                alpha: 0.15,
+                              ),
+                              backgroundImage: m['avatar_url'] != null
+                                  ? NetworkImage(m['avatar_url'] as String)
+                                  : null,
+                              child: m['avatar_url'] == null
+                                  ? Text(
+                                      (m['full_name'] as String? ?? 'U')[0]
+                                          .toUpperCase(),
+                                      style: const TextStyle(
+                                        color: AppColors.emerald,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    )
+                                  : null,
+                            ),
+                            const SizedBox(width: AppSpacing.md),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    m['full_name'] as String? ?? 'Inconnu',
+                                    style: AppTypography.h3,
+                                  ),
+                                  Text(
+                                    m['phone'] as String? ??
+                                        m['email'] as String? ??
+                                        '',
+                                    style: AppTypography.bodySmall.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color:
+                                    (role == 'admin'
+                                            ? AppColors.gold
+                                            : (role == 'staff'
+                                                  ? AppColors.emerald
+                                                  : AppColors.textTertiary))
+                                        .withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                role.toUpperCase(),
+                                style: AppTypography.caption.copyWith(
+                                  color: role == 'admin'
+                                      ? AppColors.gold
+                                      : (role == 'staff'
+                                            ? AppColors.emerald
+                                            : AppColors.textSecondary),
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 10,
+                                ),
+                              ),
+                            ),
+                            PopupMenuButton<String>(
+                              color: AppColors.cardSurfaceLight,
+                              icon: const Icon(
+                                Icons.more_vert,
+                                color: AppColors.textSecondary,
+                              ),
+                              onSelected: (val) async {
+                                if (val == 'delete') {
+                                  final confirm = await showDialog<bool>(
+                                    context: context,
+                                    builder: (_) => const _ConfirmDialog(
+                                      'Supprimer ce membre ?',
+                                      'Cette action est irréversible.',
+                                    ),
+                                  );
+                                  if (confirm == true) {
+                                    await repo.deleteMember(m['id'] as String);
+                                    ref.invalidate(adminMembersProvider);
+                                  }
+                                } else {
+                                  await repo.updateMemberRole(
+                                    m['id'] as String,
+                                    val,
+                                  );
+                                  ref.invalidate(adminMembersProvider);
+                                }
+                              },
+                              itemBuilder: (_) => [
+                                const PopupMenuItem(
+                                  value: 'member',
+                                  child: Text(
+                                    'Mettre membre',
+                                    style: TextStyle(color: AppColors.white),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  value: 'staff',
+                                  child: Text(
+                                    'Promouvoir staff',
+                                    style: TextStyle(color: AppColors.emerald),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  value: 'admin',
+                                  child: Text(
+                                    'Promouvoir admin',
+                                    style: TextStyle(color: AppColors.gold),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  value: 'delete',
+                                  child: Text(
+                                    'Supprimer',
+                                    style: TextStyle(color: AppColors.error),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: (role == 'admin' ? AppColors.gold : (role == 'staff' ? AppColors.emerald : AppColors.textTertiary)).withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          role.toUpperCase(),
-                          style: AppTypography.caption.copyWith(
-                            color: role == 'admin' ? AppColors.gold : (role == 'staff' ? AppColors.emerald : AppColors.textSecondary),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 10,
-                          ),
-                        ),
-                      ),
-                      PopupMenuButton<String>(
-                        color: AppColors.cardSurfaceLight,
-                        icon: const Icon(Icons.more_vert, color: AppColors.textSecondary),
-                        onSelected: (val) async {
-                          if (val == 'delete') {
-                            final confirm = await showDialog<bool>(context: context, builder: (_) => const _ConfirmDialog('Supprimer ce membre ?', 'Cette action est irréversible.'));
-                            if (confirm == true) {
-                              await repo.deleteMember(m['id'] as String);
-                              ref.invalidate(adminMembersProvider);
-                            }
-                          } else {
-                            await repo.updateMemberRole(m['id'] as String, val);
-                            ref.invalidate(adminMembersProvider);
-                          }
-                        },
-                        itemBuilder: (_) => [
-                          const PopupMenuItem(value: 'member', child: Text('Mettre membre', style: TextStyle(color: AppColors.white))),
-                          const PopupMenuItem(value: 'staff', child: Text('Promouvoir staff', style: TextStyle(color: AppColors.emerald))),
-                          const PopupMenuItem(value: 'admin', child: Text('Promouvoir admin', style: TextStyle(color: AppColors.gold))),
-                          const PopupMenuItem(value: 'delete', child: Text('Supprimer', style: TextStyle(color: AppColors.error))),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ).animate(delay: Duration(milliseconds: 40 * i)).fade().slideX(begin: 0.05);
-            },
-          );
-        },
+                    )
+                    .animate(delay: Duration(milliseconds: 40 * i))
+                    .fade()
+                    .slideX(begin: 0.05);
+              },
+            );
+          },
         ),
       ),
     );
@@ -898,7 +1170,13 @@ class _InfosTab extends ConsumerWidget {
             backgroundColor: AppColors.emerald,
             elevation: 6,
             icon: const Icon(Icons.event, color: AppColors.white),
-            label: const Text('Créer un événement', style: TextStyle(color: AppColors.white, fontWeight: FontWeight.bold)),
+            label: const Text(
+              'Créer un événement',
+              style: TextStyle(
+                color: AppColors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             onPressed: () => _showEventDialog(context, ref, repo),
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -907,7 +1185,13 @@ class _InfosTab extends ConsumerWidget {
             backgroundColor: AppColors.gold,
             elevation: 6,
             icon: const Icon(Icons.campaign, color: AppColors.black),
-            label: const Text('Nouvelle annonce', style: TextStyle(color: AppColors.black, fontWeight: FontWeight.bold)),
+            label: const Text(
+              'Nouvelle annonce',
+              style: TextStyle(
+                color: AppColors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             onPressed: () => _showAnnouncementDialog(context, ref, repo),
           ),
         ],
@@ -917,55 +1201,102 @@ class _InfosTab extends ConsumerWidget {
         children: [
           // Événements en attente
           eventsAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald)),
-            error: (e, _) => const SizedBox.shrink(), // Silently ignore if column missing
+            loading: () => const Center(
+              child: CircularProgressIndicator(color: AppColors.emerald),
+            ),
+            error: (e, _) =>
+                const SizedBox.shrink(), // Silently ignore if column missing
             data: (events) {
-              final unapproved = events.where((e) => !(e['is_approved'] as bool? ?? true)).toList();
+              final unapproved = events
+                  .where((e) => !(e['is_approved'] as bool? ?? true))
+                  .toList();
               if (unapproved.isEmpty) return const SizedBox.shrink();
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Container(width: 4, height: 18, decoration: BoxDecoration(color: AppColors.gold, borderRadius: BorderRadius.circular(2))),
+                      Container(
+                        width: 4,
+                        height: 18,
+                        decoration: BoxDecoration(
+                          color: AppColors.gold,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
                       const SizedBox(width: 8),
-                      Text('Événements en attente (${unapproved.length})', style: AppTypography.h2),
+                      Text(
+                        'Événements en attente (${unapproved.length})',
+                        style: AppTypography.h2,
+                      ),
                     ],
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  ...unapproved.map((e) => Padding(
-                    padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                    child: AeemgCard(
-                      padding: const EdgeInsets.all(AppSpacing.md),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(color: AppColors.gold.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
-                            child: const Icon(Icons.event, color: AppColors.gold, size: 20),
-                          ),
-                          const SizedBox(width: AppSpacing.md),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(e['title'] as String? ?? '', style: AppTypography.h3),
-                                Text(e['location'] as String? ?? 'Lieu non précisé', style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary)),
-                              ],
+                  ...unapproved.map(
+                    (e) => Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                      child: AeemgCard(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: AppColors.gold.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(
+                                Icons.event,
+                                color: AppColors.gold,
+                                size: 20,
+                              ),
                             ),
-                          ),
-                          IconButton(icon: const Icon(Icons.check_circle, color: AppColors.emerald), tooltip: 'Approuver', onPressed: () async {
-                            await repo.approveEvent(e['id'] as String);
-                            ref.invalidate(adminEventsProvider);
-                          }),
-                          IconButton(icon: const Icon(Icons.delete, color: AppColors.error, size: 20), onPressed: () async {
-                            await repo.deleteEvent(e['id'] as String);
-                            ref.invalidate(adminEventsProvider);
-                          }),
-                        ],
+                            const SizedBox(width: AppSpacing.md),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    e['title'] as String? ?? '',
+                                    style: AppTypography.h3,
+                                  ),
+                                  Text(
+                                    e['location'] as String? ??
+                                        'Lieu non précisé',
+                                    style: AppTypography.bodySmall.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.check_circle,
+                                color: AppColors.emerald,
+                              ),
+                              tooltip: 'Approuver',
+                              onPressed: () async {
+                                await repo.approveEvent(e['id'] as String);
+                                ref.invalidate(adminEventsProvider);
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.delete,
+                                color: AppColors.error,
+                                size: 20,
+                              ),
+                              onPressed: () async {
+                                await repo.deleteEvent(e['id'] as String);
+                                ref.invalidate(adminEventsProvider);
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  )),
+                  ),
                   const SizedBox(height: AppSpacing.xl),
                 ],
               );
@@ -974,21 +1305,38 @@ class _InfosTab extends ConsumerWidget {
           // Tous les événements
           Row(
             children: [
-              Container(width: 4, height: 18, decoration: BoxDecoration(color: AppColors.emerald, borderRadius: BorderRadius.circular(2))),
+              Container(
+                width: 4,
+                height: 18,
+                decoration: BoxDecoration(
+                  color: AppColors.emerald,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
               const SizedBox(width: 8),
               Text('Tous les événements', style: AppTypography.h2),
             ],
           ),
           const SizedBox(height: AppSpacing.md),
           eventsAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald)),
-            error: (e, _) => Text('Erreur événements : $e', style: const TextStyle(color: AppColors.error)),
+            loading: () => const Center(
+              child: CircularProgressIndicator(color: AppColors.emerald),
+            ),
+            error: (e, _) => Text(
+              'Erreur événements : $e',
+              style: const TextStyle(color: AppColors.error),
+            ),
             data: (events) {
               if (events.isEmpty) return _emptyTile('Aucun événement.');
               return Column(
                 children: events.map((e) {
                   final approved = e['is_approved'] as bool? ?? true;
-                  final startsAt = e['starts_at'] != null ? DateFormat('d MMM yyyy', 'fr').format(DateTime.parse(e['starts_at'] as String)) : '—';
+                  final startsAt = e['starts_at'] != null
+                      ? DateFormat(
+                          'd MMM yyyy',
+                          'fr',
+                        ).format(DateTime.parse(e['starts_at'] as String))
+                      : '—';
                   return Padding(
                     padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                     child: AeemgCard(
@@ -997,35 +1345,85 @@ class _InfosTab extends ConsumerWidget {
                         children: [
                           Container(
                             padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(color: (approved ? AppColors.emerald : AppColors.gold).withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
-                            child: Icon(Icons.event, color: approved ? AppColors.emerald : AppColors.gold, size: 20),
+                            decoration: BoxDecoration(
+                              color:
+                                  (approved
+                                          ? AppColors.emerald
+                                          : AppColors.gold)
+                                      .withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Icon(
+                              Icons.event,
+                              color: approved
+                                  ? AppColors.emerald
+                                  : AppColors.gold,
+                              size: 20,
+                            ),
                           ),
                           const SizedBox(width: AppSpacing.md),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(e['title'] as String? ?? '', style: AppTypography.h3),
-                                Text(startsAt, style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary)),
+                                Text(
+                                  e['title'] as String? ?? '',
+                                  style: AppTypography.h3,
+                                ),
+                                Text(
+                                  startsAt,
+                                  style: AppTypography.bodySmall.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
                                 if (!approved)
                                   Container(
                                     margin: const EdgeInsets.only(top: 4),
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                    decoration: BoxDecoration(color: AppColors.gold.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(4)),
-                                    child: Text('EN ATTENTE', style: AppTypography.caption.copyWith(color: AppColors.gold, fontSize: 9, fontWeight: FontWeight.bold)),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.gold.withValues(
+                                        alpha: 0.2,
+                                      ),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      'EN ATTENTE',
+                                      style: AppTypography.caption.copyWith(
+                                        color: AppColors.gold,
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ),
                               ],
                             ),
                           ),
                           if (!approved)
-                            IconButton(icon: const Icon(Icons.check_circle, color: AppColors.emerald, size: 20), onPressed: () async {
-                              await repo.approveEvent(e['id'] as String);
+                            IconButton(
+                              icon: const Icon(
+                                Icons.check_circle,
+                                color: AppColors.emerald,
+                                size: 20,
+                              ),
+                              onPressed: () async {
+                                await repo.approveEvent(e['id'] as String);
+                                ref.invalidate(adminEventsProvider);
+                              },
+                            ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.delete_outline,
+                              color: AppColors.error,
+                              size: 20,
+                            ),
+                            onPressed: () async {
+                              await repo.deleteEvent(e['id'] as String);
                               ref.invalidate(adminEventsProvider);
-                            }),
-                          IconButton(icon: const Icon(Icons.delete_outline, color: AppColors.error, size: 20), onPressed: () async {
-                            await repo.deleteEvent(e['id'] as String);
-                            ref.invalidate(adminEventsProvider);
-                          }),
+                            },
+                          ),
                         ],
                       ),
                     ),
@@ -1038,7 +1436,14 @@ class _InfosTab extends ConsumerWidget {
           // Annonces
           Row(
             children: [
-              Container(width: 4, height: 18, decoration: BoxDecoration(color: AppColors.gold, borderRadius: BorderRadius.circular(2))),
+              Container(
+                width: 4,
+                height: 18,
+                decoration: BoxDecoration(
+                  color: AppColors.gold,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
               const SizedBox(width: 8),
               Text('Annonces publiées', style: AppTypography.h2),
             ],
@@ -1046,52 +1451,102 @@ class _InfosTab extends ConsumerWidget {
           const SizedBox(height: AppSpacing.md),
           announcementsAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => Text('Erreur annonces : $e', style: const TextStyle(color: AppColors.error)),
+            error: (e, _) => Text(
+              'Erreur annonces : $e',
+              style: const TextStyle(color: AppColors.error),
+            ),
             data: (announcements) {
-              if (announcements.isEmpty) return _emptyTile('Aucune annonce publiée.');
+              if (announcements.isEmpty) {
+                return _emptyTile('Aucune annonce publiée.');
+              }
               return Column(
-                children: announcements.map((a) => Padding(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                  child: AeemgCard(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 4, height: 40,
-                          decoration: BoxDecoration(color: (a['is_important'] as bool? ?? false) ? AppColors.error : AppColors.gold, borderRadius: BorderRadius.circular(2)),
-                        ),
-                        const SizedBox(width: AppSpacing.md),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                children: announcements
+                    .map(
+                      (a) => Padding(
+                        padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                        child: AeemgCard(
+                          padding: const EdgeInsets.all(AppSpacing.md),
+                          child: Row(
                             children: [
-                              Row(
-                                children: [
-                                  Expanded(child: Text(a['title'] as String? ?? '', style: AppTypography.h3)),
-                                  if (a['is_important'] as bool? ?? false)
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                      decoration: BoxDecoration(color: AppColors.error.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(4)),
-                                      child: Text('URGENT', style: AppTypography.caption.copyWith(color: AppColors.error, fontSize: 9, fontWeight: FontWeight.bold)),
-                                    ),
-                                ],
+                              Container(
+                                width: 4,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: (a['is_important'] as bool? ?? false)
+                                      ? AppColors.error
+                                      : AppColors.gold,
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
                               ),
-                              // content est la vraie colonne (pas body)
-                              Text(a['content'] as String? ?? '', maxLines: 1, overflow: TextOverflow.ellipsis, style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary)),
+                              const SizedBox(width: AppSpacing.md),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            a['title'] as String? ?? '',
+                                            style: AppTypography.h3,
+                                          ),
+                                        ),
+                                        if (a['is_important'] as bool? ?? false)
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 6,
+                                              vertical: 2,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.error.withValues(
+                                                alpha: 0.2,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
+                                            child: Text(
+                                              'URGENT',
+                                              style: AppTypography.caption
+                                                  .copyWith(
+                                                    color: AppColors.error,
+                                                    fontSize: 9,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                    // content est la vraie colonne (pas body)
+                                    Text(
+                                      a['content'] as String? ?? '',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppTypography.bodySmall.copyWith(
+                                        color: AppColors.textSecondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.delete_outline,
+                                  color: AppColors.error,
+                                  size: 20,
+                                ),
+                                onPressed: () async {
+                                  await repo.deleteAnnouncement(
+                                    a['id'] as String,
+                                  );
+                                  ref.invalidate(adminAnnouncementsProvider);
+                                },
+                              ),
                             ],
                           ),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.delete_outline, color: AppColors.error, size: 20),
-                          onPressed: () async {
-                            await repo.deleteAnnouncement(a['id'] as String);
-                            ref.invalidate(adminAnnouncementsProvider);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                )).toList(),
+                      ),
+                    )
+                    .toList(),
               );
             },
           ),
@@ -1101,7 +1556,11 @@ class _InfosTab extends ConsumerWidget {
     );
   }
 
-  void _showAnnouncementDialog(BuildContext context, WidgetRef ref, AdminRepository repo) {
+  void _showAnnouncementDialog(
+    BuildContext context,
+    WidgetRef ref,
+    AdminRepository repo,
+  ) {
     final titleCtrl = TextEditingController();
     final contentCtrl = TextEditingController();
     bool isImportant = false;
@@ -1110,7 +1569,10 @@ class _InfosTab extends ConsumerWidget {
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setState) => AlertDialog(
           backgroundColor: AppColors.cardSurface,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: AppColors.gold.withValues(alpha: 0.3))),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(color: AppColors.gold.withValues(alpha: 0.3)),
+          ),
           title: Row(
             children: [
               const Icon(Icons.campaign, color: AppColors.gold),
@@ -1129,7 +1591,10 @@ class _InfosTab extends ConsumerWidget {
                   labelStyle: const TextStyle(color: AppColors.textSecondary),
                   filled: true,
                   fillColor: AppColors.cardSurfaceLight,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
@@ -1142,7 +1607,10 @@ class _InfosTab extends ConsumerWidget {
                   labelStyle: const TextStyle(color: AppColors.textSecondary),
                   filled: true,
                   fillColor: AppColors.cardSurfaceLight,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
@@ -1153,22 +1621,41 @@ class _InfosTab extends ConsumerWidget {
                     onChanged: (v) => setState(() => isImportant = v!),
                     activeColor: AppColors.error,
                   ),
-                  const Text('Marquer comme urgent', style: TextStyle(color: AppColors.textSecondary)),
+                  const Text(
+                    'Marquer comme urgent',
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
                 ],
               ),
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Annuler', style: TextStyle(color: AppColors.textSecondary))),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text(
+                'Annuler',
+                style: TextStyle(color: AppColors.textSecondary),
+              ),
+            ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.gold, foregroundColor: AppColors.black),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.gold,
+                foregroundColor: AppColors.black,
+              ),
               onPressed: () async {
                 if (titleCtrl.text.trim().isEmpty) return;
-                await repo.createAnnouncement(title: titleCtrl.text.trim(), content: contentCtrl.text.trim(), isImportant: isImportant);
+                await repo.createAnnouncement(
+                  title: titleCtrl.text.trim(),
+                  content: contentCtrl.text.trim(),
+                  isImportant: isImportant,
+                );
                 if (ctx.mounted) Navigator.pop(ctx);
                 ref.invalidate(adminAnnouncementsProvider);
               },
-              child: const Text('Publier', style: TextStyle(fontWeight: FontWeight.bold)),
+              child: const Text(
+                'Publier',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),
@@ -1193,7 +1680,10 @@ class _FinancesTab extends ConsumerWidget {
         backgroundColor: AppColors.emerald,
         elevation: 6,
         icon: const Icon(Icons.add, color: AppColors.white),
-        label: const Text('Nouveau bilan', style: TextStyle(color: AppColors.white, fontWeight: FontWeight.bold)),
+        label: const Text(
+          'Nouveau bilan',
+          style: TextStyle(color: AppColors.white, fontWeight: FontWeight.bold),
+        ),
         onPressed: () {
           showDialog(
             context: context,
@@ -1215,27 +1705,60 @@ class _FinancesTab extends ConsumerWidget {
           children: [
             // ── Résumé dons ──────────────────────────────────
             donationsAsync.when(
-              loading: () => const SizedBox(height: 80, child: Center(child: CircularProgressIndicator(color: AppColors.emerald))),
-              error: (e, _) => Text('Erreur dons : $e', style: const TextStyle(color: AppColors.error)),
+              loading: () => const SizedBox(
+                height: 80,
+                child: Center(
+                  child: CircularProgressIndicator(color: AppColors.emerald),
+                ),
+              ),
+              error: (e, _) => Text(
+                'Erreur dons : $e',
+                style: const TextStyle(color: AppColors.error),
+              ),
               data: (donations) {
-                final total = donations.fold<double>(0, (s, e) => s + ((e['amount'] as num?)?.toDouble() ?? 0));
+                final total = donations.fold<double>(
+                  0,
+                  (s, e) => s + ((e['amount'] as num?)?.toDouble() ?? 0),
+                );
                 return AeemgCard(
                   padding: const EdgeInsets.all(AppSpacing.lg),
                   child: Row(
                     children: [
                       Container(
                         padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(color: AppColors.error.withValues(alpha: 0.15), shape: BoxShape.circle),
-                        child: const Icon(Icons.favorite, color: AppColors.error, size: 28),
+                        decoration: BoxDecoration(
+                          color: AppColors.error.withValues(alpha: 0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.favorite,
+                          color: AppColors.error,
+                          size: 28,
+                        ),
                       ),
                       const SizedBox(width: AppSpacing.lg),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Total des dons reçus', style: AppTypography.caption.copyWith(color: AppColors.textSecondary)),
-                            Text('${total.toStringAsFixed(0)} GNF', style: AppTypography.h1.copyWith(color: AppColors.error)),
-                            Text('${donations.length} dons enregistrés', style: AppTypography.caption.copyWith(color: AppColors.textTertiary)),
+                            Text(
+                              'Total des dons reçus',
+                              style: AppTypography.caption.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                            Text(
+                              '${total.toStringAsFixed(0)} GNF',
+                              style: AppTypography.h1.copyWith(
+                                color: AppColors.error,
+                              ),
+                            ),
+                            Text(
+                              '${donations.length} dons enregistrés',
+                              style: AppTypography.caption.copyWith(
+                                color: AppColors.textTertiary,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -1248,80 +1771,158 @@ class _FinancesTab extends ConsumerWidget {
             // ── Bilans mensuels ───────────────────────────────
             Row(
               children: [
-                Container(width: 4, height: 18, decoration: BoxDecoration(color: AppColors.emerald, borderRadius: BorderRadius.circular(2))),
+                Container(
+                  width: 4,
+                  height: 18,
+                  decoration: BoxDecoration(
+                    color: AppColors.emerald,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
                 const SizedBox(width: 8),
                 Text('Bilans mensuels publiés', style: AppTypography.h2),
               ],
             ),
             const SizedBox(height: AppSpacing.md),
             reportsAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald)),
-              error: (e, _) => Text('Erreur bilans : $e', style: const TextStyle(color: AppColors.error)),
+              loading: () => const Center(
+                child: CircularProgressIndicator(color: AppColors.emerald),
+              ),
+              error: (e, _) => Text(
+                'Erreur bilans : $e',
+                style: const TextStyle(color: AppColors.error),
+              ),
               data: (reports) {
-                if (reports.isEmpty) return _emptyTile('Aucun bilan publié. Créez-en un via le bouton ci-dessous.');
-                final monthNames = ['', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+                if (reports.isEmpty) {
+                  return _emptyTile(
+                    'Aucun bilan publié. Créez-en un via le bouton ci-dessous.',
+                  );
+                }
+                final monthNames = [
+                  '',
+                  'Janvier',
+                  'Février',
+                  'Mars',
+                  'Avril',
+                  'Mai',
+                  'Juin',
+                  'Juillet',
+                  'Août',
+                  'Septembre',
+                  'Octobre',
+                  'Novembre',
+                  'Décembre',
+                ];
                 return Column(
                   children: reports.asMap().entries.map((entry) {
                     final r = entry.value;
                     final income = (r['total_income'] as num?)?.toDouble() ?? 0;
-                    final expense = (r['total_expense'] as num?)?.toDouble() ?? 0;
+                    final expense =
+                        (r['total_expense'] as num?)?.toDouble() ?? 0;
                     final balance = income - expense;
                     final isPositive = balance >= 0;
                     final month = r['month'] as int? ?? 1;
                     final year = r['year'] as int? ?? DateTime.now().year;
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                      child: AeemgCard(
-                        padding: const EdgeInsets.all(AppSpacing.md),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
+                          padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                          child: AeemgCard(
+                            padding: const EdgeInsets.all(AppSpacing.md),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(color: AppColors.emerald.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(10)),
-                                  child: const Icon(Icons.account_balance, color: AppColors.emerald, size: 18),
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.emerald.withValues(
+                                          alpha: 0.15,
+                                        ),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: const Icon(
+                                        Icons.account_balance,
+                                        color: AppColors.emerald,
+                                        size: 18,
+                                      ),
+                                    ),
+                                    const SizedBox(width: AppSpacing.md),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            '${monthNames[month]} $year',
+                                            style: AppTypography.h3,
+                                          ),
+                                          Text(
+                                            'Bilan officiel',
+                                            style: AppTypography.caption
+                                                .copyWith(
+                                                  color:
+                                                      AppColors.textSecondary,
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color:
+                                            (isPositive
+                                                    ? AppColors.emerald
+                                                    : AppColors.error)
+                                                .withValues(alpha: 0.15),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        '${isPositive ? '+' : ''}${balance.toStringAsFixed(0)} GNF',
+                                        style: AppTypography.caption.copyWith(
+                                          color: isPositive
+                                              ? AppColors.emerald
+                                              : AppColors.error,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                const SizedBox(width: AppSpacing.md),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text('${monthNames[month]} $year', style: AppTypography.h3),
-                                      Text('Bilan officiel', style: AppTypography.caption.copyWith(color: AppColors.textSecondary)),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: (isPositive ? AppColors.emerald : AppColors.error).withValues(alpha: 0.15),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    '${isPositive ? '+' : ''}${balance.toStringAsFixed(0)} GNF',
-                                    style: AppTypography.caption.copyWith(color: isPositive ? AppColors.emerald : AppColors.error, fontWeight: FontWeight.bold),
-                                  ),
+                                const SizedBox(height: AppSpacing.md),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _FinanceCell(
+                                        label: 'Recettes',
+                                        value:
+                                            '${income.toStringAsFixed(0)} GNF',
+                                        color: AppColors.emerald,
+                                        icon: Icons.arrow_downward,
+                                      ),
+                                    ),
+                                    const SizedBox(width: AppSpacing.sm),
+                                    Expanded(
+                                      child: _FinanceCell(
+                                        label: 'Dépenses',
+                                        value:
+                                            '${expense.toStringAsFixed(0)} GNF',
+                                        color: AppColors.error,
+                                        icon: Icons.arrow_upward,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                            const SizedBox(height: AppSpacing.md),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _FinanceCell(label: 'Recettes', value: '${income.toStringAsFixed(0)} GNF', color: AppColors.emerald, icon: Icons.arrow_downward),
-                                ),
-                                const SizedBox(width: AppSpacing.sm),
-                                Expanded(
-                                  child: _FinanceCell(label: 'Dépenses', value: '${expense.toStringAsFixed(0)} GNF', color: AppColors.error, icon: Icons.arrow_upward),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ).animate(delay: Duration(milliseconds: 50 * entry.key)).fade().slideY(begin: 0.05);
+                          ),
+                        )
+                        .animate(delay: Duration(milliseconds: 50 * entry.key))
+                        .fade()
+                        .slideY(begin: 0.05);
                   }).toList(),
                 );
               },
@@ -1330,7 +1931,14 @@ class _FinancesTab extends ConsumerWidget {
             // ── Historique des dons ───────────────────────────
             Row(
               children: [
-                Container(width: 4, height: 18, decoration: BoxDecoration(color: AppColors.error, borderRadius: BorderRadius.circular(2))),
+                Container(
+                  width: 4,
+                  height: 18,
+                  decoration: BoxDecoration(
+                    color: AppColors.error,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
                 const SizedBox(width: 8),
                 Text('Historique des dons', style: AppTypography.h2),
               ],
@@ -1340,7 +1948,9 @@ class _FinancesTab extends ConsumerWidget {
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => const SizedBox.shrink(),
               data: (donations) {
-                if (donations.isEmpty) return _emptyTile('Aucun don enregistré.');
+                if (donations.isEmpty) {
+                  return _emptyTile('Aucun don enregistré.');
+                }
                 return Column(
                   children: donations.asMap().entries.map((entry) {
                     final d = entry.value;
@@ -1351,43 +1961,98 @@ class _FinancesTab extends ConsumerWidget {
                         : profile?['full_name'] as String? ?? 'Inconnu';
                     final category = d['category'] as String? ?? 'general';
                     final status = d['status'] as String? ?? 'pending';
-                    final statusColor = status == 'completed' ? AppColors.emerald : (status == 'failed' ? AppColors.error : AppColors.gold);
+                    final statusColor = status == 'completed'
+                        ? AppColors.emerald
+                        : (status == 'failed'
+                              ? AppColors.error
+                              : AppColors.gold);
                     return Padding(
                       padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                      child: AeemgCard(
-                        padding: const EdgeInsets.all(AppSpacing.md),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 40, height: 40,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(color: AppColors.error.withValues(alpha: 0.15), shape: BoxShape.circle),
-                              child: const Icon(Icons.volunteer_activism, color: AppColors.error, size: 20),
-                            ),
-                            const SizedBox(width: AppSpacing.md),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(donorName, style: AppTypography.h3),
-                                  Text(category, style: AppTypography.caption.copyWith(color: AppColors.textSecondary)),
-                                ],
-                              ),
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text('${d['amount']} GNF', style: AppTypography.h3.copyWith(color: AppColors.error)),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                  decoration: BoxDecoration(color: statusColor.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(4)),
-                                  child: Text(status.toUpperCase(), style: AppTypography.caption.copyWith(color: statusColor, fontSize: 9, fontWeight: FontWeight.bold)),
+                      child:
+                          AeemgCard(
+                                padding: const EdgeInsets.all(AppSpacing.md),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 40,
+                                      height: 40,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.error.withValues(
+                                          alpha: 0.15,
+                                        ),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(
+                                        Icons.volunteer_activism,
+                                        color: AppColors.error,
+                                        size: 20,
+                                      ),
+                                    ),
+                                    const SizedBox(width: AppSpacing.md),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            donorName,
+                                            style: AppTypography.h3,
+                                          ),
+                                          Text(
+                                            category,
+                                            style: AppTypography.caption
+                                                .copyWith(
+                                                  color:
+                                                      AppColors.textSecondary,
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          '${d['amount']} GNF',
+                                          style: AppTypography.h3.copyWith(
+                                            color: AppColors.error,
+                                          ),
+                                        ),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 6,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: statusColor.withValues(
+                                              alpha: 0.15,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              4,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            status.toUpperCase(),
+                                            style: AppTypography.caption
+                                                .copyWith(
+                                                  color: statusColor,
+                                                  fontSize: 9,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ).animate(delay: Duration(milliseconds: 40 * entry.key)).fade().slideX(begin: 0.05),
+                              )
+                              .animate(
+                                delay: Duration(milliseconds: 40 * entry.key),
+                              )
+                              .fade()
+                              .slideX(begin: 0.05),
                     );
                   }).toList(),
                 );
@@ -1406,13 +2071,21 @@ class _FinanceCell extends StatelessWidget {
   final String value;
   final Color color;
   final IconData icon;
-  const _FinanceCell({required this.label, required this.value, required this.color, required this.icon});
+  const _FinanceCell({
+    required this.label,
+    required this.value,
+    required this.color,
+    required this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.sm),
-      decoration: BoxDecoration(color: color.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(10)),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: Row(
         children: [
           Icon(icon, color: color, size: 16),
@@ -1421,8 +2094,22 @@ class _FinanceCell extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: AppTypography.caption.copyWith(color: AppColors.textSecondary, fontSize: 10)),
-                Text(value, style: AppTypography.bodySmall.copyWith(color: color, fontWeight: FontWeight.bold, fontSize: 11), overflow: TextOverflow.ellipsis),
+                Text(
+                  label,
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.textSecondary,
+                    fontSize: 10,
+                  ),
+                ),
+                Text(
+                  value,
+                  style: AppTypography.bodySmall.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 11,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
           ),
@@ -1445,8 +2132,15 @@ class _ModerationTab extends ConsumerWidget {
       color: AppColors.error,
       onRefresh: () async => ref.invalidate(adminPostsProvider),
       child: postsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator(color: AppColors.error)),
-        error: (e, _) => Center(child: Text('Erreur : $e', style: const TextStyle(color: AppColors.error))),
+        loading: () => const Center(
+          child: CircularProgressIndicator(color: AppColors.error),
+        ),
+        error: (e, _) => Center(
+          child: Text(
+            'Erreur : $e',
+            style: const TextStyle(color: AppColors.error),
+          ),
+        ),
         data: (posts) {
           if (posts.isEmpty) return _emptyTile('Aucune publication à modérer.');
           return ListView.builder(
@@ -1454,7 +2148,10 @@ class _ModerationTab extends ConsumerWidget {
             itemCount: posts.length,
             itemBuilder: (context, i) {
               final p = posts[i];
-              final author = (p['profiles'] as Map<String, dynamic>?)?['full_name'] as String? ?? 'Inconnu';
+              final author =
+                  (p['profiles'] as Map<String, dynamic>?)?['full_name']
+                      as String? ??
+                  'Inconnu';
               return Padding(
                 padding: const EdgeInsets.only(bottom: AppSpacing.sm),
                 child: AeemgCard(
@@ -1464,9 +2161,18 @@ class _ModerationTab extends ConsumerWidget {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.person_outline, color: AppColors.textSecondary, size: 16),
+                          const Icon(
+                            Icons.person_outline,
+                            color: AppColors.textSecondary,
+                            size: 16,
+                          ),
                           const SizedBox(width: 4),
-                          Text(author, style: AppTypography.caption.copyWith(color: AppColors.textSecondary)),
+                          Text(
+                            author,
+                            style: AppTypography.caption.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
                           const Spacer(),
                           Container(
                             decoration: BoxDecoration(
@@ -1474,12 +2180,19 @@ class _ModerationTab extends ConsumerWidget {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: IconButton(
-                              icon: const Icon(Icons.delete_outline, color: AppColors.error, size: 20),
+                              icon: const Icon(
+                                Icons.delete_outline,
+                                color: AppColors.error,
+                                size: 20,
+                              ),
                               tooltip: 'Supprimer',
                               onPressed: () async {
                                 final confirm = await showDialog<bool>(
                                   context: context,
-                                  builder: (_) => const _ConfirmDialog('Supprimer ce post ?', 'Cette action est irréversible.'),
+                                  builder: (_) => const _ConfirmDialog(
+                                    'Supprimer ce post ?',
+                                    'Cette action est irréversible.',
+                                  ),
                                 );
                                 if (confirm == true) {
                                   await repo.deletePost(p['id'] as String);
@@ -1498,7 +2211,10 @@ class _ModerationTab extends ConsumerWidget {
                           color: AppColors.cardSurfaceLight,
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Text(p['content'] as String? ?? '', style: AppTypography.body.copyWith(fontSize: 13)),
+                        child: Text(
+                          p['content'] as String? ?? '',
+                          style: AppTypography.body.copyWith(fontSize: 13),
+                        ),
                       ),
                     ],
                   ),
@@ -1527,7 +2243,10 @@ class _IslamTab extends ConsumerWidget {
         backgroundColor: AppColors.gold,
         elevation: 6,
         icon: const Icon(Icons.add, color: AppColors.black),
-        label: const Text('Nouveau contenu', style: TextStyle(color: AppColors.black, fontWeight: FontWeight.bold)),
+        label: const Text(
+          'Nouveau contenu',
+          style: TextStyle(color: AppColors.black, fontWeight: FontWeight.bold),
+        ),
         onPressed: () {
           showDialog(
             context: context,
@@ -1542,61 +2261,114 @@ class _IslamTab extends ConsumerWidget {
         color: AppColors.gold,
         onRefresh: () async => ref.invalidate(adminIslamicProvider),
         child: contentsAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator(color: AppColors.gold)),
-          error: (e, _) => Center(child: Text('Erreur : $e', style: const TextStyle(color: AppColors.error))),
+          loading: () => const Center(
+            child: CircularProgressIndicator(color: AppColors.gold),
+          ),
+          error: (e, _) => Center(
+            child: Text(
+              'Erreur : $e',
+              style: const TextStyle(color: AppColors.error),
+            ),
+          ),
           data: (contents) {
             if (contents.isEmpty) return _emptyTile('Aucun contenu islamique.');
             return ListView.builder(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.md, 80),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.md,
+                AppSpacing.md,
+                AppSpacing.md,
+                80,
+              ),
               itemCount: contents.length,
               itemBuilder: (context, i) {
                 final c = contents[i];
                 final type = c['content_type'] as String? ?? 'Inconnu';
-                final typeColor = type == 'verse' ? AppColors.gold : (type == 'hadith' ? AppColors.emerald : const Color(0xFF3A86FF));
+                final typeColor = type == 'verse'
+                    ? AppColors.gold
+                    : (type == 'hadith'
+                          ? AppColors.emerald
+                          : const Color(0xFF3A86FF));
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                  child: AeemgCard(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(color: typeColor.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
-                          child: Icon(
-                            type == 'verse' ? Icons.menu_book : (type == 'hadith' ? Icons.auto_stories : Icons.format_quote),
-                            color: typeColor,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.md),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(c['title'] as String? ?? type, style: AppTypography.h3),
-                              Container(
-                                margin: const EdgeInsets.only(top: 4),
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                decoration: BoxDecoration(color: typeColor.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(4)),
-                                child: Text(type, style: AppTypography.caption.copyWith(color: typeColor, fontSize: 9)),
+                      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                      child: AeemgCard(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: typeColor.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                            ],
-                          ),
+                              child: Icon(
+                                type == 'verse'
+                                    ? Icons.menu_book
+                                    : (type == 'hadith'
+                                          ? Icons.auto_stories
+                                          : Icons.format_quote),
+                                color: typeColor,
+                                size: 20,
+                              ),
+                            ),
+                            const SizedBox(width: AppSpacing.md),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    c['title'] as String? ?? type,
+                                    style: AppTypography.h3,
+                                  ),
+                                  Container(
+                                    margin: const EdgeInsets.only(top: 4),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: typeColor.withValues(alpha: 0.15),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      type,
+                                      style: AppTypography.caption.copyWith(
+                                        color: typeColor,
+                                        fontSize: 9,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.delete_outline,
+                                color: AppColors.error,
+                                size: 20,
+                              ),
+                              onPressed: () async {
+                                final confirm = await showDialog<bool>(
+                                  context: context,
+                                  builder: (_) => const _ConfirmDialog(
+                                    'Supprimer le contenu ?',
+                                    '',
+                                  ),
+                                );
+                                if (confirm == true) {
+                                  await repo.deleteIslamicContent(
+                                    c['id'] as String,
+                                  );
+                                  ref.invalidate(adminIslamicProvider);
+                                }
+                              },
+                            ),
+                          ],
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.delete_outline, color: AppColors.error, size: 20),
-                          onPressed: () async {
-                            final confirm = await showDialog<bool>(context: context, builder: (_) => const _ConfirmDialog('Supprimer le contenu ?', ''));
-                            if (confirm == true) {
-                              await repo.deleteIslamicContent(c['id'] as String);
-                              ref.invalidate(adminIslamicProvider);
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ).animate(delay: Duration(milliseconds: 40 * i)).fade().slideX(begin: 0.05);
+                      ),
+                    )
+                    .animate(delay: Duration(milliseconds: 40 * i))
+                    .fade()
+                    .slideX(begin: 0.05);
               },
             );
           },
@@ -1622,14 +2394,21 @@ void _showCreateUserDialog(BuildContext context) {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Compris', style: TextStyle(color: AppColors.emerald)),
+          child: const Text(
+            'Compris',
+            style: TextStyle(color: AppColors.emerald),
+          ),
         ),
       ],
     ),
   );
 }
 
-void _showEventDialog(BuildContext context, WidgetRef ref, AdminRepository repo) {
+void _showEventDialog(
+  BuildContext context,
+  WidgetRef ref,
+  AdminRepository repo,
+) {
   final titleCtrl = TextEditingController();
   final descCtrl = TextEditingController();
   final locCtrl = TextEditingController();
@@ -1651,8 +2430,12 @@ void _showEventDialog(BuildContext context, WidgetRef ref, AdminRepository repo)
                 decoration: const InputDecoration(
                   labelText: 'Titre de l\'événement',
                   labelStyle: TextStyle(color: AppColors.textSecondary),
-                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.emerald)),
-                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.emerald, width: 2)),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.emerald),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.emerald, width: 2),
+                  ),
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
@@ -1663,8 +2446,12 @@ void _showEventDialog(BuildContext context, WidgetRef ref, AdminRepository repo)
                 decoration: const InputDecoration(
                   labelText: 'Description',
                   labelStyle: TextStyle(color: AppColors.textSecondary),
-                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.emerald)),
-                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.emerald, width: 2)),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.emerald),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.emerald, width: 2),
+                  ),
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
@@ -1674,15 +2461,28 @@ void _showEventDialog(BuildContext context, WidgetRef ref, AdminRepository repo)
                 decoration: const InputDecoration(
                   labelText: 'Lieu',
                   labelStyle: TextStyle(color: AppColors.textSecondary),
-                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.emerald)),
-                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: AppColors.emerald, width: 2)),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.emerald),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: AppColors.emerald, width: 2),
+                  ),
                 ),
               ),
               const SizedBox(height: AppSpacing.md),
               ListTile(
-                title: const Text('Date et heure', style: TextStyle(color: AppColors.textSecondary)),
-                subtitle: Text(DateFormat('dd MMM yyyy - HH:mm', 'fr').format(selectedDate), style: const TextStyle(color: AppColors.white)),
-                trailing: const Icon(Icons.calendar_today, color: AppColors.emerald),
+                title: const Text(
+                  'Date et heure',
+                  style: TextStyle(color: AppColors.textSecondary),
+                ),
+                subtitle: Text(
+                  DateFormat('dd MMM yyyy - HH:mm', 'fr').format(selectedDate),
+                  style: const TextStyle(color: AppColors.white),
+                ),
+                trailing: const Icon(
+                  Icons.calendar_today,
+                  color: AppColors.emerald,
+                ),
                 onTap: () async {
                   final date = await showDatePicker(
                     context: context,
@@ -1698,7 +2498,13 @@ void _showEventDialog(BuildContext context, WidgetRef ref, AdminRepository repo)
                       );
                       if (time != null) {
                         setState(() {
-                          selectedDate = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+                          selectedDate = DateTime(
+                            date.year,
+                            date.month,
+                            date.day,
+                            time.hour,
+                            time.minute,
+                          );
                         });
                       }
                     }
@@ -1709,7 +2515,13 @@ void _showEventDialog(BuildContext context, WidgetRef ref, AdminRepository repo)
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Annuler', style: TextStyle(color: AppColors.textSecondary))),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Annuler',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
+          ),
           AeemgPrimaryButton(
             label: 'Créer',
             onPressed: () async {
