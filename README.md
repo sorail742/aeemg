@@ -9,6 +9,7 @@ Application **Flutter** (Android, iOS, Web) adossée à **Supabase** (PostgreSQL
 | Sujet | Lien |
 |---|---|
 | Cahier des charges | [docs/CAHIER_DES_CHARGES.md](docs/CAHIER_DES_CHARGES.md) |
+| **Rapport d'avancement** | [docs/RAPPORT_AVANCEMENT.md](docs/RAPPORT_AVANCEMENT.md) |
 | Backlog (tickets + règles de validité) | [docs/tickets/](docs/tickets/README.md) |
 | Décisions d'architecture (ADR) | [docs/adr/](docs/adr/README.md) |
 | Règles de travail en équipe | [docs/team/REGLES_EQUIPE.md](docs/team/REGLES_EQUIPE.md) |

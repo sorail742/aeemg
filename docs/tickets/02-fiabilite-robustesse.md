@@ -4,6 +4,7 @@
 
 ### REL-001 — Dédoublonner les versions de migrations (déploiement impossible)
 **Type** : Fiabilité · **Priorité** : P0 · **Estimation** : XS · **Composant** : supabase/db
+**Statut** : ✅ Livré — PR #138 (renommage `20260614000100`, procédure `migration repair` dans `docs/SUPABASE_SETUP.md`)
 
 **Contexte** — Deux fichiers portent la même version `20260614000000`
 (`..._phase8_admin_fixes.sql` et `..._phase9_admin_fixes.sql`). La CLI Supabase utilise ce préfixe
@@ -22,6 +23,7 @@ environnements déjà migrés manuellement, documenter `supabase migration repai
 
 ### REL-002 — Rendre la migration phase 9 exécutable et idempotente
 **Type** : Fiabilité · **Priorité** : P0 · **Estimation** : S · **Composant** : supabase/db
+**Statut** : ✅ Livré — PR #139 : comparaison sur `role::text` au lieu d'une migration séparée (même effet, schéma inchangé) ; policies précédées de `drop policy if exists`
 **Dépendances** : REL-001, SEC-021
 
 **Contexte** — `phase9_admin_fixes.sql` fait `ALTER TYPE user_role ADD VALUE 'staff'` puis, **dans la même
@@ -38,6 +40,7 @@ transaction**, crée des policies comparant `role IN ('admin','staff')` → Post
 
 ### REL-003 — Rendre toutes les migrations rejouables sur une base vierge
 **Type** : Fiabilité · **Priorité** : P0 · **Estimation** : S · **Composant** : supabase/db
+**Statut** : ✅ Livré — PR #139 + ADR-0022 (option a) ; `supabase db reset` ×2, lint et pgTAP verts en CI
 **Dépendances** : REL-001, REL-002
 
 **Contexte** — Rejeu constaté en CI et sur PostgreSQL local : `20260409000000_fix_policies` échoue
@@ -239,6 +242,7 @@ consommation data qui croissent sans limite (contrainte 3G du CDC §7.1 : < 3 s)
 
 ### REL-016 — Rétablir la compilation de l'application (build cassé sur `main`)
 **Type** : Fiabilité · **Priorité** : P0 · **Estimation** : S · **Composant** : flutter
+**Statut** : ✅ Livré — PR #137 (onglet Hizb masqué en attendant une table validée)
 
 **Contexte** — Le commit initial de `main` ne compile pas (CI « Flutter CI » déjà en échec) ; constaté par
 les jobs `analyze`, `test`, `android` de la PR de mise en place de la CI :

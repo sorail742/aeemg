@@ -13,8 +13,8 @@ dépendances. Un ticket n'est « Terminé » que si ses critères **et** la
 | Fichier | Préfixe | Contenu | Nb |
 |---|---|---|---|
 | [01-securite.md](./01-securite.md) | `SEC` | Failles RLS, Storage, Edge Functions, données perso, release | 26 |
-| [02-fiabilite-robustesse.md](./02-fiabilite-robustesse.md) | `REL` | Build cassé, migrations cassées, idempotence, intégrité, erreurs | 16 |
-| [03-suppressions.md](./03-suppressions.md) | `DEL` | Code mort, doublons, fichiers à retirer | 12 (dont 1 livré) |
+| [02-fiabilite-robustesse.md](./02-fiabilite-robustesse.md) | `REL` | Build cassé, migrations cassées, idempotence, intégrité, erreurs | 16 (dont 4 livrés) |
+| [03-suppressions.md](./03-suppressions.md) | `DEL` | Code mort, doublons, fichiers à retirer | 12 (dont 2 livrés) |
 | [04-ameliorations.md](./04-ameliorations.md) | `AMEL` | Architecture, perf, compatibilité, i18n, a11y, tests | 25 |
 | [05-fonctionnalites.md](./05-fonctionnalites.md) | `FEAT` | Fonctionnalités du cahier des charges non implémentées | 43 |
 | [06-devops-qualite.md](./06-devops-qualite.md) | `OPS` | CI/CD, environnements, observabilité, release | 14 |

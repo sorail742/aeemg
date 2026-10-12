@@ -21,6 +21,7 @@
 
 ### DEL-002 — Supprimer le script de debug `bin/test_quran.dart`
 **Type** : Suppression · **Priorité** : P3 · **Estimation** : XS · **Composant** : flutter
+**Statut** : ✅ Livré — PR #137
 
 **Contexte** — Script d'exploration (`print(q.getSurahAndVersesFromJuz(1))`) sans valeur de test ;
 la logique est couverte par `test/quran_service_test.dart`.
