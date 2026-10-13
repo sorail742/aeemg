@@ -6,7 +6,8 @@ plugins {
 
 android {
     namespace = "com.example.aeemg"
-    compileSdk = flutter.compileSdkVersion
+    // permission_handler 13 exige l'API 37 (Flutter 3.47 fournit 36 par défaut).
+    compileSdk = maxOf(flutter.compileSdkVersion, 37)
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -46,5 +47,5 @@ flutter {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 }

@@ -83,6 +83,7 @@ par tous les connectés, donc les ID sont découvrables. `addMemberToGroup`
 ### SEC-004 — Fermer la table `group_invitations` (fuite de numéros de téléphone)
 **Type** : Sécurité · **Priorité** : P0 · **Estimation** : S · **Composant** : supabase/db
 **Dépendances** : SEC-003
+**Statut** : ✅ Livré — migration `20261013120000_sec004_group_invitations.sql`, tests pgTAP `003_sec004_group_invitations.test.sql` ; anciennes invitations conservées (contraintes `invited_by` et E.164 en `NOT VALID`)
 
 **Contexte** — `phase7_messaging_fixes.sql` : policies `SELECT using (true)` et `INSERT with check (true)`.
 Un visiteur **non connecté** peut lister tous les numéros invités et en insérer à volonté. La table est
@@ -114,6 +115,7 @@ retirer la table de la publication Realtime.
 ### SEC-006 — Rendre privés les médias de la messagerie (images, audio)
 **Type** : Sécurité · **Priorité** : P0 · **Estimation** : M · **Composant** : supabase/storage, flutter
 **Dépendances** : SEC-003, AMEL-011
+**Statut** : ✅ Livré — migration `20261013110000_sec006_medias_prives.sql` (buckets privés + limites, policies par groupe, `messages.media_path`), tests pgTAP `004_sec006_medias_prives.test.sql` ; URL signées côté app
 
 **Contexte** — Buckets `chat_images` et `chat_audio` créés `public = true` (`phase6`), lecture
 `using (bucket_id = ...)` pour tous. Les URLs publiques sont stockées dans `messages.media_url`
@@ -150,6 +152,7 @@ Aucune limite de taille ni de type MIME, aucune policy de suppression.
 ### SEC-008 — Empêcher la falsification du statut des dons et des sessions de paiement
 **Type** : Sécurité · **Priorité** : P0 · **Estimation** : M · **Composant** : supabase/db, edge-functions
 **Dépendances** : FEAT-004
+**Statut** : ✅ Livré — migration `20261013130000_sec008_statut_dons.sql` (dons créés `pending`, validation espèces par le trésorier, mobile money par le service role, historique `donation_status_history`, plus d'insertion client dans `payment_sessions`), tests pgTAP `005_sec008_statut_dons.test.sql`
 
 **Contexte** — Policy `"Créer un don"` : `with check (auth.uid() = user_id)` sans contrainte sur `status`.
 Un membre peut insérer `status = 'completed'` et gonfler les statistiques / campagnes.
@@ -182,6 +185,7 @@ Idem `payment_sessions` : insertion directe par le client avec n'importe quel `s
 ### SEC-010 — Authentifier l'Edge Function `event-reminders`
 **Type** : Sécurité · **Priorité** : P0 · **Estimation** : S · **Composant** : edge-functions
 **Dépendances** : —
+**Statut** : ✅ Livré — secret `CRON_SECRET` exigé dans l'en-tête `x-cron-secret` (comparaison en temps constant, refus si non configuré), tests Deno `event-reminders/auth.test.ts` ; planification `pg_cron` laissée à REL-005
 
 **Contexte** — `supabase/functions/event-reminders/index.ts` n'effectue **aucun contrôle d'appelant**
 et utilise la clé service role. Avec la clé anon publique (présente dans l'app), n'importe qui peut
