@@ -1,15 +1,15 @@
 // Rappels événements J-7, J-3, J-1 et jour J (logique inchangée par SEC-010 ; la
 // déduplication, la planification et les performances relèvent de REL-005).
 
-import type { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-type SupabaseClient = ReturnType<typeof createClient>;
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const offsets = [7, 3, 1, 0] as const;
 
 export async function sendEventReminders(
-  supabase: SupabaseClient,
+  supabaseUrl: string,
+  serviceRoleKey: string,
 ): Promise<{ notifications: number }> {
+  const supabase = createClient(supabaseUrl, serviceRoleKey);
   const today = new Date();
   let created = 0;
 
