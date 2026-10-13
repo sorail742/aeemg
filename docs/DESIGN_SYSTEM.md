@@ -1,4 +1,4 @@
-# AEEMG Connect — Design System
+# AEEMG — Design System
 
 Inspiré de **Muslim Pro** : expérience sombre, spirituelle et moderne.  
 Implémentation Flutter : `lib/core/theme/` + `lib/shared/widgets/ds/`

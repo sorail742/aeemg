@@ -1,4 +1,4 @@
-# Rapport d'avancement — AEEMG Connect
+# Rapport d'avancement — AEEMG
 
 **Date** : 12 octobre 2026 · **Périmètre** : audit du dépôt, outillage d'équipe, CI, premiers correctifs bloquants.
 
@@ -97,7 +97,7 @@ REL-001, REL-002, REL-003, REL-016, DEL-002 (marqués « ✅ Livré » dans `doc
 | Onglet Hizb du Coran | table des 60 débuts de hizb validée par le référent, ou masquage définitif | REL-016 (suivi) |
 | Rôle `staff` | le garder ou le fusionner avec `moderator` / `section_lead` (proposé par ADR-0008) | SEC-021, DEL-007 |
 | ADR « Proposé » | 0008 rôles, 0009 configuration, 0011 environnements, 0012 push, 0013 i18n, 0015 paiements, 0017 observabilité, 0018 médias, 0020 hors ligne | — |
-| Identifiant Android définitif et keystore | ex. `org.aeemg.connect` | SEC-020 (#21) |
+| Identifiant Android définitif et keystore | `org.aeemg` (décidé, ADR-0023) | SEC-020 (#21) |
 
 ### 3.3 Tickets P0 restants (bloquants avant toute mise en production)
 

@@ -1,4 +1,4 @@
-# AEEMG Connect
+# AEEMG
 
 Plateforme numérique de gestion communautaire de l'**Association des Élèves et Étudiants Musulmans de Guinée** :
 messagerie, événements, finances, dons, mosquée, rappels islamiques, Coran et calendrier.

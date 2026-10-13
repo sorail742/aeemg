@@ -339,13 +339,14 @@ supprimer `flutter_dotenv`, ajouter un contrôle CI qui refuse tout motif `servi
 
 ### SEC-020 — Signature release Android et identifiant d'application définitifs
 **Type** : Sécurité · **Priorité** : P0 (avant publication) · **Estimation** : S · **Composant** : android
+**Statut** : ✅ Livré — identifiant `org.aeemg` et nom « AEEMG » ([ADR-0023](../adr/0023-identifiant-et-signature-application.md)), signature depuis `key.properties` sans repli debug, procédure [keystore-android](../runbooks/keystore-android.md)
 
 **Contexte** — `android/app/build.gradle.kts` : `applicationId = "com.example.aeemg"` et build release
 signé avec la **clé de debug**. Google Play refuse `com.example.*` ; un APK signé debug peut être remplacé
 par n'importe qui. iOS : bundle identifier à vérifier.
 
 **Critères d'acceptation**
-- [ ] `applicationId`/`namespace` = identifiant définitif validé par le bureau (ex. `org.aeemg.connect`) — décision tracée dans un ADR
+- [ ] `applicationId`/`namespace` = identifiant définitif validé par le bureau (`org.aeemg`, ADR-0023) — décision tracée dans un ADR
 - [ ] Keystore release hors dépôt, chargé depuis `key.properties` / secrets CI ; `key.properties` dans `.gitignore`
 - [ ] Le workflow `release.yml` produit un AAB signé ; sans secrets, le build release échoue explicitement (pas de repli sur debug)
 - [ ] Procédure de sauvegarde du keystore documentée (2 détenteurs au bureau)

@@ -1,4 +1,4 @@
-﻿-- AEEMG Connect - Schema initial (Phase 0)
+﻿-- AEEMG - Schema initial (Phase 0)
 -- Stack : Supabase PostgreSQL + RLS
 
 -- Roles utilisateur
@@ -580,7 +580,7 @@ where not exists (select 1 from public.events limit 1);
 -- Annonce de bienvenue
 insert into public.announcements (title, content, is_important)
 select
-  'Bienvenue sur AEEMG Connect',
+  'Bienvenue sur AEEMG',
   'La plateforme officielle de communication de l''AEEMG est en ligne. Rejoignez le groupe General pour rester informe.',
   true
 where not exists (select 1 from public.announcements limit 1);

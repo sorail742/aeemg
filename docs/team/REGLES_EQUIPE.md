@@ -1,4 +1,4 @@
-# Règles de travail en équipe — AEEMG Connect
+# Règles de travail en équipe — AEEMG
 
 Équipe de **6 personnes**. Ces règles s'appliquent à tous, Tech Lead compris. Elles peuvent être modifiées
 par PR sur ce fichier, approuvée par au moins 4 membres sur 6 (décision prise en rétrospective).
