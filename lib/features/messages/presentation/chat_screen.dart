@@ -792,7 +792,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   void _showGroupOptions() {
     final canManage =
-        ref.read(canManageGroupProvider(widget.groupId)).valueOrNull ?? false;
+        ref.read(canManageGroupProvider(widget.groupId)).value ?? false;
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,

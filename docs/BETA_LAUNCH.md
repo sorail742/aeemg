@@ -3,7 +3,8 @@
 ## Prérequis
 
 1. Migrations SQL à jour dans Supabase (jusqu'à `20260413000000_phase4_evolution.sql`)
-2. Fichier `.env` avec `SUPABASE_URL` et `SUPABASE_ANON_KEY`
+2. Fichier `config/prod.json` (`SUPABASE_URL`, `SUPABASE_ANON_KEY`, `APP_ENV`) passé à chaque build par
+   `--dart-define-from-file=config/prod.json` (voir [config/README.md](../config/README.md))
 3. Auth email configurée ([SUPABASE_AUTH.md](./SUPABASE_AUTH.md))
 
 ---
@@ -12,7 +13,7 @@
 
 ```bash
 flutter pub get
-flutter build apk --release
+flutter build apk --release --dart-define-from-file=config/prod.json
 ```
 
 APK : `build/app/outputs/flutter-apk/app-release.apk`
@@ -24,7 +25,7 @@ Partage direct aux testeurs (WhatsApp, Drive, etc.).
 ## Build Web
 
 ```bash
-flutter build web --release
+flutter build web --release --dart-define-from-file=config/prod.json
 ```
 
 Déployer le dossier `build/web/` (Netlify, Vercel, Firebase Hosting).

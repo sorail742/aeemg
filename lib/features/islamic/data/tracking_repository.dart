@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DailyTrack {
@@ -69,16 +70,21 @@ final trackingRepositoryProvider = Provider<TrackingRepository>((ref) {
   return TrackingRepository();
 });
 
-final dailyTrackProvider = StateNotifierProvider.family<DailyTrackNotifier, DailyTrack, DateTime>((ref, date) {
-  final repo = ref.watch(trackingRepositoryProvider);
-  return DailyTrackNotifier(repo, date);
-});
+final dailyTrackProvider =
+    StateNotifierProvider.family<DailyTrackNotifier, DailyTrack, DateTime>((
+      ref,
+      date,
+    ) {
+      final repo = ref.watch(trackingRepositoryProvider);
+      return DailyTrackNotifier(repo, date);
+    });
 
 class DailyTrackNotifier extends StateNotifier<DailyTrack> {
   final TrackingRepository _repository;
   final DateTime _date;
 
-  DailyTrackNotifier(this._repository, this._date) : super(DailyTrack(date: _date)) {
+  DailyTrackNotifier(this._repository, this._date)
+    : super(DailyTrack(date: _date)) {
     _load();
   }
 
@@ -131,7 +137,7 @@ class TrackingRepository {
     final prefs = await SharedPreferences.getInstance();
     final key = _prefix + _formatDate(date);
     final jsonString = prefs.getString(key);
-    
+
     if (jsonString != null) {
       try {
         final Map<String, dynamic> jsonMap = jsonDecode(jsonString);

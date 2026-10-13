@@ -1,17 +1,21 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import '../../data/models/quiz_model.dart';
 
 final quizzesProvider = FutureProvider<List<QuizModel>>((ref) async {
   final jsonString = await rootBundle.loadString('assets/data/quizzes.json');
   final List<dynamic> jsonList = json.decode(jsonString);
-  return jsonList.map((e) => QuizModel.fromJson(e as Map<String, dynamic>)).toList();
+  return jsonList
+      .map((e) => QuizModel.fromJson(e as Map<String, dynamic>))
+      .toList();
 });
 
-final currentQuizProvider = StateNotifierProvider<QuizSessionNotifier, QuizSessionState>((ref) {
-  return QuizSessionNotifier();
-});
+final currentQuizProvider =
+    StateNotifierProvider<QuizSessionNotifier, QuizSessionState>((ref) {
+      return QuizSessionNotifier();
+    });
 
 class QuizSessionState {
   final QuizModel? quiz;
@@ -58,10 +62,10 @@ class QuizSessionNotifier extends StateNotifier<QuizSessionState> {
 
   void answerQuestion(int optionIndex) {
     if (state.isAnswered || state.quiz == null) return;
-    
+
     final currentQ = state.quiz!.questions[state.currentQuestionIndex];
     final isCorrect = optionIndex == currentQ.correctOptionIndex;
-    
+
     state = state.copyWith(
       isAnswered: true,
       selectedOptionIndex: optionIndex,
