@@ -46,3 +46,7 @@ app.*.map.json
 
 # Environment
 .env
+
+# Configuration locale (SEC-019) : seul le modèle est versionné
+config/*.json
+!config/example.json

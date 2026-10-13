@@ -15,10 +15,10 @@ Merci de contribuer ! Ce guide résume l'essentiel ; les règles complètes sont
 ## Démarrage rapide
 
 ```bash
-cp .env.example .env            # puis renseigner l'URL et la clé anon du projet de dev
+cp config/example.json config/dev.json   # puis renseigner l'URL et la clé anon du projet de dev
 flutter pub get
-supabase start                  # base locale (migrations appliquées)
-flutter run -d chrome           # ou un émulateur Android
+supabase start                           # base locale (migrations appliquées)
+flutter run -d chrome --dart-define-from-file=config/dev.json   # ou un émulateur Android
 ```
 
 ## Cycle de contribution

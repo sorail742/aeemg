@@ -1,6 +1,6 @@
 # 0009 — Configuration par `--dart-define-from-file`
 
-- **Statut** : Proposé
+- **Statut** : Accepté (livré par SEC-019, 2026-10-13)
 - **Date** : 2026-10-12
 - **Tickets liés** : SEC-019, DEL-009, REL-010, AMEL-013
 
@@ -13,8 +13,10 @@ n'empêche d'y placer un secret.
 ## Décision
 
 - La configuration client est injectée à la compilation : `flutter run --dart-define-from-file=config/dev.json`.
-- `config/dev.json` et `config/staging.json` sont versionnés (ils ne contiennent **que** des valeurs publiques :
-  URL Supabase, clé anon/publishable, DSN Sentry, nom d'environnement). `config/prod.json` est généré par la CI.
+- Seul `config/example.json` (valeurs factices) est versionné ; `config/dev.json`, `staging.json` et `prod.json`
+  sont ignorés par git. Ils ne contiennent **que** des valeurs publiques (URL Supabase, clé anon/publishable,
+  nom d'environnement). `config/prod.json` est généré par `release.yml` depuis le secret `APP_CONFIG_JSON`.
+  *(Écart avec la version initiale de cet ADR : il n'existe encore ni projet de dev ni de staging à versionner.)*
 - Lecture via `const String.fromEnvironment('SUPABASE_URL')` dans `lib/core/config/env.dart`.
 - **Aucun secret** n'est jamais présent dans le client : clés service role, API SMS/paiement → secrets d'Edge Functions.
 
@@ -32,4 +34,5 @@ n'empêche d'y placer un secret.
 
 ## Vérification
 
-`policy-checks` : échec si `.env` est listé dans les assets de `pubspec.yaml` ou si un motif de secret (`service_role`, `sk_live`, clé privée) apparaît dans `lib/`, `web/`, `assets/` ou `config/`.
+`policy-checks` : échec (règle `env-asset`, bloquante) si `.env` est listé dans les assets de `pubspec.yaml` ou si `flutter_dotenv` réapparaît ;
+échec si un motif de secret (`service_role`, `sk_live`, clé privée) apparaît dans `lib/`, `web/`, `assets/` ou `config/`.

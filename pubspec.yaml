@@ -33,7 +33,6 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   supabase_flutter: ^2.9.1
-  flutter_dotenv: ^5.2.1
   go_router: ^18.0.2
   flutter_riverpod: ^2.6.1
   intl: ^0.20.3
@@ -83,7 +82,6 @@ flutter:
   uses-material-design: true
 
   assets:
-    - .env
     - assets/data/hadiths.json
     - assets/data/quizzes.json
     - assets/images/
