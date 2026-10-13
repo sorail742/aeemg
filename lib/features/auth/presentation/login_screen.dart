@@ -60,25 +60,40 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     setState(() => _isLoading = true);
     try {
       final email = AuthRepository.normalizeEmail(_emailController.text);
-      AuthRepository.validatePassword(_passwordController.text);
       if (_isSignUp) {
-        final response = await ref.read(authRepositoryProvider).signUpWithPassword(
+        AuthRepository.validatePassword(_passwordController.text);
+        final response = await ref
+            .read(authRepositoryProvider)
+            .signUpWithPassword(
               email: email,
               password: _passwordController.text,
-              fullName: _nameController.text.trim().isEmpty ? null : _nameController.text.trim(),
+              fullName: _nameController.text.trim().isEmpty
+                  ? null
+                  : _nameController.text.trim(),
             );
         if (!mounted) return;
-        if (response.session != null) { context.go('/profile'); return; }
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(response.user != null
-              ? 'Compte créé. Confirmez votre email avant de vous connecter.'
-              : 'Compte créé ! Vous pouvez vous connecter.'),
-          backgroundColor: AppColors.emerald,
-        ));
+        if (response.session != null) {
+          context.go('/profile');
+          return;
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              response.user != null
+                  ? 'Compte créé. Confirmez votre email avant de vous connecter.'
+                  : 'Compte créé ! Vous pouvez vous connecter.',
+            ),
+            backgroundColor: AppColors.emerald,
+          ),
+        );
         setState(() => _isSignUp = false);
       } else {
-        await ref.read(authRepositoryProvider).signInWithPassword(
-              email: email, password: _passwordController.text);
+        await ref
+            .read(authRepositoryProvider)
+            .signInWithPassword(
+              email: email,
+              password: _passwordController.text,
+            );
         if (mounted) context.go('/profile');
       }
     } on AuthException catch (e) {
@@ -95,12 +110,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     try {
       final email = AuthRepository.normalizeEmail(_emailController.text);
       await ref.read(authRepositoryProvider).sendEmailOtp(email);
-      setState(() { _otpSent = true; _otpEmail = email; });
+      setState(() {
+        _otpSent = true;
+        _otpEmail = email;
+      });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Email envoyé à $email.'),
-          backgroundColor: AppColors.emerald,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Email envoyé à $email.'),
+            backgroundColor: AppColors.emerald,
+          ),
+        );
       }
     } on AuthException catch (e) {
       _showError(friendlyAuthError(e.message));
@@ -116,7 +136,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
     if (email == null) return;
     setState(() => _isLoading = true);
     try {
-      await ref.read(authRepositoryProvider).verifyEmailOtp(email: email, token: _otpController.text.trim());
+      await ref
+          .read(authRepositoryProvider)
+          .verifyEmailOtp(email: email, token: _otpController.text.trim());
       if (mounted) context.go('/profile');
     } on AuthException catch (e) {
       _showError(friendlyAuthError(e.message));
@@ -133,10 +155,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
       final email = AuthRepository.normalizeEmail(_emailController.text);
       await ref.read(authRepositoryProvider).resetPasswordForEmail(email);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Email de réinitialisation envoyé à $email.'),
-          backgroundColor: AppColors.emerald,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Email de réinitialisation envoyé à $email.'),
+            backgroundColor: AppColors.emerald,
+          ),
+        );
       }
     } on AuthException catch (e) {
       _showError(friendlyAuthError(e.message));
@@ -222,14 +246,19 @@ InputDecoration _islamicInputDecoration(String label, IconData icon) {
     prefixIcon: Icon(icon, color: AppColors.gold),
     filled: true,
     fillColor: AppColors.cardSurface.withValues(alpha: 0.6),
-    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(16),
+      borderSide: BorderSide.none,
+    ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(16),
       borderSide: BorderSide(color: AppColors.gold.withValues(alpha: 0.6)),
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(16),
-      borderSide: BorderSide(color: AppColors.cardSurfaceLight.withValues(alpha: 0.6)),
+      borderSide: BorderSide(
+        color: AppColors.cardSurfaceLight.withValues(alpha: 0.6),
+      ),
     ),
   );
 }
@@ -268,10 +297,22 @@ class _PasswordTab extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: AppColors.gold.withValues(alpha: 0.15),
-              border: Border.all(color: AppColors.gold.withValues(alpha: 0.4), width: 2),
-              boxShadow: [BoxShadow(color: AppColors.gold.withValues(alpha: 0.2), blurRadius: 20)],
+              border: Border.all(
+                color: AppColors.gold.withValues(alpha: 0.4),
+                width: 2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.gold.withValues(alpha: 0.2),
+                  blurRadius: 20,
+                ),
+              ],
             ),
-            child: const Icon(Icons.lock_outline, size: 48, color: AppColors.gold),
+            child: const Icon(
+              Icons.lock_outline,
+              size: 48,
+              color: AppColors.gold,
+            ),
           ).animate().scale(curve: Curves.easeOutBack),
         ),
         const SizedBox(height: AppSpacing.lg),
@@ -284,7 +325,9 @@ class _PasswordTab extends StatelessWidget {
         Text(
           'Bienvenue dans la communauté AEEMG',
           textAlign: TextAlign.center,
-          style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+          style: AppTypography.bodySmall.copyWith(
+            color: AppColors.textSecondary,
+          ),
         ).animate(delay: 150.ms).fade(),
         const SizedBox(height: AppSpacing.xl),
         if (isSignUp) ...[
@@ -292,7 +335,10 @@ class _PasswordTab extends StatelessWidget {
             controller: nameController,
             textCapitalization: TextCapitalization.words,
             style: const TextStyle(color: AppColors.white),
-            decoration: _islamicInputDecoration('Nom complet', Icons.person_outline),
+            decoration: _islamicInputDecoration(
+              'Nom complet',
+              Icons.person_outline,
+            ),
           ).animate(delay: 200.ms).fade().slideY(begin: 0.1),
           const SizedBox(height: AppSpacing.md),
         ],
@@ -308,7 +354,10 @@ class _PasswordTab extends StatelessWidget {
           controller: passwordController,
           obscureText: true,
           style: const TextStyle(color: AppColors.white),
-          decoration: _islamicInputDecoration('Mot de passe', Icons.key_outlined),
+          decoration: _islamicInputDecoration(
+            'Mot de passe',
+            Icons.key_outlined,
+          ),
         ).animate(delay: 300.ms).fade().slideY(begin: 0.1),
         const SizedBox(height: AppSpacing.xl),
         AeemgPrimaryButton(
@@ -320,14 +369,19 @@ class _PasswordTab extends StatelessWidget {
         TextButton(
           onPressed: onToggleMode,
           child: Text(
-            isSignUp ? 'Déjà un compte ? Se connecter' : "Pas de compte ? S'inscrire",
+            isSignUp
+                ? 'Déjà un compte ? Se connecter'
+                : "Pas de compte ? S'inscrire",
             style: const TextStyle(color: AppColors.gold),
           ),
         ).animate(delay: 400.ms).fade(),
         if (!isSignUp)
           TextButton(
             onPressed: isLoading ? null : onResetPassword,
-            child: const Text('Mot de passe oublié ?', style: TextStyle(color: AppColors.textSecondary)),
+            child: const Text(
+              'Mot de passe oublié ?',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
           ).animate(delay: 450.ms).fade(),
       ],
     );
@@ -368,10 +422,22 @@ class _OtpTab extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: AppColors.emerald.withValues(alpha: 0.15),
-              border: Border.all(color: AppColors.emerald.withValues(alpha: 0.4), width: 2),
-              boxShadow: [BoxShadow(color: AppColors.emerald.withValues(alpha: 0.2), blurRadius: 20)],
+              border: Border.all(
+                color: AppColors.emerald.withValues(alpha: 0.4),
+                width: 2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.emerald.withValues(alpha: 0.2),
+                  blurRadius: 20,
+                ),
+              ],
             ),
-            child: const Icon(Icons.pin_outlined, size: 48, color: AppColors.emerald),
+            child: const Icon(
+              Icons.pin_outlined,
+              size: 48,
+              color: AppColors.emerald,
+            ),
           ).animate().scale(curve: Curves.easeOutBack),
         ),
         const SizedBox(height: AppSpacing.lg),
@@ -382,9 +448,13 @@ class _OtpTab extends StatelessWidget {
         ).animate(delay: 100.ms).fade(),
         const SizedBox(height: AppSpacing.xs),
         Text(
-          otpSent ? 'Code envoyé à $otpEmail' : 'Nécessite la configuration OTP dans Supabase.',
+          otpSent
+              ? 'Code envoyé à $otpEmail'
+              : 'Nécessite la configuration OTP dans Supabase.',
           textAlign: TextAlign.center,
-          style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+          style: AppTypography.bodySmall.copyWith(
+            color: AppColors.textSecondary,
+          ),
         ).animate(delay: 150.ms).fade(),
         const SizedBox(height: AppSpacing.xl),
         if (!otpSent) ...[
@@ -407,7 +477,10 @@ class _OtpTab extends StatelessWidget {
             textAlign: TextAlign.center,
             maxLength: 8,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            style: AppTypography.h2.copyWith(letterSpacing: 8, color: AppColors.white),
+            style: AppTypography.h2.copyWith(
+              letterSpacing: 8,
+              color: AppColors.white,
+            ),
             decoration: InputDecoration(
               labelText: 'Code à 6 chiffres',
               labelStyle: const TextStyle(color: AppColors.textSecondary),
@@ -416,10 +489,15 @@ class _OtpTab extends StatelessWidget {
               counterText: '',
               filled: true,
               fillColor: AppColors.cardSurface.withValues(alpha: 0.6),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide.none,
+              ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(color: AppColors.emerald.withValues(alpha: 0.6)),
+                borderSide: BorderSide(
+                  color: AppColors.emerald.withValues(alpha: 0.6),
+                ),
               ),
             ),
           ).animate(delay: 200.ms).fade().slideY(begin: 0.1),
@@ -431,7 +509,10 @@ class _OtpTab extends StatelessWidget {
           ).animate(delay: 250.ms).fade(),
           TextButton(
             onPressed: onReset,
-            child: const Text("Changer d'email", style: TextStyle(color: AppColors.textSecondary)),
+            child: const Text(
+              "Changer d'email",
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
           ).animate(delay: 300.ms).fade(),
         ],
       ],
