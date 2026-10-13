@@ -12,12 +12,12 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 
-import '../../../core/providers/supabase_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/phone_number.dart';
 import '../../../core/utils/supabase_errors.dart';
 import '../../../shared/widgets/async_value_widget.dart';
 import '../../auth/presentation/providers/auth_provider.dart';
+import '../data/chat_media.dart';
 import '../data/models/chat_models.dart';
 import 'providers/messages_provider.dart';
 
@@ -231,6 +231,55 @@ class _CallButton extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────
+//  MÉDIA PRIVÉ (URL signée, SEC-006)
+// ─────────────────────────────────────────────────────────────
+class _ChatMedia extends ConsumerWidget {
+  const _ChatMedia({required this.message, required this.builder});
+
+  final ChatMessage message;
+  final Widget Function(String url) builder;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final kind = ChatMediaKind.fromMessageType(message.messageType)!;
+    final url = ref.watch(
+      chatMediaUrlProvider((
+        kind: kind,
+        path: message.mediaPath,
+        legacyUrl: message.mediaUrl,
+      )),
+    );
+    return url.when(
+      data: (url) => url == null ? const _MediaUnavailable() : builder(url),
+      loading: () => const SizedBox(
+        width: 200,
+        height: 48,
+        child: Center(
+          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+        ),
+      ),
+      error: (_, _) => const _MediaUnavailable(),
+    );
+  }
+}
+
+class _MediaUnavailable extends StatelessWidget {
+  const _MediaUnavailable();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.broken_image_outlined, color: Colors.white38, size: 18),
+        SizedBox(width: 6),
+        Text('Média indisponible', style: TextStyle(color: Colors.white38)),
+      ],
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
 //  AUDIO MESSAGE PLAYER
 // ─────────────────────────────────────────────────────────────
 class _AudioMessagePlayer extends StatefulWidget {
@@ -424,31 +473,44 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
     if (xFile == null) return;
 
-    final file = File(xFile.path);
-    final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
-    final path = '${widget.groupId}/$fileName';
+    await _sendMedia(
+      kind: ChatMediaKind.image,
+      fileName: xFile.name,
+      readBytes: xFile.readAsBytes,
+      content: '📸 Image',
+      senderId: user.id,
+    );
+  }
 
+  /// Dépose le média dans le dossier privé du groupe puis envoie le message
+  /// avec son chemin (SEC-006).
+  Future<void> _sendMedia({
+    required ChatMediaKind kind,
+    required String fileName,
+    required Future<Uint8List> Function() readBytes,
+    required String content,
+    required String senderId,
+  }) async {
+    final repo = ref.read(messagesRepositoryProvider);
     try {
-      final client = ref.read(supabaseClientProvider);
-      if (client == null) throw Exception('Supabase client is null');
-
-      await client.storage.from('chat_images').upload(path, file);
-      final mediaUrl = client.storage.from('chat_images').getPublicUrl(path);
-
-      await ref
-          .read(messagesRepositoryProvider)
-          .sendMessage(
-            groupId: widget.groupId,
-            senderId: user.id,
-            content: '📸 Image',
-            messageType: 'image',
-            mediaUrl: mediaUrl,
-          );
+      final path = await repo.uploadChatMedia(
+        groupId: widget.groupId,
+        kind: kind,
+        fileName: fileName,
+        bytes: await readBytes(),
+      );
+      await repo.sendMessage(
+        groupId: widget.groupId,
+        senderId: senderId,
+        content: content,
+        messageType: kind.name,
+        mediaPath: path,
+      );
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Erreur: $e')));
+        ).showSnackBar(SnackBar(content: Text(friendlySupabaseError(e))));
       }
     }
   }
@@ -471,35 +533,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final user = ref.read(currentUserProvider);
     if (user == null) return;
 
-    final file = File(path);
-    final fileName = 'audio_${DateTime.now().millisecondsSinceEpoch}.m4a';
-    final storagePath = '${widget.groupId}/$fileName';
-
-    try {
-      final client = ref.read(supabaseClientProvider);
-      if (client == null) throw Exception('Supabase client is null');
-
-      await client.storage.from('chat_audio').upload(storagePath, file);
-      final mediaUrl = client.storage
-          .from('chat_audio')
-          .getPublicUrl(storagePath);
-
-      await ref
-          .read(messagesRepositoryProvider)
-          .sendMessage(
-            groupId: widget.groupId,
-            senderId: user.id,
-            content: '🎤 Message vocal',
-            messageType: 'audio',
-            mediaUrl: mediaUrl,
-          );
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Erreur: $e')));
-      }
-    }
+    await _sendMedia(
+      kind: ChatMediaKind.audio,
+      fileName: 'vocal.m4a',
+      readBytes: () => File(path).readAsBytes(),
+      content: '🎤 Message vocal',
+      senderId: user.id,
+    );
   }
 
   void _replyToMessage(ChatMessage message) {
@@ -1491,18 +1531,21 @@ class _MessageBubble extends StatelessWidget {
                     ],
                   )
                 else if (message.messageType == 'image' &&
-                    message.mediaUrl != null)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      message.mediaUrl!,
-                      fit: BoxFit.cover,
-                      width: 200,
+                    (message.mediaPath ?? message.mediaUrl) != null)
+                  _ChatMedia(
+                    message: message,
+                    builder: (url) => ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(url, fit: BoxFit.cover, width: 200),
                     ),
                   )
                 else if (message.messageType == 'audio' &&
-                    message.mediaUrl != null)
-                  _AudioMessagePlayer(url: message.mediaUrl!, isMine: isMine)
+                    (message.mediaPath ?? message.mediaUrl) != null)
+                  _ChatMedia(
+                    message: message,
+                    builder: (url) =>
+                        _AudioMessagePlayer(url: url, isMine: isMine),
+                  )
                 else
                   Text(
                     message.content,
