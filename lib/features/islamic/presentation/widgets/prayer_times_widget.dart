@@ -38,7 +38,7 @@ class _PrayerTimesWidgetState extends ConsumerState<PrayerTimesWidget> {
   }
 
   void _updateCountdown() {
-    final prayerData = ref.read(prayerTimesProvider).valueOrNull;
+    final prayerData = ref.read(prayerTimesProvider).value;
     if (prayerData == null) return;
 
     final now = DateTime.now();
@@ -104,11 +104,16 @@ class _PrayerTimesWidgetState extends ConsumerState<PrayerTimesWidget> {
   Future<void> _updateAlarms(PrayerData data, AdhanPreferences prefs) async {
     final adhan = AdhanService();
     await adhan.cancelAll();
-    
+
     // We only schedule if the time is in the future
     final now = DateTime.now();
-    
-    Future<void> scheduleIf(bool enabled, int id, String title, DateTime time) async {
+
+    Future<void> scheduleIf(
+      bool enabled,
+      int id,
+      String title,
+      DateTime time,
+    ) async {
       if (enabled && time.isAfter(now)) {
         await adhan.scheduleAdhan(
           id: id,
@@ -132,7 +137,7 @@ class _PrayerTimesWidgetState extends ConsumerState<PrayerTimesWidget> {
     final adhanPrefs = ref.watch(adhanPreferencesProvider);
 
     ref.listen<AdhanPreferences>(adhanPreferencesProvider, (previous, next) {
-      final data = ref.read(prayerTimesProvider).valueOrNull;
+      final data = ref.read(prayerTimesProvider).value;
       if (data != null) {
         _updateAlarms(data, next);
       }
@@ -140,7 +145,8 @@ class _PrayerTimesWidgetState extends ConsumerState<PrayerTimesWidget> {
 
     return prayerAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (_, _) => const AeemgCard(child: Text("Erreur lors du chargement des prières")),
+      error: (_, _) =>
+          const AeemgCard(child: Text("Erreur lors du chargement des prières")),
       data: (prayerData) {
         if (prayerData == null) {
           return AeemgCard(
@@ -155,7 +161,10 @@ class _PrayerTimesWidgetState extends ConsumerState<PrayerTimesWidget> {
                 ),
                 TextButton(
                   onPressed: () => ref.refresh(prayerTimesProvider),
-                  child: const Text("Réessayer", style: TextStyle(color: AppColors.brightGreen)),
+                  child: const Text(
+                    "Réessayer",
+                    style: TextStyle(color: AppColors.brightGreen),
+                  ),
                 ),
               ],
             ),
@@ -173,7 +182,10 @@ class _PrayerTimesWidgetState extends ConsumerState<PrayerTimesWidget> {
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppColors.emerald.withValues(alpha: 0.5), width: 1),
+            border: Border.all(
+              color: AppColors.emerald.withValues(alpha: 0.5),
+              width: 1,
+            ),
             boxShadow: [
               BoxShadow(
                 color: AppColors.emerald.withValues(alpha: 0.3),
@@ -191,11 +203,17 @@ class _PrayerTimesWidgetState extends ConsumerState<PrayerTimesWidget> {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.location_on, color: AppColors.white, size: 16),
+                      const Icon(
+                        Icons.location_on,
+                        color: AppColors.white,
+                        size: 16,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         prayerData.locationName,
-                        style: AppTypography.caption.copyWith(color: AppColors.white),
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.white,
+                        ),
                       ),
                     ],
                   ),
@@ -203,17 +221,27 @@ class _PrayerTimesWidgetState extends ConsumerState<PrayerTimesWidget> {
                     children: [
                       Text(
                         DateFormat('d MMM yyyy', 'fr').format(DateTime.now()),
-                        style: AppTypography.caption.copyWith(color: AppColors.white),
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.white,
+                        ),
                       ),
                       const SizedBox(width: 8),
                       InkWell(
                         onTap: () {
                           // Could open a specific settings modal, but we'll show a snackbar to guide them
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Touchez la cloche sous chaque prière pour activer son alarme.')),
+                            const SnackBar(
+                              content: Text(
+                                'Touchez la cloche sous chaque prière pour activer son alarme.',
+                              ),
+                            ),
                           );
                         },
-                        child: const Icon(Icons.settings_suggest, color: AppColors.gold, size: 20),
+                        child: const Icon(
+                          Icons.settings_suggest,
+                          color: AppColors.gold,
+                          size: 20,
+                        ),
                       ),
                     ],
                   ),
@@ -223,11 +251,16 @@ class _PrayerTimesWidgetState extends ConsumerState<PrayerTimesWidget> {
               if (prayerData.nextPrayer != Prayer.none) ...[
                 Text(
                   'Prochaine prière : ${_prayerName(prayerData.nextPrayer)}',
-                  style: AppTypography.bodySmall.copyWith(color: AppColors.white.withValues(alpha: 0.8)),
+                  style: AppTypography.bodySmall.copyWith(
+                    color: AppColors.white.withValues(alpha: 0.8),
+                  ),
                 ),
                 Text(
                   _formatDuration(_timeUntilNext),
-                  style: AppTypography.h1.copyWith(color: AppColors.white, fontSize: 32),
+                  style: AppTypography.h1.copyWith(
+                    color: AppColors.white,
+                    fontSize: 32,
+                  ),
                 ),
               ] else ...[
                 Text(
@@ -239,11 +272,61 @@ class _PrayerTimesWidgetState extends ConsumerState<PrayerTimesWidget> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(child: _PrayerTimeItem(name: 'Fajr', time: format.format(times.fajr), isNext: prayerData.nextPrayer == Prayer.fajr, alarmEnabled: adhanPrefs.fajr, onToggleAlarm: (v) => ref.read(adhanPreferencesProvider.notifier).toggle('fajr', v))),
-                  Expanded(child: _PrayerTimeItem(name: 'Dhuhr', time: format.format(times.dhuhr), isNext: prayerData.nextPrayer == Prayer.dhuhr, alarmEnabled: adhanPrefs.dhuhr, onToggleAlarm: (v) => ref.read(adhanPreferencesProvider.notifier).toggle('dhuhr', v))),
-                  Expanded(child: _PrayerTimeItem(name: 'Asr', time: format.format(times.asr), isNext: prayerData.nextPrayer == Prayer.asr, alarmEnabled: adhanPrefs.asr, onToggleAlarm: (v) => ref.read(adhanPreferencesProvider.notifier).toggle('asr', v))),
-                  Expanded(child: _PrayerTimeItem(name: 'Maghrib', time: format.format(times.maghrib), isNext: prayerData.nextPrayer == Prayer.maghrib, alarmEnabled: adhanPrefs.maghrib, onToggleAlarm: (v) => ref.read(adhanPreferencesProvider.notifier).toggle('maghrib', v))),
-                  Expanded(child: _PrayerTimeItem(name: 'Isha', time: format.format(times.isha), isNext: prayerData.nextPrayer == Prayer.isha, alarmEnabled: adhanPrefs.isha, onToggleAlarm: (v) => ref.read(adhanPreferencesProvider.notifier).toggle('isha', v))),
+                  Expanded(
+                    child: _PrayerTimeItem(
+                      name: 'Fajr',
+                      time: format.format(times.fajr),
+                      isNext: prayerData.nextPrayer == Prayer.fajr,
+                      alarmEnabled: adhanPrefs.fajr,
+                      onToggleAlarm: (v) => ref
+                          .read(adhanPreferencesProvider.notifier)
+                          .toggle('fajr', v),
+                    ),
+                  ),
+                  Expanded(
+                    child: _PrayerTimeItem(
+                      name: 'Dhuhr',
+                      time: format.format(times.dhuhr),
+                      isNext: prayerData.nextPrayer == Prayer.dhuhr,
+                      alarmEnabled: adhanPrefs.dhuhr,
+                      onToggleAlarm: (v) => ref
+                          .read(adhanPreferencesProvider.notifier)
+                          .toggle('dhuhr', v),
+                    ),
+                  ),
+                  Expanded(
+                    child: _PrayerTimeItem(
+                      name: 'Asr',
+                      time: format.format(times.asr),
+                      isNext: prayerData.nextPrayer == Prayer.asr,
+                      alarmEnabled: adhanPrefs.asr,
+                      onToggleAlarm: (v) => ref
+                          .read(adhanPreferencesProvider.notifier)
+                          .toggle('asr', v),
+                    ),
+                  ),
+                  Expanded(
+                    child: _PrayerTimeItem(
+                      name: 'Maghrib',
+                      time: format.format(times.maghrib),
+                      isNext: prayerData.nextPrayer == Prayer.maghrib,
+                      alarmEnabled: adhanPrefs.maghrib,
+                      onToggleAlarm: (v) => ref
+                          .read(adhanPreferencesProvider.notifier)
+                          .toggle('maghrib', v),
+                    ),
+                  ),
+                  Expanded(
+                    child: _PrayerTimeItem(
+                      name: 'Isha',
+                      time: format.format(times.isha),
+                      isNext: prayerData.nextPrayer == Prayer.isha,
+                      alarmEnabled: adhanPrefs.isha,
+                      onToggleAlarm: (v) => ref
+                          .read(adhanPreferencesProvider.notifier)
+                          .toggle('isha', v),
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -261,7 +344,13 @@ class _PrayerTimeItem extends ConsumerWidget {
   final bool alarmEnabled;
   final ValueChanged<bool> onToggleAlarm;
 
-  const _PrayerTimeItem({required this.name, required this.time, this.isNext = false, required this.alarmEnabled, required this.onToggleAlarm});
+  const _PrayerTimeItem({
+    required this.name,
+    required this.time,
+    this.isNext = false,
+    required this.alarmEnabled,
+    required this.onToggleAlarm,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -270,7 +359,9 @@ class _PrayerTimeItem extends ConsumerWidget {
         Text(
           name,
           style: AppTypography.caption.copyWith(
-            color: isNext ? AppColors.white : AppColors.white.withValues(alpha: 0.6),
+            color: isNext
+                ? AppColors.white
+                : AppColors.white.withValues(alpha: 0.6),
             fontWeight: isNext ? FontWeight.bold : FontWeight.normal,
           ),
         ),
@@ -278,7 +369,9 @@ class _PrayerTimeItem extends ConsumerWidget {
         Text(
           time,
           style: AppTypography.body.copyWith(
-            color: isNext ? AppColors.white : AppColors.white.withValues(alpha: 0.8),
+            color: isNext
+                ? AppColors.white
+                : AppColors.white.withValues(alpha: 0.8),
             fontWeight: isNext ? FontWeight.bold : FontWeight.normal,
           ),
         ),
@@ -291,7 +384,9 @@ class _PrayerTimeItem extends ConsumerWidget {
           child: Icon(
             alarmEnabled ? Icons.notifications_active : Icons.notifications_off,
             size: 16,
-            color: alarmEnabled ? AppColors.gold : AppColors.white.withValues(alpha: 0.4),
+            color: alarmEnabled
+                ? AppColors.gold
+                : AppColors.white.withValues(alpha: 0.4),
           ),
         ),
       ],
