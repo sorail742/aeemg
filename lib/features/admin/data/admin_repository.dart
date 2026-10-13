@@ -1,5 +1,15 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+/// Action d'administration refusée par le serveur (droits insuffisants, règle métier).
+class AdminActionDenied implements Exception {
+  AdminActionDenied(this.message);
+
+  final String message;
+
+  @override
+  String toString() => message;
+}
+
 class BetaFeedbackSummary {
   const BetaFeedbackSummary({
     required this.count,
@@ -59,11 +69,15 @@ class AdminRepository {
         .eq('is_approved', false)
         .count();
     final feedbacksRes = await _client?.from('feedback').select('id').count();
-    final donationsRes =
-        await _client?.from('donations').select('amount').limit(1000);
+    final donationsRes = await _client
+        ?.from('donations')
+        .select('amount')
+        .limit(1000);
 
-    final totalDonations = ((donationsRes as List?) ?? [])
-        .fold<double>(0, (sum, e) => sum + ((e['amount'] as num?)?.toDouble() ?? 0));
+    final totalDonations = ((donationsRes as List?) ?? []).fold<double>(
+      0,
+      (sum, e) => sum + ((e['amount'] as num?)?.toDouble() ?? 0),
+    );
 
     return AdminStats(
       totalMembers: membersRes?.count ?? 0,
@@ -86,8 +100,17 @@ class AdminRepository {
     return (res as List? ?? []).cast<Map<String, dynamic>>();
   }
 
+  /// Change le rôle via la RPC `set_member_role`, qui applique les règles
+  /// d'ADR-0008 côté serveur (SEC-001). Lève [AdminActionDenied] en cas de refus.
   Future<void> updateMemberRole(String userId, String role) async {
-    await _client?.from('profiles').update({'role': role}).eq('id', userId);
+    try {
+      await _client?.rpc(
+        'set_member_role',
+        params: {'target': userId, 'new_role': role},
+      );
+    } on PostgrestException catch (e) {
+      throw AdminActionDenied(e.message);
+    }
   }
 
   Future<void> deleteMember(String userId) async {
@@ -128,16 +151,16 @@ class AdminRepository {
   Future<List<Map<String, dynamic>>> fetchEvents() async {
     final res = await _client
         ?.from('events')
-        .select('id, title, starts_at, ends_at, location, event_type, is_approved, description')
+        .select(
+          'id, title, starts_at, ends_at, location, event_type, is_approved, description',
+        )
         .order('starts_at', ascending: true)
         .limit(100);
     return (res as List? ?? []).cast<Map<String, dynamic>>();
   }
 
   Future<void> approveEvent(String id) async {
-    await _client
-        ?.from('events')
-        .update({'is_approved': true}).eq('id', id);
+    await _client?.from('events').update({'is_approved': true}).eq('id', id);
   }
 
   Future<void> deleteEvent(String id) async {
@@ -168,7 +191,9 @@ class AdminRepository {
   Future<List<Map<String, dynamic>>> fetchDonations() async {
     final res = await _client
         ?.from('donations')
-        .select('id, amount, category, status, payment_method, created_at, is_anonymous, user_id, profiles(full_name, phone)')
+        .select(
+          'id, amount, category, status, payment_method, created_at, is_anonymous, user_id, profiles(full_name, phone)',
+        )
         .order('created_at', ascending: false)
         .limit(100);
     return (res as List? ?? []).cast<Map<String, dynamic>>();
@@ -178,7 +203,9 @@ class AdminRepository {
   Future<List<Map<String, dynamic>>> fetchMonthlyReports() async {
     final res = await _client
         ?.from('monthly_reports')
-        .select('id, year, month, total_income, total_expense, is_published, published_at, created_at')
+        .select(
+          'id, year, month, total_income, total_expense, is_published, published_at, created_at',
+        )
         .order('year', ascending: false)
         .order('month', ascending: false)
         .limit(24);
@@ -205,7 +232,9 @@ class AdminRepository {
   Future<List<Map<String, dynamic>>> fetchPosts() async {
     final res = await _client
         ?.from('posts')
-        .select('id, content, image_url, likes_count, comments_count, created_at, profiles!posts_author_id_fkey(full_name, avatar_url)')
+        .select(
+          'id, content, image_url, likes_count, comments_count, created_at, profiles!posts_author_id_fkey(full_name, avatar_url)',
+        )
         .order('created_at', ascending: false)
         .limit(50);
     return (res as List? ?? []).cast<Map<String, dynamic>>();
@@ -219,7 +248,9 @@ class AdminRepository {
   Future<List<Map<String, dynamic>>> fetchIslamicContents() async {
     final res = await _client
         ?.from('islamic_contents')
-        .select('id, title, body, content_type, source, active_date, created_at')
+        .select(
+          'id, title, body, content_type, source, active_date, created_at',
+        )
         .order('created_at', ascending: false)
         .limit(100);
     return (res as List? ?? []).cast<Map<String, dynamic>>();
@@ -239,7 +270,10 @@ class AdminRepository {
       'content_type': contentType,
       'source': source,
       'translation_peul': translationPeul,
-      'active_date': (activeDate ?? DateTime.now()).toIso8601String().split('T').first,
+      'active_date': (activeDate ?? DateTime.now())
+          .toIso8601String()
+          .split('T')
+          .first,
     });
   }
 
@@ -259,8 +293,10 @@ class AdminRepository {
     if (list.isEmpty) {
       return const BetaFeedbackSummary(count: 0, averageRating: 0, recent: []);
     }
-    final ratings =
-        list.map((e) => e['rating'] as int?).whereType<int>().toList();
+    final ratings = list
+        .map((e) => e['rating'] as int?)
+        .whereType<int>()
+        .toList();
     final avg = ratings.isEmpty
         ? 0.0
         : ratings.reduce((a, b) => a + b) / ratings.length;
