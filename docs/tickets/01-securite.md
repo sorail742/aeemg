@@ -185,6 +185,7 @@ Idem `payment_sessions` : insertion directe par le client avec n'importe quel `s
 ### SEC-010 — Authentifier l'Edge Function `event-reminders`
 **Type** : Sécurité · **Priorité** : P0 · **Estimation** : S · **Composant** : edge-functions
 **Dépendances** : —
+**Statut** : ✅ Livré — secret `CRON_SECRET` exigé dans l'en-tête `x-cron-secret` (comparaison en temps constant, refus si non configuré), tests Deno `event-reminders/auth.test.ts` ; planification `pg_cron` laissée à REL-005
 
 **Contexte** — `supabase/functions/event-reminders/index.ts` n'effectue **aucun contrôle d'appelant**
 et utilise la clé service role. Avec la clé anon publique (présente dans l'app), n'importe qui peut
