@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import '../../../../core/providers/supabase_provider.dart';
 import '../../data/social_repository.dart';
 import '../../data/models/post_model.dart';
@@ -11,9 +12,10 @@ final socialRepositoryProvider = Provider<SocialRepository>((ref) {
   return SocialRepository(client);
 });
 
-final feedProvider = StateNotifierProvider<FeedNotifier, AsyncValue<List<PostModel>>>((ref) {
-  return FeedNotifier(ref.watch(socialRepositoryProvider));
-});
+final feedProvider =
+    StateNotifierProvider<FeedNotifier, AsyncValue<List<PostModel>>>((ref) {
+      return FeedNotifier(ref.watch(socialRepositoryProvider));
+    });
 
 class FeedNotifier extends StateNotifier<AsyncValue<List<PostModel>>> {
   final SocialRepository _repository;
@@ -34,7 +36,10 @@ class FeedNotifier extends StateNotifier<AsyncValue<List<PostModel>>> {
 
   Future<void> createPost(String content, File? imageFile) async {
     try {
-      final newPost = await _repository.createPost(content: content, imageFile: imageFile);
+      final newPost = await _repository.createPost(
+        content: content,
+        imageFile: imageFile,
+      );
       if (state is AsyncData) {
         final currentPosts = state.value!;
         state = AsyncValue.data([newPost, ...currentPosts]);
@@ -46,19 +51,19 @@ class FeedNotifier extends StateNotifier<AsyncValue<List<PostModel>>> {
 
   Future<void> toggleLike(PostModel post) async {
     if (state is! AsyncData) return;
-    
+
     final currentPosts = state.value!;
     final index = currentPosts.indexWhere((p) => p.id == post.id);
     if (index == -1) return;
 
     final isLiked = post.isLikedByMe;
-    
+
     // Optimistic update
     final updatedPost = post.copyWith(
       isLikedByMe: !isLiked,
       likesCount: post.likesCount + (isLiked ? -1 : 1),
     );
-    
+
     final newPosts = List<PostModel>.from(currentPosts);
     newPosts[index] = updatedPost;
     state = AsyncValue.data(newPosts);
@@ -93,7 +98,7 @@ class FeedNotifier extends StateNotifier<AsyncValue<List<PostModel>>> {
     final currentPosts = state.value!;
     final newPosts = currentPosts.where((p) => p.id != postId).toList();
     state = AsyncValue.data(newPosts);
-    
+
     try {
       await _repository.deletePost(postId);
     } catch (e) {
@@ -102,6 +107,9 @@ class FeedNotifier extends StateNotifier<AsyncValue<List<PostModel>>> {
   }
 }
 
-final postCommentsProvider = FutureProvider.family<List<CommentModel>, String>((ref, postId) async {
+final postCommentsProvider = FutureProvider.family<List<CommentModel>, String>((
+  ref,
+  postId,
+) async {
   return ref.watch(socialRepositoryProvider).fetchComments(postId);
 });
