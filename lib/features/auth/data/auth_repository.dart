@@ -23,10 +23,7 @@ class AuthRepository {
     if (client == null) {
       throw const AuthException('Supabase non configuré.');
     }
-    await client.auth.signInWithOtp(
-      email: email,
-      shouldCreateUser: true,
-    );
+    await client.auth.signInWithOtp(email: email, shouldCreateUser: true);
   }
 
   Future<AuthResponse> verifyEmailOtp({
@@ -101,9 +98,23 @@ class AuthRepository {
     return email;
   }
 
+  /// Longueur minimale, identique à `minimum_password_length` (supabase/config.toml, SEC-022).
+  static const minPasswordLength = 10;
+
+  /// Règles appliquées à la création et au changement de mot de passe, alignées sur
+  /// `password_requirements = "letters_digits"`. Jamais à la connexion : un membre dont
+  /// l'ancien mot de passe est plus court doit pouvoir se connecter pour le changer.
   static void validatePassword(String password) {
-    if (password.length < 6) {
-      throw const AuthException('Le mot de passe doit faire au moins 6 caractères.');
+    if (password.length < minPasswordLength) {
+      throw const AuthException(
+        'Le mot de passe doit faire au moins $minPasswordLength caractères.',
+      );
+    }
+    if (!RegExp(r'[A-Za-z]').hasMatch(password) ||
+        !RegExp(r'[0-9]').hasMatch(password)) {
+      throw const AuthException(
+        'Le mot de passe doit contenir au moins une lettre et un chiffre.',
+      );
     }
   }
 }

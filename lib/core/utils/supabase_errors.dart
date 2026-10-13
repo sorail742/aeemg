@@ -32,8 +32,19 @@ String friendlyAuthError(String message) {
   }
   if (lower.contains('email not confirmed') ||
       lower.contains('invalid email')) {
-    return 'Email non confirmé. Vérifiez votre boîte mail ou désactivez '
-        '« Confirm email » dans Supabase → Authentication → Email.';
+    return 'Email non confirmé. Ouvrez le lien reçu par email avant de vous '
+        'connecter (pensez aux indésirables).';
+  }
+  // Politique de mot de passe du serveur (SEC-022) : longueur, composition, mots de passe
+  // ayant fuité (« known to be weak »).
+  if (lower.contains('password should') ||
+      lower.contains('weak') ||
+      lower.contains('easy to guess')) {
+    return 'Mot de passe trop faible : au moins 10 caractères avec lettres et '
+        'chiffres, et jamais un mot de passe déjà utilisé ailleurs.';
+  }
+  if (lower.contains('captcha')) {
+    return 'Vérification anti-robot échouée. Réessayez.';
   }
   if (lower.contains('invalid login credentials')) {
     return 'Email ou mot de passe incorrect.\n\n'

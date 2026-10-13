@@ -33,6 +33,46 @@ site_url = "http://localhost:3000"
 additional_redirect_urls = ["io.supabase.aeemg://login-callback/"]
 jwt_expiry = 3600
 enable_signup = true
+# SEC-022 : au moins 10 caractères, lettres et chiffres (vérifié aussi par AuthRepository.validatePassword).
+minimum_password_length = 10
+password_requirements = "letters_digits"
+
+[auth.rate_limit]
+# Emails envoyés par heure (exige [auth.email.smtp] en production).
+email_sent = 30
+# Inscriptions et connexions par IP toutes les 5 minutes.
+sign_in_sign_ups = 30
+token_verifications = 30
+
+# CAPTCHA (SEC-022) : Turnstile sur l'inscription, la connexion et la réinitialisation.
+# Désactivé tant que l'app n'envoie pas de captchaToken (widget à livrer, cf. docs/SUPABASE_AUTH.md) ;
+# en production, le secret se règle dans Dashboard → Authentication → Attack Protection.
+[auth.captcha]
+enabled = false
+provider = "turnstile"
+secret = "env(SUPABASE_AUTH_CAPTCHA_SECRET)"
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+# SEC-022 : confirmation obligatoire avant la première connexion (staging et production).
+enable_confirmations = true
+# Changer de mot de passe exige une session récente ou une réauthentification.
+secure_password_change = true
+max_frequency = "60s"
+otp_length = 6
+otp_expiry = 3600
+
+# SMTP de production (SEC-022) : le SMTP intégré de Supabase est limité à quelques emails par heure.
+# Activé en production via Dashboard → Authentication → SMTP Settings (Resend), cf. docs/SUPABASE_AUTH.md.
+[auth.email.smtp]
+enabled = false
+host = "smtp.resend.com"
+port = 465
+user = "resend"
+pass = "env(SUPABASE_AUTH_SMTP_PASS)"
+admin_email = "no-reply@aeemg.org"
+sender_name = "AEEMG"
 
 [auth.sms]
 enable_signup = true

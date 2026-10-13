@@ -1,3 +1,4 @@
+import 'package:aeemg/core/utils/supabase_errors.dart';
 import 'package:aeemg/features/auth/data/auth_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -19,16 +20,57 @@ void main() {
     });
   });
 
-  group('AuthRepository.validatePassword', () {
-    test('accepte un mot de passe valide', () {
-      expect(() => AuthRepository.validatePassword('secret1'), returnsNormally);
+  group('AuthRepository.validatePassword (SEC-022)', () {
+    test('accepte 10 caractères avec lettres et chiffres', () {
+      expect(
+        () => AuthRepository.validatePassword('aeemg2026x'),
+        returnsNormally,
+      );
     });
 
-    test('rejette un mot de passe trop court', () {
+    test('rejette moins de 10 caractères', () {
       expect(
-        () => AuthRepository.validatePassword('123'),
+        () => AuthRepository.validatePassword('secret12'),
         throwsA(isA<AuthException>()),
       );
     });
+
+    test('rejette un mot de passe sans chiffre', () {
+      expect(
+        () => AuthRepository.validatePassword('motdepasselong'),
+        throwsA(isA<AuthException>()),
+      );
+    });
+
+    test('rejette un mot de passe sans lettre', () {
+      expect(
+        () => AuthRepository.validatePassword('1234567890'),
+        throwsA(isA<AuthException>()),
+      );
+    });
+  });
+
+  group('friendlyAuthError (SEC-022)', () {
+    test('mot de passe refusé par le serveur', () {
+      expect(
+        friendlyAuthError('Password should be at least 10 characters.'),
+        contains('10 caractères'),
+      );
+      expect(
+        friendlyAuthError(
+          'Password is known to be weak and easy to guess, please choose a different one.',
+        ),
+        contains('trop faible'),
+      );
+    });
+
+    test(
+      'email non confirmé : ne conseille plus de désactiver la confirmation',
+      () {
+        final message = friendlyAuthError('Email not confirmed');
+        expect(message, contains('lien reçu'));
+        expect(message, isNot(contains('désactivez')));
+      },
+    );
   });
 }
