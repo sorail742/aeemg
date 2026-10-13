@@ -88,8 +88,8 @@ class AdhanPreferencesNotifier extends StateNotifier<AdhanPreferences> {
 
 final adhanPreferencesProvider =
     StateNotifierProvider<AdhanPreferencesNotifier, AdhanPreferences>((ref) {
-  return AdhanPreferencesNotifier();
-});
+      return AdhanPreferencesNotifier();
+    });
 
 class PrayerData {
   final PrayerTimes times;
@@ -112,23 +112,31 @@ class PrayerRepository {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) return null;
       }
-      
+
       if (permission == LocationPermission.deniedForever) {
         return null;
       }
 
       final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.low),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.low,
+        ),
       );
 
       final coordinates = Coordinates(position.latitude, position.longitude);
-      
+
       // Obtenir la ville
       String cityName = "Localisation inconnue";
       try {
-        List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+        List<Placemark> placemarks = await Geocoding().placemarkFromCoordinates(
+          position.latitude,
+          position.longitude,
+        );
         if (placemarks.isNotEmpty) {
-          cityName = placemarks.first.locality ?? placemarks.first.subAdministrativeArea ?? "Votre position";
+          cityName =
+              placemarks.first.locality ??
+              placemarks.first.subAdministrativeArea ??
+              "Votre position";
         }
       } catch (_) {}
 
