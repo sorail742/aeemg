@@ -12,11 +12,19 @@ final chatGroupsProvider = FutureProvider<List<ChatGroup>>((ref) async {
   return ref.read(messagesRepositoryProvider).fetchGroups();
 });
 
+final canManageGroupProvider = FutureProvider.autoDispose.family<bool, String>((
+  ref,
+  groupId,
+) {
+  return ref.read(messagesRepositoryProvider).canManageGroup(groupId);
+});
+
 final announcementsProvider = FutureProvider<List<Announcement>>((ref) async {
   return ref.read(messagesRepositoryProvider).fetchAnnouncements();
 });
 
-final messagesStreamProvider =
-    StreamProvider.family<List<ChatMessage>, String>((ref, groupId) {
-  return ref.read(messagesRepositoryProvider).watchMessages(groupId);
-});
+final messagesStreamProvider = StreamProvider.family<List<ChatMessage>, String>(
+  (ref, groupId) {
+    return ref.read(messagesRepositoryProvider).watchMessages(groupId);
+  },
+);

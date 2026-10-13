@@ -78,7 +78,11 @@ class _CallScreenState extends State<_CallScreen> {
                   ),
                   Text(
                     _formattedTime,
-                    style: const TextStyle(color: AppColors.brightGreen, fontSize: 16, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      color: AppColors.brightGreen,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
@@ -96,7 +100,11 @@ class _CallScreenState extends State<_CallScreen> {
                   end: Alignment.bottomRight,
                 ),
                 boxShadow: [
-                  BoxShadow(color: AppColors.emerald.withValues(alpha: 0.4), blurRadius: 30, spreadRadius: 5),
+                  BoxShadow(
+                    color: AppColors.emerald.withValues(alpha: 0.4),
+                    blurRadius: 30,
+                    spreadRadius: 5,
+                  ),
                 ],
               ),
               child: const Icon(Icons.group, size: 60, color: Colors.white),
@@ -104,10 +112,17 @@ class _CallScreenState extends State<_CallScreen> {
             const SizedBox(height: 24),
             Text(
               widget.groupName,
-              style: const TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 8),
-            const Text('Appel en cours...', style: TextStyle(color: Colors.white54, fontSize: 16)),
+            const Text(
+              'Appel en cours...',
+              style: TextStyle(color: Colors.white54, fontSize: 16),
+            ),
             const Spacer(),
             // Controls
             Container(
@@ -136,9 +151,19 @@ class _CallScreenState extends State<_CallScreen> {
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
                         color: Colors.red,
-                        boxShadow: [BoxShadow(color: Colors.red, blurRadius: 20, spreadRadius: 2)],
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.red,
+                            blurRadius: 20,
+                            spreadRadius: 2,
+                          ),
+                        ],
                       ),
-                      child: const Icon(Icons.call_end, color: Colors.white, size: 34),
+                      child: const Icon(
+                        Icons.call_end,
+                        color: Colors.white,
+                        size: 34,
+                      ),
                     ),
                   ),
                   if (widget.isVideo)
@@ -152,7 +177,9 @@ class _CallScreenState extends State<_CallScreen> {
                     _CallButton(
                       icon: _speakerOn ? Icons.volume_up : Icons.volume_off,
                       label: 'Haut-parleur',
-                      color: _speakerOn ? AppColors.brightGreen : Colors.white30,
+                      color: _speakerOn
+                          ? AppColors.brightGreen
+                          : Colors.white30,
                       onTap: () => setState(() => _speakerOn = !_speakerOn),
                     ),
                 ],
@@ -166,7 +193,12 @@ class _CallScreenState extends State<_CallScreen> {
 }
 
 class _CallButton extends StatelessWidget {
-  const _CallButton({required this.icon, required this.label, required this.color, required this.onTap});
+  const _CallButton({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
 
   final IconData icon;
   final String label;
@@ -182,7 +214,10 @@ class _CallButton extends StatelessWidget {
           Container(
             width: 56,
             height: 56,
-            decoration: BoxDecoration(shape: BoxShape.circle, color: color.withValues(alpha: 0.2)),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: color.withValues(alpha: 0.2),
+            ),
             child: Icon(icon, color: color, size: 28),
           ),
           const SizedBox(height: 6),
@@ -225,7 +260,12 @@ class _AudioMessagePlayerState extends State<_AudioMessagePlayer> {
       if (mounted) setState(() => _duration = dur);
     });
     _player.onPlayerComplete.listen((_) {
-      if (mounted) setState(() { _playing = false; _position = Duration.zero; });
+      if (mounted) {
+        setState(() {
+          _playing = false;
+          _position = Duration.zero;
+        });
+      }
     });
   }
 
@@ -270,9 +310,15 @@ class _AudioMessagePlayerState extends State<_AudioMessagePlayer> {
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: widget.isMine ? Colors.white24 : AppColors.emerald.withValues(alpha: 0.3),
+              color: widget.isMine
+                  ? Colors.white24
+                  : AppColors.emerald.withValues(alpha: 0.3),
             ),
-            child: Icon(_playing ? Icons.pause : Icons.play_arrow, color: activeColor, size: 22),
+            child: Icon(
+              _playing ? Icons.pause : Icons.play_arrow,
+              color: activeColor,
+              size: 22,
+            ),
           ),
         ),
         const SizedBox(width: 8),
@@ -291,13 +337,20 @@ class _AudioMessagePlayerState extends State<_AudioMessagePlayer> {
               const SizedBox(height: 4),
               Text(
                 _playing ? _fmt(_position) : _fmt(_duration),
-                style: TextStyle(color: activeColor.withValues(alpha: 0.7), fontSize: 10),
+                style: TextStyle(
+                  color: activeColor.withValues(alpha: 0.7),
+                  fontSize: 10,
+                ),
               ),
             ],
           ),
         ),
         const SizedBox(width: 4),
-        Icon(Icons.graphic_eq, color: activeColor.withValues(alpha: 0.5), size: 18),
+        Icon(
+          Icons.graphic_eq,
+          color: activeColor.withValues(alpha: 0.5),
+          size: 18,
+        ),
       ],
     );
   }
@@ -347,7 +400,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final replyId = _replyingTo?.id;
     setState(() => _replyingTo = null);
 
-    await ref.read(messagesRepositoryProvider).sendMessage(
+    await ref
+        .read(messagesRepositoryProvider)
+        .sendMessage(
           groupId: widget.groupId,
           senderId: user.id,
           content: text,
@@ -361,7 +416,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final user = ref.read(currentUserProvider);
     if (user == null) return;
 
-    final xFile = await _imagePicker.pickImage(source: ImageSource.gallery, imageQuality: 70);
+    final xFile = await _imagePicker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 70,
+    );
     if (xFile == null) return;
 
     final file = File(xFile.path);
@@ -375,7 +433,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       await client.storage.from('chat_images').upload(path, file);
       final mediaUrl = client.storage.from('chat_images').getPublicUrl(path);
 
-      await ref.read(messagesRepositoryProvider).sendMessage(
+      await ref
+          .read(messagesRepositoryProvider)
+          .sendMessage(
             groupId: widget.groupId,
             senderId: user.id,
             content: '📸 Image',
@@ -384,7 +444,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Erreur: $e')));
       }
     }
   }
@@ -392,7 +454,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Future<void> _startRecording() async {
     if (await _audioRecorder.hasPermission()) {
       final dir = await getTemporaryDirectory();
-      _recordingPath = '${dir.path}/audio_${DateTime.now().millisecondsSinceEpoch}.m4a';
+      _recordingPath =
+          '${dir.path}/audio_${DateTime.now().millisecondsSinceEpoch}.m4a';
       await _audioRecorder.start(const RecordConfig(), path: _recordingPath!);
       setState(() => _isRecording = true);
     }
@@ -415,9 +478,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       if (client == null) throw Exception('Supabase client is null');
 
       await client.storage.from('chat_audio').upload(storagePath, file);
-      final mediaUrl = client.storage.from('chat_audio').getPublicUrl(storagePath);
+      final mediaUrl = client.storage
+          .from('chat_audio')
+          .getPublicUrl(storagePath);
 
-      await ref.read(messagesRepositoryProvider).sendMessage(
+      await ref
+          .read(messagesRepositoryProvider)
+          .sendMessage(
             groupId: widget.groupId,
             senderId: user.id,
             content: '🎤 Message vocal',
@@ -426,7 +493,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erreur: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Erreur: $e')));
       }
     }
   }
@@ -440,13 +509,25 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: const Color(0xFF1F2C34),
-        title: const Text('Supprimer le message', style: TextStyle(color: Colors.white)),
-        content: const Text('Ce message sera supprimé pour tout le monde.', style: TextStyle(color: Colors.white70)),
+        title: const Text(
+          'Supprimer le message',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: const Text(
+          'Ce message sera supprimé pour tout le monde.',
+          style: TextStyle(color: Colors.white70),
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Annuler')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Annuler'),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Supprimer', style: TextStyle(color: Colors.redAccent)),
+            child: const Text(
+              'Supprimer',
+              style: TextStyle(color: Colors.redAccent),
+            ),
           ),
         ],
       ),
@@ -456,7 +537,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 
-  void _showMessageOptions(BuildContext context, ChatMessage message, bool isMine) {
+  void _showMessageOptions(
+    BuildContext context,
+    ChatMessage message,
+    bool isMine,
+  ) {
     final userId = ref.read(currentUserProvider)?.id;
 
     showModalBottomSheet(
@@ -473,7 +558,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             children: [
               // Quick reactions bar
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: _quickReactions.map((emoji) {
@@ -481,7 +569,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       onTap: () {
                         Navigator.pop(context);
                         if (userId != null) {
-                          ref.read(messagesRepositoryProvider).addReaction(
+                          ref
+                              .read(messagesRepositoryProvider)
+                              .addReaction(
                                 messageId: message.id,
                                 userId: userId,
                                 emoji: emoji,
@@ -495,7 +585,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           color: Colors.white.withValues(alpha: 0.08),
                           shape: BoxShape.circle,
                         ),
-                        child: Text(emoji, style: const TextStyle(fontSize: 26)),
+                        child: Text(
+                          emoji,
+                          style: const TextStyle(fontSize: 26),
+                        ),
                       ),
                     );
                   }).toList(),
@@ -517,7 +610,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   Navigator.pop(context);
                   Clipboard.setData(ClipboardData(text: message.content));
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Message copié'), duration: Duration(seconds: 1)),
+                    const SnackBar(
+                      content: Text('Message copié'),
+                      duration: Duration(seconds: 1),
+                    ),
                   );
                 },
               ),
@@ -549,7 +645,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         builder: (context, setStateDialog) {
           return AlertDialog(
             backgroundColor: const Color(0xFF1F2C34),
-            title: const Text('Ajouter un membre', style: TextStyle(color: Colors.white)),
+            title: const Text(
+              'Ajouter un membre',
+              style: TextStyle(color: Colors.white),
+            ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -567,7 +666,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     hintStyle: const TextStyle(color: Colors.white38),
                     filled: true,
                     fillColor: Colors.black26,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
                   ),
                 ),
               ],
@@ -575,10 +677,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('Annuler', style: TextStyle(color: Colors.white70)),
+                child: const Text(
+                  'Annuler',
+                  style: TextStyle(color: Colors.white70),
+                ),
               ),
               ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: AppColors.brightGreen),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.brightGreen,
+                ),
                 onPressed: isLoading
                     ? null
                     : () async {
@@ -591,11 +698,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           // TODO: Dans une vraie app, on chercherait l'ID de l'utilisateur par son téléphone.
                           // Si l'utilisateur n'existe pas, on l'invite via invitePhoneNumber.
                           // Pour simuler cela, on appelle l'invitation.
-                          await ref.read(messagesRepositoryProvider).invitePhoneNumber(widget.groupId, phone);
-                          
+                          await ref
+                              .read(messagesRepositoryProvider)
+                              .invitePhoneNumber(widget.groupId, phone);
+
                           if (ctx.mounted) Navigator.pop(ctx);
                           messenger.showSnackBar(
-                            const SnackBar(content: Text('Invitation envoyée au numéro.')),
+                            const SnackBar(
+                              content: Text('Invitation envoyée au numéro.'),
+                            ),
                           );
                         } catch (e) {
                           messenger.showSnackBar(
@@ -606,8 +717,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         }
                       },
                 child: isLoading
-                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                    : const Text('Ajouter', style: TextStyle(color: Colors.white)),
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Text(
+                        'Ajouter',
+                        style: TextStyle(color: Colors.white),
+                      ),
               ),
             ],
           );
@@ -617,6 +738,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   void _showGroupOptions() {
+    final canManage =
+        ref.read(canManageGroupProvider(widget.groupId)).valueOrNull ?? false;
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -631,18 +754,26 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(16),
-                child: Text(widget.groupName,
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                child: Text(
+                  widget.groupName,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
               ),
               const Divider(color: Colors.white12, height: 1),
-              _OptionTile(
-                icon: Icons.person_add,
-                label: 'Ajouter un membre/numéro',
-                onTap: () {
-                  Navigator.pop(context);
-                  _showAddMemberDialog();
-                },
-              ),
+              // Réservé aux admins du groupe et au staff (SEC-003).
+              if (canManage)
+                _OptionTile(
+                  icon: Icons.person_add,
+                  label: 'Ajouter un membre/numéro',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _showAddMemberDialog();
+                  },
+                ),
               _OptionTile(
                 icon: Icons.group,
                 label: 'Voir les membres',
@@ -652,9 +783,20 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     context: context,
                     builder: (ctx) => AlertDialog(
                       backgroundColor: const Color(0xFF1F2C34),
-                      title: const Text('Membres du groupe', style: TextStyle(color: Colors.white)),
-                      content: const Text('La liste des membres sera affichée ici prochainement.', style: TextStyle(color: Colors.white70)),
-                      actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Fermer'))],
+                      title: const Text(
+                        'Membres du groupe',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      content: const Text(
+                        'La liste des membres sera affichée ici prochainement.',
+                        style: TextStyle(color: Colors.white70),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          child: const Text('Fermer'),
+                        ),
+                      ],
                     ),
                   );
                 },
@@ -665,7 +807,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 onTap: () {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Notifications désactivées pour ce groupe.')),
+                    const SnackBar(
+                      content: Text(
+                        'Notifications désactivées pour ce groupe.',
+                      ),
+                    ),
                   );
                 },
               ),
@@ -675,7 +821,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 onTap: () {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Recherche activée. Tapez votre recherche...')),
+                    const SnackBar(
+                      content: Text(
+                        'Recherche activée. Tapez votre recherche...',
+                      ),
+                    ),
                   );
                 },
               ),
@@ -689,18 +839,34 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     context: context,
                     builder: (ctx) => AlertDialog(
                       backgroundColor: const Color(0xFF1F2C34),
-                      title: const Text('Effacer la discussion', style: TextStyle(color: Colors.white)),
-                      content: const Text('Voulez-vous vraiment vider cette discussion ? (Action locale uniquement)', style: TextStyle(color: Colors.white70)),
+                      title: const Text(
+                        'Effacer la discussion',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      content: const Text(
+                        'Voulez-vous vraiment vider cette discussion ? (Action locale uniquement)',
+                        style: TextStyle(color: Colors.white70),
+                      ),
                       actions: [
-                        TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Annuler')),
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          child: const Text('Annuler'),
+                        ),
                         TextButton(
                           onPressed: () {
                             Navigator.pop(ctx);
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Discussion effacée de votre appareil.')),
+                              const SnackBar(
+                                content: Text(
+                                  'Discussion effacée de votre appareil.',
+                                ),
+                              ),
                             );
                           },
-                          child: const Text('Effacer', style: TextStyle(color: Colors.redAccent)),
+                          child: const Text(
+                            'Effacer',
+                            style: TextStyle(color: Colors.redAccent),
+                          ),
                         ),
                       ],
                     ),
@@ -731,6 +897,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Widget build(BuildContext context) {
     final messagesAsync = ref.watch(messagesStreamProvider(widget.groupId));
     final user = ref.watch(currentUserProvider);
+    // Précharge le droit de gestion pour le menu des options du groupe.
+    ref.watch(canManageGroupProvider(widget.groupId));
 
     if (user != null && !_joinAttempted) {
       _joinAttempted = true;
@@ -761,7 +929,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   end: Alignment.bottomRight,
                 ),
                 boxShadow: [
-                  BoxShadow(color: AppColors.emerald.withValues(alpha: 0.3), blurRadius: 8),
+                  BoxShadow(
+                    color: AppColors.emerald.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                  ),
                 ],
               ),
               child: const Icon(Icons.group, color: Colors.white, size: 24),
@@ -771,12 +942,32 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(widget.groupName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                  Text(
+                    widget.groupName,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                   Row(
                     children: [
-                      Container(width: 8, height: 8, decoration: const BoxDecoration(color: AppColors.emerald, shape: BoxShape.circle)),
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          color: AppColors.emerald,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
                       const SizedBox(width: 4),
-                      const Text('En ligne', style: TextStyle(fontSize: 11, color: AppColors.emerald)),
+                      const Text(
+                        'En ligne',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: AppColors.emerald,
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -787,13 +978,23 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.videocam, color: AppColors.emerald),
-            onPressed: () => Navigator.push(context,
-                MaterialPageRoute(builder: (_) => _CallScreen(groupName: widget.groupName, isVideo: true))),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    _CallScreen(groupName: widget.groupName, isVideo: true),
+              ),
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.call, color: AppColors.emerald),
-            onPressed: () => Navigator.push(context,
-                MaterialPageRoute(builder: (_) => _CallScreen(groupName: widget.groupName, isVideo: false))),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    _CallScreen(groupName: widget.groupName, isVideo: false),
+              ),
+            ),
           ),
           IconButton(
             icon: const Icon(Icons.more_vert, color: Colors.white),
@@ -804,9 +1005,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: const NetworkImage('https://i.pinimg.com/originals/8f/ba/cb/8fbacbd464e996966eb9d4a6b7a9c21e.jpg'),
+            image: const NetworkImage(
+              'https://i.pinimg.com/originals/8f/ba/cb/8fbacbd464e996966eb9d4a6b7a9c21e.jpg',
+            ),
             fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(Colors.black.withValues(alpha: 0.82), BlendMode.darken),
+            colorFilter: ColorFilter.mode(
+              Colors.black.withValues(alpha: 0.82),
+              BlendMode.darken,
+            ),
           ),
         ),
         child: Column(
@@ -814,9 +1020,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             Expanded(
               child: AsyncValueWidget(
                 value: messagesAsync,
-                empty: const Center(child: Text('Aucun message. Lancez la discussion !', style: TextStyle(color: Colors.white54))),
+                empty: const Center(
+                  child: Text(
+                    'Aucun message. Lancez la discussion !',
+                    style: TextStyle(color: Colors.white54),
+                  ),
+                ),
                 data: (messages) {
-                  final sorted = messages.toList()..sort((a, b) => a.createdAt.compareTo(b.createdAt));
+                  final sorted = messages.toList()
+                    ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
                   // Build list with date separators (oldest to newest)
                   final items = <_ChatItem>[];
@@ -835,7 +1047,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
                   return ListView.builder(
                     controller: _scrollController,
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 8,
+                    ),
                     reverse: true,
                     itemCount: reversedItems.length,
                     itemBuilder: (context, index) {
@@ -849,7 +1064,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         message: msg,
                         isMine: isMine,
                         onSwipe: () => _replyToMessage(msg),
-                        onLongPress: () => _showMessageOptions(context, msg, isMine),
+                        onLongPress: () =>
+                            _showMessageOptions(context, msg, isMine),
                       );
                     },
                   );
@@ -862,13 +1078,25 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 decoration: BoxDecoration(
                   color: const Color(0xFF1A2833),
                   border: Border(
-                    top: BorderSide(color: AppColors.emerald.withValues(alpha: 0.4)),
+                    top: BorderSide(
+                      color: AppColors.emerald.withValues(alpha: 0.4),
+                    ),
                   ),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 child: Row(
                   children: [
-                    Container(width: 3, height: 44, decoration: BoxDecoration(color: AppColors.emerald, borderRadius: BorderRadius.circular(2))),
+                    Container(
+                      width: 3,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: AppColors.emerald,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Column(
@@ -876,20 +1104,31 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         children: [
                           Text(
                             _replyingTo!.senderName ?? 'Utilisateur',
-                            style: const TextStyle(color: AppColors.emerald, fontWeight: FontWeight.bold, fontSize: 12),
+                            style: const TextStyle(
+                              color: AppColors.emerald,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             _replyingTo!.content,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(color: Colors.white54, fontSize: 12),
+                            style: const TextStyle(
+                              color: Colors.white54,
+                              fontSize: 12,
+                            ),
                           ),
                         ],
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, color: Colors.white38, size: 18),
+                      icon: const Icon(
+                        Icons.close,
+                        color: Colors.white38,
+                        size: 18,
+                      ),
                       onPressed: () => setState(() => _replyingTo = null),
                     ),
                   ],
@@ -901,7 +1140,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 6,
+                      ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
@@ -916,12 +1158,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                                 children: [
                                   IconButton(
                                     icon: Icon(
-                                      _showEmojiPicker ? Icons.keyboard : Icons.emoji_emotions_outlined,
+                                      _showEmojiPicker
+                                          ? Icons.keyboard
+                                          : Icons.emoji_emotions_outlined,
                                       color: Colors.white54,
                                     ),
                                     onPressed: () {
-                                      if (!_showEmojiPicker) FocusScope.of(context).unfocus();
-                                      setState(() => _showEmojiPicker = !_showEmojiPicker);
+                                      if (!_showEmojiPicker) {
+                                        FocusScope.of(context).unfocus();
+                                      }
+                                      setState(
+                                        () => _showEmojiPicker =
+                                            !_showEmojiPicker,
+                                      );
                                     },
                                   ),
                                   Expanded(
@@ -929,23 +1178,39 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                                       controller: _controller,
                                       minLines: 1,
                                       maxLines: 6,
-                                      style: const TextStyle(color: Colors.white),
-                                      onTap: () { if (_showEmojiPicker) setState(() => _showEmojiPicker = false); },
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                      onTap: () {
+                                        if (_showEmojiPicker) {
+                                          setState(
+                                            () => _showEmojiPicker = false,
+                                          );
+                                        }
+                                      },
                                       decoration: const InputDecoration(
                                         hintText: 'Message',
                                         border: InputBorder.none,
-                                        hintStyle: TextStyle(color: Colors.white38),
+                                        hintStyle: TextStyle(
+                                          color: Colors.white38,
+                                        ),
                                       ),
                                       onChanged: (_) => setState(() {}),
                                     ),
                                   ),
                                   IconButton(
-                                    icon: const Icon(Icons.attach_file, color: Colors.white54),
+                                    icon: const Icon(
+                                      Icons.attach_file,
+                                      color: Colors.white54,
+                                    ),
                                     onPressed: _sendImage,
                                   ),
                                   if (_controller.text.isEmpty)
                                     IconButton(
-                                      icon: const Icon(Icons.camera_alt, color: Colors.white54),
+                                      icon: const Icon(
+                                        Icons.camera_alt,
+                                        color: Colors.white54,
+                                      ),
                                       onPressed: _sendImage,
                                     ),
                                 ],
@@ -956,25 +1221,35 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           GestureDetector(
                             onLongPressStart: (_) => _startRecording(),
                             onLongPressEnd: (_) => _stopRecording(),
-                            onTap: () { if (_controller.text.isNotEmpty) _sendText(); },
+                            onTap: () {
+                              if (_controller.text.isNotEmpty) _sendText();
+                            },
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 200),
                               width: 48,
                               height: 48,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: _isRecording ? Colors.redAccent : AppColors.emerald,
+                                color: _isRecording
+                                    ? Colors.redAccent
+                                    : AppColors.emerald,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: (_isRecording ? Colors.redAccent : AppColors.emerald).withValues(alpha: 0.4),
+                                    color:
+                                        (_isRecording
+                                                ? Colors.redAccent
+                                                : AppColors.emerald)
+                                            .withValues(alpha: 0.4),
                                     blurRadius: _isRecording ? 15 : 6,
-                                  )
+                                  ),
                                 ],
                               ),
                               child: Icon(
                                 _controller.text.isNotEmpty
                                     ? Icons.send
-                                    : (_isRecording ? Icons.mic : Icons.mic_none),
+                                    : (_isRecording
+                                          ? Icons.mic
+                                          : Icons.mic_none),
                                 color: Colors.white,
                                 size: 22,
                               ),
@@ -990,7 +1265,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           textEditingController: _controller,
                           onEmojiSelected: (_, _) => setState(() {}),
                           config: const Config(
-                            emojiViewConfig: EmojiViewConfig(backgroundColor: Color(0xFF1F2C34)),
+                            emojiViewConfig: EmojiViewConfig(
+                              backgroundColor: Color(0xFF1F2C34),
+                            ),
                             categoryViewConfig: CategoryViewConfig(
                               backgroundColor: Color(0xFF1F2C34),
                               iconColorSelected: AppColors.brightGreen,
@@ -1045,7 +1322,10 @@ class _DateSeparatorWidget extends StatelessWidget {
               color: const Color(0xFF1F2C34).withValues(alpha: 0.9),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+            child: Text(
+              label,
+              style: const TextStyle(color: Colors.white70, fontSize: 12),
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.1))),
@@ -1056,7 +1336,12 @@ class _DateSeparatorWidget extends StatelessWidget {
 }
 
 class _OptionTile extends StatelessWidget {
-  const _OptionTile({required this.icon, required this.label, required this.onTap, this.color});
+  const _OptionTile({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.color,
+  });
 
   final IconData icon;
   final String label;
@@ -1113,11 +1398,15 @@ class _MessageBubble extends StatelessWidget {
           child: Container(
             margin: const EdgeInsets.only(bottom: 6),
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.78),
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.sizeOf(context).width * 0.78,
+            ),
             decoration: BoxDecoration(
               color: message.isDeleted
                   ? Colors.white.withValues(alpha: 0.05)
-                  : (isMine ? const Color(0xFF005C4B) : const Color(0xFF202C33)),
+                  : (isMine
+                        ? const Color(0xFF005C4B)
+                        : const Color(0xFF202C33)),
               borderRadius: BorderRadius.only(
                 topLeft: const Radius.circular(14),
                 topRight: const Radius.circular(14),
@@ -1125,7 +1414,11 @@ class _MessageBubble extends StatelessWidget {
                 bottomRight: isMine ? Radius.zero : const Radius.circular(14),
               ),
               boxShadow: [
-                BoxShadow(color: Colors.black.withValues(alpha: 0.15), blurRadius: 4, offset: const Offset(0, 2)),
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.15),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
               ],
             ),
             child: Column(
@@ -1140,7 +1433,10 @@ class _MessageBubble extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: Colors.primaries[message.senderId.hashCode % Colors.primaries.length].shade300,
+                        color: Colors
+                            .primaries[message.senderId.hashCode %
+                                Colors.primaries.length]
+                            .shade300,
                       ),
                     ),
                   ),
@@ -1152,9 +1448,17 @@ class _MessageBubble extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.black.withValues(alpha: 0.25),
                       borderRadius: BorderRadius.circular(8),
-                      border: const Border(left: BorderSide(color: AppColors.brightGreen, width: 3)),
+                      border: const Border(
+                        left: BorderSide(
+                          color: AppColors.brightGreen,
+                          width: 3,
+                        ),
+                      ),
                     ),
-                    child: const Text('↩ Réponse à un message', style: TextStyle(fontSize: 11, color: Colors.white60)),
+                    child: const Text(
+                      '↩ Réponse à un message',
+                      style: TextStyle(fontSize: 11, color: Colors.white60),
+                    ),
                   ),
                 // Content
                 if (message.isDeleted)
@@ -1163,18 +1467,34 @@ class _MessageBubble extends StatelessWidget {
                     children: [
                       const Icon(Icons.block, color: Colors.white38, size: 14),
                       const SizedBox(width: 4),
-                      Text(message.content, style: const TextStyle(color: Colors.white38, fontStyle: FontStyle.italic, fontSize: 14)),
+                      Text(
+                        message.content,
+                        style: const TextStyle(
+                          color: Colors.white38,
+                          fontStyle: FontStyle.italic,
+                          fontSize: 14,
+                        ),
+                      ),
                     ],
                   )
-                else if (message.messageType == 'image' && message.mediaUrl != null)
+                else if (message.messageType == 'image' &&
+                    message.mediaUrl != null)
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.network(message.mediaUrl!, fit: BoxFit.cover, width: 200),
+                    child: Image.network(
+                      message.mediaUrl!,
+                      fit: BoxFit.cover,
+                      width: 200,
+                    ),
                   )
-                else if (message.messageType == 'audio' && message.mediaUrl != null)
+                else if (message.messageType == 'audio' &&
+                    message.mediaUrl != null)
                   _AudioMessagePlayer(url: message.mediaUrl!, isMine: isMine)
                 else
-                  Text(message.content, style: const TextStyle(color: Colors.white, fontSize: 15)),
+                  Text(
+                    message.content,
+                    style: const TextStyle(color: Colors.white, fontSize: 15),
+                  ),
                 // Timestamp + ticks
                 Align(
                   alignment: Alignment.centerRight,
@@ -1185,11 +1505,18 @@ class _MessageBubble extends StatelessWidget {
                       children: [
                         Text(
                           timeFormat.format(message.createdAt),
-                          style: const TextStyle(fontSize: 10, color: Colors.white38),
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Colors.white38,
+                          ),
                         ),
                         if (isMine && !message.isDeleted) ...[
                           const SizedBox(width: 3),
-                          const Icon(Icons.done_all, size: 13, color: Colors.lightBlue),
+                          const Icon(
+                            Icons.done_all,
+                            size: 13,
+                            color: Colors.lightBlue,
+                          ),
                         ],
                       ],
                     ),

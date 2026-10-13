@@ -17,11 +17,27 @@ class MessagesRepository {
         .toList();
   }
 
+  /// Inscription opportuniste à l'ouverture d'une conversation. Le serveur ne
+  /// l'accepte que pour les groupes publics (SEC-003) : un refus (groupe privé,
+  /// conversation directe, déjà membre) n'est pas une erreur pour l'utilisateur.
   Future<void> joinGroup(String groupId, String userId) async {
-    await _client?.from('chat_group_members').upsert({
-      'group_id': groupId,
-      'user_id': userId,
-    });
+    try {
+      await _client?.from('chat_group_members').upsert({
+        'group_id': groupId,
+        'user_id': userId,
+      }, ignoreDuplicates: true);
+    } on PostgrestException {
+      // Groupe non public : l'accès passe par un admin du groupe.
+    }
+  }
+
+  /// L'utilisateur courant peut-il gérer les membres du groupe (owner/admin du
+  /// groupe ou staff) ? Calculé côté serveur par `is_group_admin`.
+  Future<bool> canManageGroup(String groupId) async {
+    final client = _client;
+    if (client == null) return false;
+    final result = await client.rpc('is_group_admin', params: {'g': groupId});
+    return result == true;
   }
 
   Stream<List<ChatMessage>> watchMessages(String groupId) {
@@ -57,7 +73,7 @@ class MessagesRepository {
   Stream<List<MessageReceipt>> watchMessageReceipts(String groupId) {
     final client = _client;
     if (client == null) return Stream.value([]);
-    // We only watch receipts for messages in this group. 
+    // We only watch receipts for messages in this group.
     // This is a bit complex in Supabase stream, so we'll just watch all receipts and filter in UI, or wait for realtime.
     return client
         .from('message_receipts')
@@ -96,7 +112,10 @@ class MessagesRepository {
         .toList();
   }
 
-  Future<void> markAnnouncementRead(String announcementId, String userId) async {
+  Future<void> markAnnouncementRead(
+    String announcementId,
+    String userId,
+  ) async {
     await _client?.from('announcement_reads').upsert({
       'announcement_id': announcementId,
       'user_id': userId,
@@ -105,10 +124,10 @@ class MessagesRepository {
 
   /// Soft-delete a message (sets is_deleted = true)
   Future<void> deleteMessage(String messageId) async {
-    await _client?.from('messages').update({
-      'is_deleted': true,
-      'content': 'Ce message a été supprimé',
-    }).eq('id', messageId);
+    await _client
+        ?.from('messages')
+        .update({'is_deleted': true, 'content': 'Ce message a été supprimé'})
+        .eq('id', messageId);
   }
 
   /// Add or toggle an emoji reaction on a message
@@ -163,4 +182,3 @@ class MessagesRepository {
     });
   }
 }
-

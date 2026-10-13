@@ -57,6 +57,7 @@ sont modifiables que par les triggers `SECURITY DEFINER`.
 
 ### SEC-003 — Empêcher l'auto-ajout dans un groupe/conversation privée
 **Type** : Sécurité · **Priorité** : P0 · **Estimation** : M · **Composant** : supabase/db, flutter
+**Statut** : ✅ Livré — migration `20261012170000_sec003_groupes_prives.sql`, tests pgTAP `002_sec003_groupes_prives.test.sql`
 **Dépendances** : —
 
 **Contexte** — Policy `"Rejoindre un groupe"` (`phase1_mvp.sql`) : `with check (auth.uid() = user_id)`.
