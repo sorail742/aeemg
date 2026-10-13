@@ -45,9 +45,8 @@ jobs:
         with:
           channel: ${{ matrix.channel }}
           cache: true
-      - run: cp .env.example .env
       - run: flutter pub get
-      - run: flutter build apk --debug
+      - run: flutter build apk --debug --dart-define-from-file=config/example.json
       - name: Taille de l'APK
         run: |
           ls -la build/app/outputs/flutter-apk/
@@ -65,9 +64,8 @@ jobs:
         with:
           channel: stable
           cache: true
-      - run: cp .env.example .env
       - run: flutter pub get
-      - run: flutter build web --wasm --release
+      - run: flutter build web --wasm --release --dart-define-from-file=config/example.json
 
   ios:
     name: ios (no codesign)
@@ -81,9 +79,8 @@ jobs:
         with:
           channel: stable
           cache: true
-      - run: cp .env.example .env
       - run: flutter pub get
-      - run: flutter build ios --release --no-codesign
+      - run: flutter build ios --release --no-codesign --dart-define-from-file=config/example.json
 
   android-integration:
     name: android integration (API ${{ matrix.api-level }})
@@ -117,7 +114,7 @@ jobs:
           channel: stable
           cache: true
       - if: steps.detect.outputs.present == 'true'
-        run: cp .env.example .env && flutter pub get
+        run: flutter pub get
       - name: Activer KVM
         if: steps.detect.outputs.present == 'true'
         run: |
@@ -130,4 +127,4 @@ jobs:
           api-level: ${{ matrix.api-level }}
           arch: x86_64
           target: ${{ matrix.api-level >= 30 && 'google_apis' || 'default' }}
-          script: flutter test integration_test
+          script: flutter test integration_test --dart-define-from-file=config/example.json

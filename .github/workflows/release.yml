@@ -62,18 +62,23 @@ jobs:
           fi
           echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/app/upload-keystore.jks
           printf '%s\n' "$ANDROID_KEY_PROPERTIES" > android/key.properties
-      - name: Configuration de production
+      - name: Configuration de production (SEC-019, ADR-0009)
         env:
-          APP_ENV_FILE: ${{ secrets.APP_ENV_FILE }}
+          APP_CONFIG_JSON: ${{ secrets.APP_CONFIG_JSON }}
         run: |
-          if [[ -z "$APP_ENV_FILE" ]]; then echo "::error::Secret APP_ENV_FILE absent."; exit 1; fi
-          printf '%s\n' "$APP_ENV_FILE" > .env
+          if [[ -z "$APP_CONFIG_JSON" ]]; then echo "::error::Secret APP_CONFIG_JSON absent."; exit 1; fi
+          printf '%s\n' "$APP_CONFIG_JSON" > config/prod.json
+          python3 -c 'import json,sys; d=json.load(open("config/prod.json")); sys.exit(0 if d.get("SUPABASE_URL") and d.get("SUPABASE_ANON_KEY") else 1)' \
+            || { echo "::error::APP_CONFIG_JSON doit être un JSON avec SUPABASE_URL et SUPABASE_ANON_KEY."; exit 1; }
+          if grep -qE 'service_role|c2VydmljZV9yb2xl|sk_live_' config/prod.json; then
+            echo "::error::APP_CONFIG_JSON contient une clé secrète (service_role…) : elle serait publiée dans l'app."; exit 1
+          fi
       - run: flutter pub get
-      - run: flutter build appbundle --release --obfuscate --split-debug-info=build/symbols
-      - run: flutter build apk --release --split-per-abi --obfuscate --split-debug-info=build/symbols
+      - run: flutter build appbundle --release --obfuscate --split-debug-info=build/symbols --dart-define-from-file=config/prod.json
+      - run: flutter build apk --release --split-per-abi --obfuscate --split-debug-info=build/symbols --dart-define-from-file=config/prod.json
       - name: Nettoyer les secrets
         if: always()
-        run: rm -f android/app/upload-keystore.jks android/key.properties .env
+        run: rm -f android/app/upload-keystore.jks android/key.properties config/prod.json
       - uses: actions/upload-artifact@v4
         with:
           name: android-release
@@ -98,15 +103,20 @@ jobs:
         with:
           channel: stable
           cache: true
-      - name: Configuration de production
+      - name: Configuration de production (SEC-019, ADR-0009)
         env:
-          APP_ENV_FILE: ${{ secrets.APP_ENV_FILE }}
+          APP_CONFIG_JSON: ${{ secrets.APP_CONFIG_JSON }}
         run: |
-          if [[ -z "$APP_ENV_FILE" ]]; then echo "::error::Secret APP_ENV_FILE absent."; exit 1; fi
-          printf '%s\n' "$APP_ENV_FILE" > .env
+          if [[ -z "$APP_CONFIG_JSON" ]]; then echo "::error::Secret APP_CONFIG_JSON absent."; exit 1; fi
+          printf '%s\n' "$APP_CONFIG_JSON" > config/prod.json
+          python3 -c 'import json,sys; d=json.load(open("config/prod.json")); sys.exit(0 if d.get("SUPABASE_URL") and d.get("SUPABASE_ANON_KEY") else 1)' \
+            || { echo "::error::APP_CONFIG_JSON doit être un JSON avec SUPABASE_URL et SUPABASE_ANON_KEY."; exit 1; }
+          if grep -qE 'service_role|c2VydmljZV9yb2xl|sk_live_' config/prod.json; then
+            echo "::error::APP_CONFIG_JSON contient une clé secrète (service_role…) : elle serait publiée dans l'app."; exit 1
+          fi
       - run: flutter pub get
-      - run: flutter build web --release
-      - run: rm -f .env
+      - run: flutter build web --release --dart-define-from-file=config/prod.json
+      - run: rm -f config/prod.json
       - run: tar -czf web-build.tar.gz -C build web
       - uses: actions/upload-artifact@v4
         with:
