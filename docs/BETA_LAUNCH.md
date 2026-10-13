@@ -52,12 +52,18 @@ Edge Function `supabase/functions/event-reminders` :
 supabase functions deploy event-reminders
 ```
 
-Appeler quotidiennement (cron) :
+La fonction n'accepte que les appels portant le secret partagé `CRON_SECRET` dans
+l'en-tête `x-cron-secret` (SEC-010). La clé anon (présente dans l'app) ne suffit pas, et la
+clé `service_role` ne doit **jamais** être utilisée pour l'appeler ni copiée hors du Dashboard.
 
-```bash
-curl -X POST https://fuumkjatgczkbxdpjduo.supabase.co/functions/v1/event-reminders \
-  -H "Authorization: Bearer VOTRE_SERVICE_ROLE_KEY"
-```
+1. Générer un secret long et aléatoire, par exemple `openssl rand -hex 32`, puis le
+   déclarer dans Dashboard → Edge Functions → Secrets sous le nom `CRON_SECRET`.
+2. Planifier un appel quotidien qui envoie ce secret : `pg_cron` + `pg_net` avec le secret
+   stocké dans Supabase Vault (migration prévue par REL-005), ou un planificateur externe.
+   La passerelle Supabase exige aussi un JWT : joindre la clé anon dans `Authorization`.
+
+Réponses : `401` sans secret ou avec un mauvais secret (y compris la clé anon seule),
+`500` si `CRON_SECRET` n'est pas configuré, `200` avec le nombre de notifications créées.
 
 ---
 
