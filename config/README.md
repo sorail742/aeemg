@@ -16,5 +16,5 @@ flutter run --dart-define-from-file=config/dev.json
 Clés : `APP_ENV` (`dev` / `staging` / `prod`), `SUPABASE_URL`, `SUPABASE_ANON_KEY`.
 
 **Valeurs publiques uniquement** : l'URL et la clé anon/publishable finissent dans le binaire et
-le JavaScript web. Jamais de clé `service_role`, de clé API SMS ou de paiement : elles vont dans
+le JavaScript web. Jamais de clé « service role », de clé API SMS ou de paiement : elles vont dans
 les secrets des Edge Functions (`policy-checks` refuse ces motifs dans `config/`).
