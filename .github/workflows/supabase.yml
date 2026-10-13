@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       # Format des noms, versions uniques, aucune migration existante modifiée (ADR-0010).
@@ -36,8 +36,8 @@ jobs:
     timeout-minutes: 30
     needs: [migrations-lint]
     steps:
-      - uses: actions/checkout@v4
-      - uses: supabase/setup-cli@v1
+      - uses: actions/checkout@v7
+      - uses: supabase/setup-cli@v3
         with:
           version: latest
       - name: Démarrer Supabase local (services utiles uniquement)

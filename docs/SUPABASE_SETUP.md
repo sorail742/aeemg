@@ -97,6 +97,20 @@ supabase migration list --linked
 En cas de doute, vérifier en SQL que les policies `Staff can create events` existent sur
 `public.events` : si oui, la phase 9 est déjà appliquée.
 
+### Production : historique initialisé le 2026-10-13 (ADR-0024)
+
+La production n'avait aucun historique de migrations. Les 13 migrations historiques
+(`20260407000000` → `20260614000100`) y sont marquées appliquées, et la migration idempotente
+`20260615000000_reconciliation_production.sql` aligne le schéma. Ensuite :
+
+```bash
+supabase migration list --linked   # les versions historiques doivent apparaître « Remote »
+supabase db push                    # applique la réconciliation puis les migrations de sécurité
+```
+
+Ne plus modifier le schéma de production à la main (Dashboard, éditeur SQL) : toute modification
+passe par une migration versionnée (ADR-0010).
+
 ---
 
 ## 5. Vérifier
