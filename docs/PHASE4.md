@@ -32,6 +32,7 @@ supabase functions deploy event-reminders
 | `ORANGE_MONEY_MERCHANT_ID` | Marchand AEEMG |
 | `SMS_API_KEY` | AfricasTalking / Orange SMS |
 | `SMS_SENDER_ID` | Expéditeur SMS |
+| `CRON_SECRET` | Secret exigé par `event-reminders` (en-tête `x-cron-secret`, SEC-010) |
 
 ## À activer en production
 

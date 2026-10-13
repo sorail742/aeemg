@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'chat_media.dart';
 import 'models/chat_models.dart';
 
 class MessagesRepository {
@@ -57,7 +60,7 @@ class MessagesRepository {
     required String senderId,
     required String content,
     String messageType = 'text',
-    String? mediaUrl,
+    String? mediaPath,
     String? replyToId,
   }) async {
     await _client?.from('messages').insert({
@@ -65,10 +68,44 @@ class MessagesRepository {
       'sender_id': senderId,
       'content': content,
       'message_type': messageType,
-      'media_url': ?mediaUrl,
+      'media_path': ?mediaPath,
       'reply_to_id': ?replyToId,
     });
   }
+
+  /// Dépose un média dans le dossier du groupe et retourne son chemin, à
+  /// enregistrer dans `messages.media_path`.
+  ///
+  /// Lève [ChatMediaRejected] si le type ou la taille ne sont pas autorisés.
+  Future<String> uploadChatMedia({
+    required String groupId,
+    required ChatMediaKind kind,
+    required String fileName,
+    required Uint8List bytes,
+  }) async {
+    final client = _client;
+    if (client == null) throw StateError('Supabase non initialisé');
+
+    final contentType = checkChatMedia(kind, fileName, bytes.length);
+    final path = newChatMediaPath(groupId, fileName);
+    await client.storage
+        .from(kind.bucket)
+        .uploadBinary(
+          path,
+          bytes,
+          fileOptions: FileOptions(contentType: contentType),
+        );
+    return path;
+  }
+
+  /// URL signée de courte durée pour afficher un média privé.
+  Future<String?> signedChatMediaUrl(ChatMediaKind kind, String path) async {
+    return _client?.storage
+        .from(kind.bucket)
+        .createSignedUrl(path, chatMediaUrlTtl.inSeconds);
+  }
+
+  static const chatMediaUrlTtl = Duration(hours: 1);
 
   Stream<List<MessageReceipt>> watchMessageReceipts(String groupId) {
     final client = _client;
@@ -170,15 +207,17 @@ class MessagesRepository {
     });
   }
 
-  /// Invite a phone number to the group (if they don't have the app yet)
+  /// Invite a phone number to the group (if they don't have the app yet).
+  ///
+  /// [phoneNumber] doit être au format E.164 (voir `normalizeE164`). Seuls les
+  /// admins du groupe et le staff peuvent inviter ; `invited_by` est renseigné
+  /// par la base (SEC-004).
   Future<void> invitePhoneNumber(String groupId, String phoneNumber) async {
-    // Dans une vraie application, cela déclencherait un Edge Function
-    // qui enverrait un SMS d'invitation via Twilio/MessageBird.
-    // Pour l'instant, on simule l'enregistrement de l'invitation.
+    // L'envoi du SMS d'invitation (Edge Function) n'est pas encore branché :
+    // on enregistre seulement l'invitation.
     await _client?.from('group_invitations').insert({
       'group_id': groupId,
       'phone_number': phoneNumber,
-      'status': 'pending',
     });
   }
 }
