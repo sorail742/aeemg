@@ -129,7 +129,7 @@ class PrayerRepository {
       // Obtenir la ville
       String cityName = "Localisation inconnue";
       try {
-        List<Placemark> placemarks = await placemarkFromCoordinates(
+        List<Placemark> placemarks = await Geocoding().placemarkFromCoordinates(
           position.latitude,
           position.longitude,
         );
