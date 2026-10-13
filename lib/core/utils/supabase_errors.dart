@@ -18,6 +18,10 @@ String friendlySupabaseError(Object error) {
     return friendlyAuthError(error.message);
   }
 
+  if (error is StorageException) {
+    return friendlyStorageError(error);
+  }
+
   return error.toString();
 }
 
@@ -57,4 +61,20 @@ String friendlyAuthError(String message) {
 
 bool isMissingTableError(Object error) {
   return error is PostgrestException && error.code == 'PGRST205';
+}
+
+/// Refus du serveur Storage (limites des buckets, policies — SEC-006).
+String friendlyStorageError(StorageException error) {
+  final status = error.statusCode;
+  final lower = error.message.toLowerCase();
+  if (status == '413' || lower.contains('maximum allowed size')) {
+    return 'Fichier trop volumineux pour être envoyé.';
+  }
+  if (status == '415' || lower.contains('mime type')) {
+    return 'Type de fichier non autorisé.';
+  }
+  if (status == '403' || lower.contains('row-level security')) {
+    return 'Envoi refusé : vous n\'êtes pas membre de cette conversation.';
+  }
+  return error.message;
 }
