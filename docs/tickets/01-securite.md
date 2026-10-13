@@ -151,6 +151,7 @@ Aucune limite de taille ni de type MIME, aucune policy de suppression.
 ### SEC-008 — Empêcher la falsification du statut des dons et des sessions de paiement
 **Type** : Sécurité · **Priorité** : P0 · **Estimation** : M · **Composant** : supabase/db, edge-functions
 **Dépendances** : FEAT-004
+**Statut** : ✅ Livré — migration `20261013130000_sec008_statut_dons.sql` (dons créés `pending`, validation espèces par le trésorier, mobile money par le service role, historique `donation_status_history`, plus d'insertion client dans `payment_sessions`), tests pgTAP `005_sec008_statut_dons.test.sql`
 
 **Contexte** — Policy `"Créer un don"` : `with check (auth.uid() = user_id)` sans contrainte sur `status`.
 Un membre peut insérer `status = 'completed'` et gonfler les statistiques / campagnes.
