@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 
 import '../../../../core/providers/offline_cache_provider.dart';
 import '../../data/quran_audio_service.dart';
@@ -10,11 +11,15 @@ final quranServiceProvider = Provider<QuranService>((ref) {
   return const QuranService();
 });
 
-final quranBookmarksRepositoryProvider = Provider<QuranBookmarksRepository>((ref) {
+final quranBookmarksRepositoryProvider = Provider<QuranBookmarksRepository>((
+  ref,
+) {
   return QuranBookmarksRepository(ref.watch(sharedPreferencesProvider));
 });
 
-final quranAudioServiceProvider = ChangeNotifierProvider<QuranAudioService>((ref) {
+final quranAudioServiceProvider = ChangeNotifierProvider<QuranAudioService>((
+  ref,
+) {
   final service = QuranAudioService();
   ref.onDispose(() => service.dispose());
   return service;

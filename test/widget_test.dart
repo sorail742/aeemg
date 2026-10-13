@@ -1,6 +1,5 @@
 import 'package:aeemg/app.dart';
 import 'package:aeemg/core/providers/offline_cache_provider.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,12 +10,7 @@ void main() {
   setUpAll(() async {
     TestWidgetsFlutterBinding.ensureInitialized();
     await initializeDateFormatting('fr');
-    dotenv.testLoad(
-      fileInput: '''
-SUPABASE_URL=https://placeholder.supabase.co
-SUPABASE_ANON_KEY=placeholder-anon-key
-''',
-    );
+    // Sans --dart-define, Env.isConfigured est faux : l'app démarre sans Supabase.
   });
 
   testWidgets('AEEMG affiche l\'écran d\'accueil', (tester) async {

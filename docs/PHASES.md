@@ -64,5 +64,5 @@
 
 1. Exécuter `20260413000000_phase4_evolution.sql` dans Supabase
 2. Déployer Edge Functions (voir PHASE4.md)
-3. Build APK beta : `flutter build apk --release`
+3. Build APK beta : `flutter build apk --release --dart-define-from-file=config/prod.json`
 4. Lancer beta fermée (checklist BETA_LAUNCH.md)

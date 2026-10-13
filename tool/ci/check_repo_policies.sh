@@ -8,8 +8,8 @@
 set -uo pipefail
 
 # Règles promues en erreur bloquante. Ajouter l'ID quand le ticket est livré.
-ERROR_RULES="${ERROR_RULES:-secrets forbidden-files service-role}"
-# Ex. après SEC-019 : ERROR_RULES="... env-asset" ; après AMEL-001 : "... file-size"
+ERROR_RULES="${ERROR_RULES:-secrets forbidden-files service-role env-asset}"
+# Ex. après AMEL-001 : ERROR_RULES="... file-size"
 
 errors=0
 warnings=0
@@ -58,6 +58,10 @@ done < <(git grep -nIE 'eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]*c2VydmljZV9yb2xl' -
 if grep -nE '^[[:space:]]*-[[:space:]]*\.env[[:space:]]*$' pubspec.yaml >/dev/null; then
   l=$(grep -nE '^[[:space:]]*-[[:space:]]*\.env[[:space:]]*$' pubspec.yaml | head -1 | cut -d: -f1)
   report env-asset pubspec.yaml "$l" ".env est publié dans l'APK et le build web (SEC-019, ADR-0009)."
+fi
+if grep -nE '^[[:space:]]+flutter_dotenv:' pubspec.yaml >/dev/null; then
+  l=$(grep -nE '^[[:space:]]+flutter_dotenv:' pubspec.yaml | head -1 | cut -d: -f1)
+  report env-asset pubspec.yaml "$l" "flutter_dotenv lit un fichier embarqué : utiliser --dart-define-from-file (SEC-019, ADR-0009)."
 fi
 
 # 5. Android : identifiant d'exemple et signature debug en release (SEC-020)

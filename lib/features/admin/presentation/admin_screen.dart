@@ -1056,7 +1056,7 @@ class _MembersTab extends ConsumerWidget {
                                 color:
                                     (role == 'admin'
                                             ? AppColors.gold
-                                            : (role == 'staff'
+                                            : (role == 'moderator'
                                                   ? AppColors.emerald
                                                   : AppColors.textTertiary))
                                         .withValues(alpha: 0.2),
@@ -1067,7 +1067,7 @@ class _MembersTab extends ConsumerWidget {
                                 style: AppTypography.caption.copyWith(
                                   color: role == 'admin'
                                       ? AppColors.gold
-                                      : (role == 'staff'
+                                      : (role == 'moderator'
                                             ? AppColors.emerald
                                             : AppColors.textSecondary),
                                   fontWeight: FontWeight.bold,
@@ -1124,9 +1124,9 @@ class _MembersTab extends ConsumerWidget {
                                   ),
                                 ),
                                 const PopupMenuItem(
-                                  value: 'staff',
+                                  value: 'moderator',
                                   child: Text(
-                                    'Promouvoir staff',
+                                    'Promouvoir modérateur',
                                     style: TextStyle(color: AppColors.emerald),
                                   ),
                                 ),

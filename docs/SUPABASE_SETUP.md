@@ -16,14 +16,20 @@ Si l'app affiche *« Could not find the table »* :
 
 ---
 
-## 1. Variables d'environnement Flutter
+## 1. Configuration Flutter (ADR-0009)
 
-Le fichier `.env` à la racine :
+La configuration est injectée à la compilation (plus de fichier `.env` embarqué, SEC-019). Copier
+`config/example.json` en `config/dev.json` (ignoré par git) :
 
-```env
-SUPABASE_URL=https://fuumkjatgczkbxdpjduo.supabase.co
-SUPABASE_ANON_KEY=sb_publishable_...
+```json
+{
+  "APP_ENV": "dev",
+  "SUPABASE_URL": "https://fuumkjatgczkbxdpjduo.supabase.co",
+  "SUPABASE_ANON_KEY": "sb_publishable_..."
+}
 ```
+
+puis lancer `flutter run --dart-define-from-file=config/dev.json`. Voir [config/README.md](../config/README.md).
 
 ---
 

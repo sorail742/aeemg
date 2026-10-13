@@ -37,7 +37,7 @@ Les nouveaux contrôles révèlent des problèmes **existants** ; c'est voulu. �
 
 - `supabase / migrations-lint` et `supabase / db` **échouent** tant que REL-001 (versions de migration dupliquées)
   et REL-002 (enum `staff` utilisé dans la même transaction) ne sont pas corrigés → ce sont des tickets P0.
-- `policy-checks` passe mais émet ~40 **avertissements** (fichiers > 400 lignes, `dart:io`, `.env` en asset,
+- `policy-checks` passe mais émet ~40 **avertissements** (fichiers > 400 lignes, `dart:io`,
   signature debug, exceptions brutes affichées, TODO sans ticket). Chaque avertissement pointe vers son ticket.
 - `security / dependencies` peut échouer si des dépendances du `pubspec.lock` ont des vulnérabilités connues :
   mettre à jour la dépendance (PR Dependabot) ou documenter l'exception.
@@ -53,7 +53,7 @@ sans modifier les workflows :
 | `COVERAGE_MIN` | `0` | Couverture minimale (%) | +10 points par trimestre (AMEL-007) |
 | `WEB_BUDGET_KB` | `0` (rapport) | Budget gzip de `main.dart.js` | Après mesure initiale (AMEL-010) |
 | `FORMAT_SCOPE` | `changed` | `all` = tout le dépôt | Après AMEL-024 |
-| `POLICY_ERROR_RULES` | `secrets forbidden-files service-role` | Règles de `policy-checks` bloquantes | Ajouter `env-asset` (SEC-019), `dart-io` (AMEL-011), `file-size` (AMEL-001), `presentation-supabase` (AMEL-002), `raw-error` (REL-008), `todo-ticket`, `no-print` |
+| `POLICY_ERROR_RULES` | `secrets forbidden-files service-role env-asset` | Règles de `policy-checks` bloquantes | Ajouter `dart-io` (AMEL-011), `file-size` (AMEL-001), `presentation-supabase` (AMEL-002), `raw-error` (REL-008), `todo-ticket`, `no-print` |
 | `PR_MAX_LINES` | `1000` | Taille max d'une PR (contournable par le label `taille-justifiee`) | Réduire à 600 quand l'équipe est rodée |
 | `DEPENDENCY_REVIEW` | absent | `true` active le job `dependency-review` | Dès que « Dependency graph » est activé (OPS-004) |
 
@@ -74,7 +74,7 @@ supabase start && supabase db reset && supabase db lint && supabase test db
 | Secret | Environnement GitHub | Utilisé par |
 |---|---|---|
 | `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEY_PROPERTIES` | `production` | `release / android` |
-| `APP_ENV_FILE` (contenu de configuration prod, valeurs publiques uniquement) | `production` | `release` |
+| `APP_CONFIG_JSON` (JSON de configuration prod : `APP_ENV`, `SUPABASE_URL`, `SUPABASE_ANON_KEY` ; valeurs publiques uniquement, la release refuse tout `service_role`) | `production` | `release` |
 | `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, `SUPABASE_PROJECT_REF` | `staging`, `production` | déploiement (OPS-005, à venir) |
 
 ## Bonnes pratiques appliquées

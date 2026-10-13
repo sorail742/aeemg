@@ -323,6 +323,7 @@ de lecture restent `using (true)` : un événement en attente d'approbation est 
 ### SEC-019 — Ne plus embarquer `.env` dans les assets de l'application
 **Type** : Sécurité · **Priorité** : P1 · **Estimation** : S · **Composant** : flutter, ci
 **Dépendances** : —
+**Statut** : ✅ Livré — `flutter_dotenv` retiré, configuration `--dart-define-from-file=config/<env>.json` ([config/README.md](../../config/README.md)), règle `env-asset` bloquante
 
 **Contexte** — `pubspec.yaml` déclare `.env` comme asset : le fichier est copié tel quel dans l'APK et
 dans `build/web/assets/.env` (téléchargeable). Si quelqu'un y ajoute une clé sensible (service role,

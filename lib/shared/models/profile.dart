@@ -36,24 +36,34 @@ class MemberProfile {
   }
 
   Map<String, dynamic> toUpdateJson() => {
-        'full_name': fullName,
-        'section': section,
-        'specialty': specialty,
-        'is_profile_public': isProfilePublic,
-      };
+    'full_name': fullName,
+    'section': section,
+    'specialty': specialty,
+    'is_profile_public': isProfilePublic,
+  };
 
-  bool get isStaff =>
-      const {'super_admin', 'admin', 'moderator', 'section_lead'}.contains(role);
+  // Répliques exactes des helpers SQL is_staff(), is_admin() et is_treasurer()
+  // (ADR-0008, SEC-021) : test/profile_roles_test.dart et le test pgTAP
+  // 006_sec021_matrice_roles vérifient la même matrice.
+  bool get isStaff => const {
+    'super_admin',
+    'admin',
+    'moderator',
+    'section_lead',
+  }.contains(role);
 
-  bool get isTreasurer => role == 'treasurer' || isStaff;
+  bool get isAdmin => const {'super_admin', 'admin'}.contains(role);
+
+  bool get isTreasurer =>
+      const {'super_admin', 'admin', 'treasurer'}.contains(role);
 
   String get roleLabel => switch (role) {
-        'super_admin' => 'Super Admin',
-        'admin' => 'Administrateur',
-        'moderator' => 'Modérateur',
-        'treasurer' => 'Trésorier',
-        'section_lead' => 'Responsable section',
-        'volunteer' => 'Bénévole',
-        _ => 'Membre',
-      };
+    'super_admin' => 'Super Admin',
+    'admin' => 'Administrateur',
+    'moderator' => 'Modérateur',
+    'treasurer' => 'Trésorier',
+    'section_lead' => 'Responsable section',
+    'volunteer' => 'Bénévole',
+    _ => 'Membre',
+  };
 }
