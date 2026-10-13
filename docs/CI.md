@@ -1,4 +1,4 @@
-# Intégration continue — AEEMG Connect
+# Intégration continue — AEEMG
 
 Tous les workflows sont dans `.github/workflows/`. Chaque job couvre un ou plusieurs attributs qualité.
 

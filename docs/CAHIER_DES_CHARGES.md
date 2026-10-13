@@ -1,4 +1,4 @@
-# AEEMG CONNECT
+# AEEMG
 
 **Plateforme Numérique de Gestion Communautaire**  
 Association des Élèves et Étudiants Musulmans de Guinée
@@ -15,7 +15,7 @@ Avril 2026
 
 ## RÉSUMÉ EXÉCUTIF
 
-AEEMG Connect est une application **Flutter** (mobile iOS/Android et web) connectée à **Supabase**, conçue pour numériser et centraliser la gestion de la communauté estudiantine musulmane de Guinée. Fondée sur les résultats d'une étude de terrain menée auprès des membres, cette première version cible 9 fonctionnalités clés : Communication, Gestion des Événements, Finances, Notifications, Gestion des Membres, Dons, Gestion de la Mosquée, Rappels Islamiques et Calendrier.
+AEEMG est une application **Flutter** (mobile iOS/Android et web) connectée à **Supabase**, conçue pour numériser et centraliser la gestion de la communauté estudiantine musulmane de Guinée. Fondée sur les résultats d'une étude de terrain menée auprès des membres, cette première version cible 9 fonctionnalités clés : Communication, Gestion des Événements, Finances, Notifications, Gestion des Membres, Dons, Gestion de la Mosquée, Rappels Islamiques et Calendrier.
 
 ---
 
@@ -49,7 +49,7 @@ Une étude de terrain conduite en avril 2026 auprès de 16 membres a mis en lumi
 
 ### 1.3. Vision du Projet
 
-AEEMG Connect aspire à devenir la plateforme de référence pour toutes les communautés musulmanes estudiantines de Guinée, en offrant un outil moderne, accessible et conforme aux valeurs islamiques. La vision à long terme inclut l'extension à d'autres associations similaires à travers l'Afrique de l'Ouest.
+AEEMG aspire à devenir la plateforme de référence pour toutes les communautés musulmanes estudiantines de Guinée, en offrant un outil moderne, accessible et conforme aux valeurs islamiques. La vision à long terme inclut l'extension à d'autres associations similaires à travers l'Afrique de l'Ouest.
 
 ### 1.4. Public Cible
 
@@ -322,7 +322,7 @@ Voir le fichier détaillé : [PHASES.md](./PHASES.md)
 
 ## 9. Conclusion et Vision
 
-AEEMG Connect est un outil au service de la Oumma estudiantine guinéenne. En répondant aux besoins exprimés sur le terrain, cette première version pose des bases solides pour une communauté mieux informée, plus unie et plus efficace.
+AEEMG est un outil au service de la Oumma estudiantine guinéenne. En répondant aux besoins exprimés sur le terrain, cette première version pose des bases solides pour une communauté mieux informée, plus unie et plus efficace.
 
 **Vision à long terme**
 - Extension aux autres sections AEEMG en Guinée

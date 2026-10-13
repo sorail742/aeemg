@@ -1,4 +1,4 @@
-# Contribuer à AEEMG Connect
+# Contribuer à AEEMG
 
 Merci de contribuer ! Ce guide résume l'essentiel ; les règles complètes sont dans
 [docs/team/REGLES_EQUIPE.md](docs/team/REGLES_EQUIPE.md).

@@ -1,4 +1,4 @@
-# Configuration Supabase — AEEMG Connect
+# Configuration Supabase — AEEMG
 
 **Projet :** `fuumkjatgczkbxdpjduo`  
 **URL :** https://fuumkjatgczkbxdpjduo.supabase.co
@@ -124,4 +124,4 @@ Après migration SQL + hot restart :
 
 ---
 
-*AEEMG Connect | Supabase setup*
+*AEEMG | Supabase setup*

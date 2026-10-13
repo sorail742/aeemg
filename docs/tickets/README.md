@@ -1,4 +1,4 @@
-# Backlog AEEMG Connect — Tickets
+# Backlog AEEMG — Tickets
 
 Backlog issu de l'audit complet du dépôt (code Flutter, migrations Supabase,
 Edge Functions, CI, docs, cahier des charges v1.1) réalisé en octobre 2026.
