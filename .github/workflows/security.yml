@@ -53,8 +53,8 @@ jobs:
 
   dependency-review:
     name: dependency-review
-    # Le graphe de dépendances est actif par défaut sur un dépôt public (OPS-004). Si le dépôt
-    # devient privé sans GitHub Advanced Security, poser DEPENDENCY_REVIEW=false pour l'ignorer.
+    # Exige « Dependency graph » (OPS-004), vérifié par l'étape « Graphe de dépendances actif ? ».
+    # DEPENDENCY_REVIEW=false désactive le job.
     if: github.event_name == 'pull_request' && vars.DEPENDENCY_REVIEW != 'false'
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -63,8 +63,23 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v7
+      # Tant que « Dependency graph » est désactivé (Settings → Code security, réservé au
+      # propriétaire), l'API répond 403/404 : le job le signale au lieu d'échouer.
+      - name: Graphe de dépendances actif ?
+        id: graph
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RANGE: ${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}
+        run: |
+          if gh api "repos/$GITHUB_REPOSITORY/dependency-graph/compare/$RANGE" --silent; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::Dependency graph désactivé : revue des dépendances ignorée. L'activer dans https://github.com/$GITHUB_REPOSITORY/settings/security_analysis (OPS-004)."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
       # Refuse les nouvelles dépendances vulnérables (≥ modérée) ou sous licence incompatible.
       - uses: actions/dependency-review-action@v5
+        if: steps.graph.outputs.enabled == 'true'
         with:
           fail-on-severity: moderate
           deny-licenses: AGPL-3.0-only, AGPL-3.0-or-later, GPL-3.0-only, GPL-3.0-or-later
