@@ -14,8 +14,8 @@ Tous les workflows sont dans `.github/workflows/`. Chaque job couvre un ou plusi
 | `compatibility` | `android (stable)` | PR (code/plateformes), push, nuit | Compatibilité | ✅ |
 | | `android (beta)` | idem | Compatibilité future | ❌ informatif |
 | | `web (wasm)` | idem | Compatibilité, performance | ❌ jusqu'à AMEL-011 |
-| | `ios (no codesign)` | push `main`, nuit | Compatibilité | ❌ (hors PR, coût macOS) |
-| | `android integration (API 24, 34)` | push `main`, nuit (si `integration_test/` existe) | Fiabilité, compatibilité | ❌ jusqu'à OPS-010 |
+| | `ios (no codesign)` | PR (code/plateformes), push, nuit — dépôt public : minutes macOS gratuites | Compatibilité | ❌ (à rendre bloquant après quelques semaines vertes) |
+| | `android integration (API 24, 34)` | PR (code/plateformes), push, nuit — `integration_test/app_test.dart` | Fiabilité, compatibilité | ❌ (à rendre bloquant après quelques semaines vertes) |
 | `security` | `secrets (gitleaks)` | PR, push, hebdo | Sécurité | ✅ |
 | | `dependencies (osv-scanner)` | PR, push, hebdo | Sécurité | ✅ |
 | | `dependency-review` | PR | Sécurité, conformité licences | ✅ |
@@ -55,7 +55,7 @@ sans modifier les workflows :
 | `FORMAT_SCOPE` | `changed` | `all` = tout le dépôt | Après AMEL-024 |
 | `POLICY_ERROR_RULES` | `secrets forbidden-files service-role env-asset` | Règles de `policy-checks` bloquantes | Ajouter `dart-io` (AMEL-011), `file-size` (AMEL-001), `presentation-supabase` (AMEL-002), `raw-error` (REL-008), `todo-ticket`, `no-print` |
 | `PR_MAX_LINES` | `1000` | Taille max d'une PR (contournable par le label `taille-justifiee`) | Réduire à 600 quand l'équipe est rodée |
-| `DEPENDENCY_REVIEW` | absent | `true` active le job `dependency-review` | Dès que « Dependency graph » est activé (OPS-004) |
+| `DEPENDENCY_REVIEW` | absent (job actif) | `false` désactive le job `dependency-review` | Si le dépôt devient privé sans GitHub Advanced Security |
 
 Pour un test pgTAP `todo()` : retirer le `todo()` dans la PR qui corrige la faille.
 
