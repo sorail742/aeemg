@@ -1,6 +1,6 @@
 # 0008 — Modèle de rôles et matrice de permissions
 
-- **Statut** : Proposé
+- **Statut** : Accepté partiellement (SEC-021, 2026-10-13)
 - **Date** : 2026-10-12
 - **Tickets liés** : SEC-001, SEC-021, DEL-007, FEAT-018, FEAT-035
 
@@ -32,7 +32,8 @@ Helpers SQL (seule source de vérité, répliqués à l'identique dans `Profile`
 `is_super_admin()`, `is_admin()` (super_admin, admin), `is_moderator()` (+ moderator, section_lead),
 `is_treasurer()` (super_admin, treasurer), `is_member()` (tout sauf visitor).
 
-Le rôle `staff` est déprécié (DEL-007). Les rôles **de groupe** de messagerie (owner/admin/member) sont
+Le rôle `staff` est déprécié (DEL-007) : SEC-021 convertit les profils `staff` en `moderator` et
+ajoute la contrainte `profiles_role_not_staff`. Les rôles **de groupe** de messagerie (owner/admin/member) sont
 distincts et stockés dans `chat_group_members` (SEC-003).
 
 ## Conséquences
@@ -40,6 +41,16 @@ distincts et stockés dans `chat_group_members` (SEC-003).
 - ✅ Une matrice testable cellule par cellule ; plus d'incohérences SQL/Dart.
 - ⚠️ `admin` perd l'accès en écriture aux finances (séparation des pouvoirs) : à valider par le bureau.
 - 🔧 Migration des profils `staff`, réécriture des policies (SEC-021).
+
+## État de mise en œuvre (SEC-021)
+
+Livré : doublons de policies sur `events` supprimés, `staff` déprécié, `MemberProfile.isStaff`,
+`isAdmin` et `isTreasurer` alignés sur `is_staff()`, `is_admin()` et `is_treasurer()`, matrice
+testée (pgTAP + Dart) et documentée dans `docs/ADMIN_GUIDE.md`.
+
+En attente de validation du bureau : retrait d'`admin` de `is_treasurer()` (séparation des
+pouvoirs) et découpage d'`is_staff()` en `is_moderator()`. Les helpers actuels gardent leur
+périmètre en attendant, pour ne retirer aucun droit sans décision.
 
 ## Alternatives considérées
 
