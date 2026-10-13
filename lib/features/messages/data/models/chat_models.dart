@@ -16,13 +16,13 @@ class ChatGroup {
   final DateTime createdAt;
 
   factory ChatGroup.fromJson(Map<String, dynamic> json) => ChatGroup(
-        id: json['id'] as String,
-        name: json['name'] as String?,
-        description: json['description'] as String?,
-        isOfficial: json['is_official'] as bool? ?? false,
-        isGroup: json['is_group'] as bool? ?? true,
-        createdAt: DateTime.parse(json['created_at'] as String),
-      );
+    id: json['id'] as String,
+    name: json['name'] as String?,
+    description: json['description'] as String?,
+    isOfficial: json['is_official'] as bool? ?? false,
+    isGroup: json['is_group'] as bool? ?? true,
+    createdAt: DateTime.parse(json['created_at'] as String),
+  );
 }
 
 class ChatMessage {
@@ -53,19 +53,19 @@ class ChatMessage {
   final String? senderName;
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) => ChatMessage(
-        id: json['id'] as String,
-        groupId: json['group_id'] as String,
-        senderId: json['sender_id'] as String,
-        content: json['content'] as String,
-        messageType: json['message_type'] as String? ?? 'text',
-        mediaUrl: json['media_url'] as String?,
-        replyToId: json['reply_to_id'] as String?,
-        isDeleted: json['is_deleted'] as bool? ?? false,
-        isPinned: json['is_pinned'] as bool? ?? false,
-        createdAt: DateTime.parse(json['created_at'] as String),
-        senderName: (json['profiles'] as Map<String, dynamic>?)?['full_name']
-            as String?,
-      );
+    id: json['id'] as String,
+    groupId: json['group_id'] as String,
+    senderId: json['sender_id'] as String,
+    content: json['content'] as String,
+    messageType: json['message_type'] as String? ?? 'text',
+    mediaUrl: json['media_url'] as String?,
+    replyToId: json['reply_to_id'] as String?,
+    isDeleted: json['is_deleted'] as bool? ?? false,
+    isPinned: json['is_pinned'] as bool? ?? false,
+    createdAt: DateTime.parse(json['created_at'] as String),
+    senderName:
+        (json['profiles'] as Map<String, dynamic>?)?['full_name'] as String?,
+  );
 }
 
 class MessageReceipt {
@@ -82,11 +82,11 @@ class MessageReceipt {
   final DateTime readAt;
 
   factory MessageReceipt.fromJson(Map<String, dynamic> json) => MessageReceipt(
-        messageId: json['message_id'] as String,
-        userId: json['user_id'] as String,
-        status: json['status'] as String,
-        readAt: DateTime.parse(json['read_at'] as String),
-      );
+    messageId: json['message_id'] as String,
+    userId: json['user_id'] as String,
+    status: json['status'] as String,
+    readAt: DateTime.parse(json['read_at'] as String),
+  );
 }
 
 class Announcement {
@@ -109,20 +109,20 @@ class Announcement {
   final bool isRead;
 
   factory Announcement.fromJson(Map<String, dynamic> json) => Announcement(
-        id: json['id'] as String,
-        title: json['title'] as String,
-        content: json['content'] as String,
-        isImportant: json['is_important'] as bool? ?? false,
-        createdAt: DateTime.parse(json['created_at'] as String),
-        authorName: (json['profiles'] as Map<String, dynamic>?)?['full_name']
-            as String?,
-      );
+    id: json['id'] as String,
+    title: json['title'] as String,
+    content: json['content'] as String,
+    isImportant: json['is_important'] as bool? ?? false,
+    createdAt: DateTime.parse(json['created_at'] as String),
+    authorName:
+        (json['profiles'] as Map<String, dynamic>?)?['full_name'] as String?,
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'content': content,
-        'is_important': isImportant,
-        'created_at': createdAt.toIso8601String(),
-      };
+    'id': id,
+    'title': title,
+    'content': content,
+    'is_important': isImportant,
+    'created_at': createdAt.toIso8601String(),
+  };
 }
