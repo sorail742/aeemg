@@ -170,15 +170,17 @@ class MessagesRepository {
     });
   }
 
-  /// Invite a phone number to the group (if they don't have the app yet)
+  /// Invite a phone number to the group (if they don't have the app yet).
+  ///
+  /// [phoneNumber] doit être au format E.164 (voir `normalizeE164`). Seuls les
+  /// admins du groupe et le staff peuvent inviter ; `invited_by` est renseigné
+  /// par la base (SEC-004).
   Future<void> invitePhoneNumber(String groupId, String phoneNumber) async {
-    // Dans une vraie application, cela déclencherait un Edge Function
-    // qui enverrait un SMS d'invitation via Twilio/MessageBird.
-    // Pour l'instant, on simule l'enregistrement de l'invitation.
+    // L'envoi du SMS d'invitation (Edge Function) n'est pas encore branché :
+    // on enregistre seulement l'invitation.
     await _client?.from('group_invitations').insert({
       'group_id': groupId,
       'phone_number': phoneNumber,
-      'status': 'pending',
     });
   }
 }

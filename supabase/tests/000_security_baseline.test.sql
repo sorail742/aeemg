@@ -18,7 +18,6 @@ select is(
 );
 
 -- 2. Aucune policy « ouverte à tous » en écriture (with check (true)).
-select todo('SEC-004 : group_invitations accepte with check (true)', 1);
 select is(
   (select count(*)::int
      from pg_policies

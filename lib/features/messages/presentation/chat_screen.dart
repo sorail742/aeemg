@@ -14,6 +14,8 @@ import 'package:record/record.dart';
 
 import '../../../core/providers/supabase_provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/phone_number.dart';
+import '../../../core/utils/supabase_errors.dart';
 import '../../../shared/widgets/async_value_widget.dart';
 import '../../auth/presentation/providers/auth_provider.dart';
 import '../data/models/chat_models.dart';
@@ -689,11 +691,22 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 onPressed: isLoading
                     ? null
                     : () async {
-                        final phone = phoneController.text.trim();
-                        if (phone.isEmpty) return;
+                        if (phoneController.text.trim().isEmpty) return;
+                        final messenger = ScaffoldMessenger.of(context);
+                        final phone = normalizeE164(phoneController.text);
+                        if (phone == null) {
+                          messenger.showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Numéro invalide : saisissez-le avec '
+                                'l\'indicatif pays, par exemple +224 620 00 00 00.',
+                              ),
+                            ),
+                          );
+                          return;
+                        }
 
                         setStateDialog(() => isLoading = true);
-                        final messenger = ScaffoldMessenger.of(context);
                         try {
                           // TODO: Dans une vraie app, on chercherait l'ID de l'utilisateur par son téléphone.
                           // Si l'utilisateur n'existe pas, on l'invite via invitePhoneNumber.
@@ -710,7 +723,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           );
                         } catch (e) {
                           messenger.showSnackBar(
-                            SnackBar(content: Text('Erreur: $e')),
+                            SnackBar(content: Text(friendlySupabaseError(e))),
                           );
                         } finally {
                           setStateDialog(() => isLoading = false);
