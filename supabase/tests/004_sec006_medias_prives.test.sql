@@ -1,7 +1,7 @@
 -- SEC-006 : médias de la messagerie privés.
 -- Exécution : supabase test db
 begin;
-select plan(14);
+select plan(13);
 
 insert into auth.users (id, email) values
   ('00000000-0000-0000-0000-00000000e001', 'auteur@aeemg.test'),
@@ -79,22 +79,18 @@ select throws_ok(
     values ('chat_audio', '40000000-0000-0000-0000-000000000001/vocal.m4a',
             '00000000-0000-0000-0000-00000000e002')$$,
   '42501', null, 'Un non-membre ne dépose rien dans le dossier du groupe');
-delete from storage.objects where name = '40000000-0000-0000-0000-000000000001/photo.jpg';
 reset role;
-select is(
-  (select count(*)::int from storage.objects
-    where name = '40000000-0000-0000-0000-000000000001/photo.jpg'),
-  1, 'Un non-membre ne supprime pas les médias du groupe');
 
--- L'auteur supprime son propre média.
-select pg_temp.login('00000000-0000-0000-0000-00000000e001');
-set local role authenticated;
-delete from storage.objects where name = '40000000-0000-0000-0000-000000000001/photo.jpg';
-reset role;
-select is(
-  (select count(*)::int from storage.objects
-    where name = '40000000-0000-0000-0000-000000000001/photo.jpg'),
-  0, 'L''auteur supprime son média');
+-- Supabase interdit tout DELETE SQL direct sur storage.objects (trigger
+-- storage.protect_delete, même quand aucune ligne n'est visible) : la suppression
+-- ne passe que par l'API Storage, qui applique cette policy. On vérifie donc sa
+-- définition.
+select ok(
+  (select qual like '%owner = auth.uid()%' and qual like '%is_group_admin(%chat_media_group(name)%'
+     from pg_policies
+    where schemaname = 'storage' and tablename = 'objects' and cmd = 'DELETE'
+      and policyname = 'Médias de chat supprimés par l''auteur ou un admin du groupe'),
+  'Suppression réservée à l''auteur du dépôt ou à un admin du groupe');
 
 select * from finish();
 rollback;
