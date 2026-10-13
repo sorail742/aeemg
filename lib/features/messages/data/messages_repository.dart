@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'chat_media.dart';
 import 'models/chat_models.dart';
 
 class MessagesRepository {
@@ -57,7 +60,7 @@ class MessagesRepository {
     required String senderId,
     required String content,
     String messageType = 'text',
-    String? mediaUrl,
+    String? mediaPath,
     String? replyToId,
   }) async {
     await _client?.from('messages').insert({
@@ -65,10 +68,44 @@ class MessagesRepository {
       'sender_id': senderId,
       'content': content,
       'message_type': messageType,
-      'media_url': ?mediaUrl,
+      'media_path': ?mediaPath,
       'reply_to_id': ?replyToId,
     });
   }
+
+  /// Dépose un média dans le dossier du groupe et retourne son chemin, à
+  /// enregistrer dans `messages.media_path`.
+  ///
+  /// Lève [ChatMediaRejected] si le type ou la taille ne sont pas autorisés.
+  Future<String> uploadChatMedia({
+    required String groupId,
+    required ChatMediaKind kind,
+    required String fileName,
+    required Uint8List bytes,
+  }) async {
+    final client = _client;
+    if (client == null) throw StateError('Supabase non initialisé');
+
+    final contentType = checkChatMedia(kind, fileName, bytes.length);
+    final path = newChatMediaPath(groupId, fileName);
+    await client.storage
+        .from(kind.bucket)
+        .uploadBinary(
+          path,
+          bytes,
+          fileOptions: FileOptions(contentType: contentType),
+        );
+    return path;
+  }
+
+  /// URL signée de courte durée pour afficher un média privé.
+  Future<String?> signedChatMediaUrl(ChatMediaKind kind, String path) async {
+    return _client?.storage
+        .from(kind.bucket)
+        .createSignedUrl(path, chatMediaUrlTtl.inSeconds);
+  }
+
+  static const chatMediaUrlTtl = Duration(hours: 1);
 
   Stream<List<MessageReceipt>> watchMessageReceipts(String groupId) {
     final client = _client;

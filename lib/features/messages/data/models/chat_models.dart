@@ -33,6 +33,7 @@ class ChatMessage {
     required this.content,
     required this.messageType,
     this.mediaUrl,
+    this.mediaPath,
     this.replyToId,
     required this.isDeleted,
     required this.isPinned,
@@ -45,7 +46,12 @@ class ChatMessage {
   final String senderId;
   final String content;
   final String messageType;
+
+  /// URL publique des anciennes versions (dépréciée, SEC-006).
   final String? mediaUrl;
+
+  /// Chemin du média dans son bucket (`chat_images` / `chat_audio`).
+  final String? mediaPath;
   final String? replyToId;
   final bool isDeleted;
   final bool isPinned;
@@ -59,6 +65,7 @@ class ChatMessage {
     content: json['content'] as String,
     messageType: json['message_type'] as String? ?? 'text',
     mediaUrl: json['media_url'] as String?,
+    mediaPath: json['media_path'] as String?,
     replyToId: json['reply_to_id'] as String?,
     isDeleted: json['is_deleted'] as bool? ?? false,
     isPinned: json['is_pinned'] as bool? ?? false,
