@@ -53,9 +53,9 @@ jobs:
 
   dependency-review:
     name: dependency-review
-    # Nécessite « Dependency graph » activé dans Settings → Code security (OPS-004),
-    # puis la variable de dépôt DEPENDENCY_REVIEW=true.
-    if: github.event_name == 'pull_request' && vars.DEPENDENCY_REVIEW == 'true'
+    # Le graphe de dépendances est actif par défaut sur un dépôt public (OPS-004). Si le dépôt
+    # devient privé sans GitHub Advanced Security, poser DEPENDENCY_REVIEW=false pour l'ignorer.
+    if: github.event_name == 'pull_request' && vars.DEPENDENCY_REVIEW != 'false'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
