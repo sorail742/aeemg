@@ -83,6 +83,7 @@ par tous les connectés, donc les ID sont découvrables. `addMemberToGroup`
 ### SEC-004 — Fermer la table `group_invitations` (fuite de numéros de téléphone)
 **Type** : Sécurité · **Priorité** : P0 · **Estimation** : S · **Composant** : supabase/db
 **Dépendances** : SEC-003
+**Statut** : ✅ Livré — migration `20261013120000_sec004_group_invitations.sql`, tests pgTAP `003_sec004_group_invitations.test.sql` ; anciennes invitations conservées (contraintes `invited_by` et E.164 en `NOT VALID`)
 
 **Contexte** — `phase7_messaging_fixes.sql` : policies `SELECT using (true)` et `INSERT with check (true)`.
 Un visiteur **non connecté** peut lister tous les numéros invités et en insérer à volonté. La table est
