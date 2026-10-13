@@ -6,7 +6,8 @@ plugins {
 
 android {
     namespace = "com.example.aeemg"
-    compileSdk = flutter.compileSdkVersion
+    // permission_handler 13 exige l'API 37 (Flutter 3.47 fournit 36 par défaut).
+    compileSdk = maxOf(flutter.compileSdkVersion, 37)
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
