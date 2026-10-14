@@ -1000,159 +1000,167 @@ class _MembersTab extends ConsumerWidget {
                 final m = members[i];
                 final role = m['role'] as String? ?? 'member';
                 return Padding(
-                      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                      child: AeemgCard(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.md,
-                          vertical: AppSpacing.sm,
+                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                  child: AeemgCard(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.sm,
+                    ),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundColor: AppColors.emerald.withValues(
+                            alpha: 0.15,
+                          ),
+                          backgroundImage: m['avatar_url'] != null
+                              ? NetworkImage(m['avatar_url'] as String)
+                              : null,
+                          child: m['avatar_url'] == null
+                              ? Text(
+                                  (m['full_name'] as String? ?? 'U')[0]
+                                      .toUpperCase(),
+                                  style: const TextStyle(
+                                    color: AppColors.emerald,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )
+                              : null,
                         ),
-                        child: Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 20,
-                              backgroundColor: AppColors.emerald.withValues(
-                                alpha: 0.15,
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                m['full_name'] as String? ?? 'Inconnu',
+                                style: AppTypography.h3,
                               ),
-                              backgroundImage: m['avatar_url'] != null
-                                  ? NetworkImage(m['avatar_url'] as String)
-                                  : null,
-                              child: m['avatar_url'] == null
-                                  ? Text(
-                                      (m['full_name'] as String? ?? 'U')[0]
-                                          .toUpperCase(),
-                                      style: const TextStyle(
-                                        color: AppColors.emerald,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    )
-                                  : null,
-                            ),
-                            const SizedBox(width: AppSpacing.md),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    m['full_name'] as String? ?? 'Inconnu',
-                                    style: AppTypography.h3,
-                                  ),
-                                  Text(
-                                    m['phone'] as String? ??
-                                        m['email'] as String? ??
-                                        '',
-                                    style: AppTypography.bodySmall.copyWith(
-                                      color: AppColors.textSecondary,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 3,
-                              ),
-                              decoration: BoxDecoration(
-                                color:
-                                    (role == 'admin'
-                                            ? AppColors.gold
-                                            : (role == 'moderator'
-                                                  ? AppColors.emerald
-                                                  : AppColors.textTertiary))
-                                        .withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                role.toUpperCase(),
-                                style: AppTypography.caption.copyWith(
-                                  color: role == 'admin'
-                                      ? AppColors.gold
-                                      : (role == 'moderator'
-                                            ? AppColors.emerald
-                                            : AppColors.textSecondary),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 10,
+                              Text(
+                                m['phone'] as String? ??
+                                    m['email'] as String? ??
+                                    '',
+                                style: AppTypography.bodySmall.copyWith(
+                                  color: AppColors.textSecondary,
                                 ),
                               ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color:
+                                (role == 'admin'
+                                        ? AppColors.gold
+                                        : (role == 'moderator'
+                                              ? AppColors.emerald
+                                              : AppColors.textTertiary))
+                                    .withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            role.toUpperCase(),
+                            style: AppTypography.caption.copyWith(
+                              color: role == 'admin'
+                                  ? AppColors.gold
+                                  : (role == 'moderator'
+                                        ? AppColors.emerald
+                                        : AppColors.textSecondary),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 10,
                             ),
-                            PopupMenuButton<String>(
-                              color: AppColors.cardSurfaceLight,
-                              icon: const Icon(
-                                Icons.more_vert,
-                                color: AppColors.textSecondary,
-                              ),
-                              onSelected: (val) async {
-                                if (val == 'delete') {
-                                  final confirm = await showDialog<bool>(
-                                    context: context,
-                                    builder: (_) => const _ConfirmDialog(
-                                      'Supprimer ce membre ?',
-                                      'Cette action est irréversible.',
+                          ),
+                        ),
+                        PopupMenuButton<String>(
+                          color: AppColors.cardSurfaceLight,
+                          icon: const Icon(
+                            Icons.more_vert,
+                            color: AppColors.textSecondary,
+                          ),
+                          onSelected: (val) async {
+                            if (val == 'delete') {
+                              final messenger = ScaffoldMessenger.of(context);
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder: (_) => const _ConfirmDialog(
+                                  'Supprimer ce membre ?',
+                                  'Le compte et ses données personnelles sont '
+                                      'supprimés définitivement. Ses événements, '
+                                      'annonces et groupes sont conservés.',
+                                ),
+                              );
+                              if (confirm == true) {
+                                try {
+                                  await repo.deleteMember(m['id'] as String);
+                                  ref.invalidate(adminMembersProvider);
+                                } on AdminActionDenied catch (e) {
+                                  messenger.showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Suppression refusée : ${e.message}',
+                                      ),
                                     ),
                                   );
-                                  if (confirm == true) {
-                                    await repo.deleteMember(m['id'] as String);
-                                    ref.invalidate(adminMembersProvider);
-                                  }
-                                } else {
-                                  final messenger = ScaffoldMessenger.of(
-                                    context,
-                                  );
-                                  try {
-                                    await repo.updateMemberRole(
-                                      m['id'] as String,
-                                      val,
-                                    );
-                                    ref.invalidate(adminMembersProvider);
-                                  } on AdminActionDenied catch (e) {
-                                    messenger.showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          'Changement de rôle refusé : ${e.message}',
-                                        ),
-                                      ),
-                                    );
-                                  }
                                 }
-                              },
-                              itemBuilder: (_) => [
-                                const PopupMenuItem(
-                                  value: 'member',
-                                  child: Text(
-                                    'Mettre membre',
-                                    style: TextStyle(color: AppColors.white),
+                              }
+                            } else {
+                              final messenger = ScaffoldMessenger.of(context);
+                              try {
+                                await repo.updateMemberRole(
+                                  m['id'] as String,
+                                  val,
+                                );
+                                ref.invalidate(adminMembersProvider);
+                              } on AdminActionDenied catch (e) {
+                                messenger.showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Changement de rôle refusé : ${e.message}',
+                                    ),
                                   ),
-                                ),
-                                const PopupMenuItem(
-                                  value: 'moderator',
-                                  child: Text(
-                                    'Promouvoir modérateur',
-                                    style: TextStyle(color: AppColors.emerald),
-                                  ),
-                                ),
-                                const PopupMenuItem(
-                                  value: 'admin',
-                                  child: Text(
-                                    'Promouvoir admin',
-                                    style: TextStyle(color: AppColors.gold),
-                                  ),
-                                ),
-                                const PopupMenuItem(
-                                  value: 'delete',
-                                  child: Text(
-                                    'Supprimer',
-                                    style: TextStyle(color: AppColors.error),
-                                  ),
-                                ),
-                              ],
+                                );
+                              }
+                            }
+                          },
+                          itemBuilder: (_) => [
+                            const PopupMenuItem(
+                              value: 'member',
+                              child: Text(
+                                'Mettre membre',
+                                style: TextStyle(color: AppColors.white),
+                              ),
+                            ),
+                            const PopupMenuItem(
+                              value: 'moderator',
+                              child: Text(
+                                'Promouvoir modérateur',
+                                style: TextStyle(color: AppColors.emerald),
+                              ),
+                            ),
+                            const PopupMenuItem(
+                              value: 'admin',
+                              child: Text(
+                                'Promouvoir admin',
+                                style: TextStyle(color: AppColors.gold),
+                              ),
+                            ),
+                            const PopupMenuItem(
+                              value: 'delete',
+                              child: Text(
+                                'Supprimer',
+                                style: TextStyle(color: AppColors.error),
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                    )
-                    .animate(delay: Duration(milliseconds: 40 * i))
-                    .fade()
-                    .slideX(begin: 0.05);
+                      ],
+                    ),
+                  ),
+                ).animate(delay: Duration(milliseconds: 40 * i)).fade().slideX(begin: 0.05);
               },
             );
           },

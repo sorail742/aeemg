@@ -38,6 +38,36 @@ Attribuer un rôle : Supabase → Table Editor → `profiles` → colonne `role`
 
 ---
 
+## Supprimer un membre (SEC-023)
+
+Écran Admin → Membres → ⋮ → **Supprimer**. L'app appelle l'Edge Function `admin-delete-user`,
+qui supprime le **compte** (`auth.users`) : le membre ne peut plus se connecter.
+
+| Règle | Détail |
+|---|---|
+| Qui peut supprimer | `admin` et `super_admin` ; un admin ou super_admin ne peut être supprimé que par un super_admin |
+| Interdit | supprimer son propre compte depuis l'administration |
+| Vérification | `public.check_member_deletion()` en base, avec l'identité de l'appelant |
+
+**Choix : suppression des données personnelles, conservation des contenus collectifs.**
+
+| Données | Sort |
+|---|---|
+| Profil, préférences, appareils, notifications | supprimés |
+| Messages, réactions, accusés de lecture, posts, commentaires, likes, abonnements | supprimés (droit à l'effacement) |
+| Fichiers déposés (avatars, médias de messagerie, images de posts) | supprimés de Storage |
+| Inscriptions aux événements, bénévolat, favoris | supprimées |
+| Événements, annonces, groupes créés | **conservés**, auteur vide (« Membre supprimé ») |
+| Transactions saisies, dons, retours beta, sessions de paiement | **conservés**, auteur vide (obligations comptables) |
+
+La suppression directe d'une ligne `profiles` n'est plus possible : elle laissait le compte
+actif, sans profil.
+
+Déploiement : `supabase functions deploy admin-delete-user` (utilise `SUPABASE_URL`,
+`SUPABASE_ANON_KEY` et `SUPABASE_SERVICE_ROLE_KEY`, fournis automatiquement par Supabase).
+
+---
+
 ## Publier une annonce
 
 ```sql
