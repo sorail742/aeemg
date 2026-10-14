@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../core/config/env.dart';
 import '../../../core/theme/app_colors.dart';
@@ -16,320 +16,334 @@ import '../../members/presentation/providers/members_provider.dart';
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
+  static String _initials(String name) {
+    final parts = name.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty);
+    final letters = parts.take(2).map((p) => p[0].toUpperCase()).join();
+    return letters.isEmpty ? '?' : letters;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider);
     final profileAsync = ref.watch(myProfileProvider);
     final isAuthenticated = user != null;
     final userContact = user?.email ?? user?.phone;
-    final displayName = profileAsync.maybeWhen(
-      data: (p) => p?.fullName ?? userContact ?? 'Membre AEEMG',
-      orElse: () => userContact ?? 'Visiteur',
-    );
-    final isStaff = profileAsync.maybeWhen(
-      data: (p) => p?.isStaff ?? false,
-      orElse: () => false,
-    );
-    final initials = displayName.isNotEmpty
-        ? displayName.trim().split(' ').take(2).map((s) => s.isEmpty ? '' : s[0].toUpperCase()).join()
-        : '?';
+    final profile = profileAsync.value;
+    final displayName = !isAuthenticated
+        ? 'Visiteur'
+        : profile?.fullName ?? userContact ?? 'Membre AEEMG';
+    final isStaff = profile?.isStaff ?? false;
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.white),
-        title: Text('Profil', style: AppTypography.h2.copyWith(color: AppColors.white)),
-      ),
+      appBar: AppBar(title: const Text('Profil')),
       body: IslamicBackground(
         withPattern: true,
         child: ListView(
-          padding: EdgeInsets.only(
-            top: MediaQuery.of(context).padding.top + kToolbarHeight + 16,
-            left: AppSpacing.md,
-            right: AppSpacing.md,
-            bottom: AppSpacing.xl,
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            AppSpacing.lg,
+            AppSpacing.md,
+            AppSpacing.xxl,
           ),
-          physics: const BouncingScrollPhysics(),
           children: [
-            // Profile Hero Card
             AeemgCard(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Column(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Row(
                 children: [
-                  Container(
-                    width: 90,
-                    height: 90,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [AppColors.emerald, AppColors.gold],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.emerald.withValues(alpha: 0.4),
-                          blurRadius: 20,
-                          spreadRadius: 2,
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Text(
-                        initials,
-                        style: AppTypography.h1.copyWith(color: AppColors.white, fontSize: 32),
-                      ),
-                    ),
-                  ).animate().scale(curve: Curves.easeOutBack),
-                  const SizedBox(height: AppSpacing.md),
-                  Text(
-                    displayName,
-                    textAlign: TextAlign.center,
-                    style: AppTypography.h2.copyWith(color: AppColors.white),
-                  ).animate(delay: 100.ms).fade(),
-                  const SizedBox(height: 4),
-                  Text(
-                    isAuthenticated
-                        ? userContact ?? 'Membre'
-                        : 'Connectez-vous pour accéder à votre profil',
-                    textAlign: TextAlign.center,
-                    style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
-                  ).animate(delay: 150.ms).fade(),
-                  if (isAuthenticated) ...[
-                    const SizedBox(height: AppSpacing.md),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundColor: AppColors.darkTeal,
+                    child: isAuthenticated
+                        ? Text(
+                            _initials(displayName),
+                            style: AppTypography.h2.copyWith(
+                              color: AppColors.lightEmerald,
+                            ),
+                          )
+                        : const Icon(
+                            Icons.person_outline,
+                            color: AppColors.lightEmerald,
+                            size: 28,
+                          ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: AppColors.emerald.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.emerald.withValues(alpha: 0.4)),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.verified, color: AppColors.emerald, size: 16),
-                              const SizedBox(width: 6),
-                              Text(
-                                isStaff ? 'Staff AEEMG' : 'Membre AEEMG',
-                                style: AppTypography.caption.copyWith(
-                                  color: AppColors.emerald,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
+                        Text(
+                          displayName,
+                          style: AppTypography.h3,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
+                        const SizedBox(height: 2),
+                        Text(
+                          isAuthenticated
+                              ? userContact ?? ''
+                              : 'Connectez-vous pour accéder à votre espace membre.',
+                          style: AppTypography.bodySmall,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (isAuthenticated) ...[
+                          const SizedBox(height: AppSpacing.sm),
+                          _RoleBadge(
+                            label: profile?.roleLabel ?? 'Membre',
+                            staff: isStaff,
+                          ),
+                        ],
                       ],
-                    ).animate(delay: 200.ms).fade(),
-                  ],
+                    ),
+                  ),
                 ],
               ),
-            ).animate().fade().slideY(begin: -0.1),
+            ),
             const SizedBox(height: AppSpacing.lg),
 
             if (isAuthenticated) ...[
-              _SectionHeader(title: 'Mon Compte'),
-              _MenuTile(icon: Icons.edit, title: 'Modifier mon profil', onTap: () => context.push('/profile/edit')),
-              _MenuTile(icon: Icons.lock_outline, title: 'Définir un mot de passe', onTap: () => context.push('/profile/password')),
-              _MenuTile(icon: Icons.tune, title: 'Préférences alertes', onTap: () => context.push('/notifications/settings')),
+              const _GroupLabel('Mon compte'),
+              _MenuGroup(
+                items: [
+                  _MenuItem(
+                    Icons.person_outline,
+                    'Modifier mon profil',
+                    () => context.push('/profile/edit'),
+                  ),
+                  _MenuItem(
+                    Icons.lock_outline,
+                    'Mot de passe',
+                    () => context.push('/profile/password'),
+                  ),
+                  _MenuItem(
+                    Icons.notifications_none,
+                    'Préférences de notification',
+                    () => context.push('/notifications/settings'),
+                  ),
+                ],
+              ),
               const SizedBox(height: AppSpacing.lg),
-
-              _SectionHeader(title: 'Communauté'),
-              _MenuTile(icon: Icons.people, title: 'Annuaire des membres', onTap: () => context.push('/members')),
-              _MenuTile(icon: Icons.favorite, title: 'Faire un don', onTap: () => context.push('/donations')),
-              _MenuTile(icon: Icons.account_balance, title: 'Bilans financiers', onTap: () => context.push('/finance')),
-              if (isStaff)
-                _MenuTile(
-                  icon: Icons.admin_panel_settings,
-                  title: 'Administration',
-                  highlight: true,
-                  onTap: () => context.push('/admin'),
-                ),
+              const _GroupLabel('Communauté'),
+              _MenuGroup(
+                items: [
+                  _MenuItem(
+                    Icons.people_outline,
+                    'Annuaire des membres',
+                    () => context.push('/members'),
+                  ),
+                  _MenuItem(
+                    Icons.volunteer_activism_outlined,
+                    'Faire un don',
+                    () => context.push('/donations'),
+                  ),
+                  _MenuItem(
+                    Icons.account_balance_outlined,
+                    'Bilans financiers',
+                    () => context.push('/finance'),
+                  ),
+                  if (isStaff)
+                    _MenuItem(
+                      Icons.admin_panel_settings_outlined,
+                      'Administration',
+                      () => context.push('/admin'),
+                      accent: true,
+                    ),
+                ],
+              ),
               const SizedBox(height: AppSpacing.lg),
-
-              _SectionHeader(title: 'Application'),
-              _MenuTile(icon: Icons.notifications, title: 'Notifications', onTap: () => context.push('/notifications')),
-              _MenuTile(icon: Icons.settings_outlined, title: 'Paramètres', onTap: () => context.push('/settings')),
-              _MenuTile(icon: Icons.feedback_outlined, title: 'Retour beta', onTap: () => context.push('/feedback')),
-              const SizedBox(height: AppSpacing.xl),
             ],
 
-            _SectionHeader(title: 'Système'),
-            _StatusTile(
-              icon: Icons.cloud,
-              title: 'Supabase',
-              status: Env.isConfigured ? 'Configuré' : 'En attente de configuration',
-              isOk: Env.isConfigured,
+            const _GroupLabel('Application'),
+            _MenuGroup(
+              items: [
+                if (isAuthenticated)
+                  _MenuItem(
+                    Icons.inbox_outlined,
+                    'Notifications',
+                    () => context.push('/notifications'),
+                  ),
+                _MenuItem(
+                  Icons.settings_outlined,
+                  'Paramètres',
+                  () => context.push('/settings'),
+                ),
+                if (isAuthenticated)
+                  _MenuItem(
+                    Icons.rate_review_outlined,
+                    'Donner mon avis',
+                    () => context.push('/feedback'),
+                  ),
+              ],
             ),
-            const SizedBox(height: AppSpacing.sm),
-            _StatusTile(
-              icon: Icons.login,
-              title: 'Authentification',
-              status: isAuthenticated ? 'Connecté' : 'Non connecté',
-              isOk: isAuthenticated,
-            ),
-            const SizedBox(height: AppSpacing.xl),
+            const SizedBox(height: AppSpacing.lg),
+
+            // Diagnostic réservé aux environnements de développement et de recette.
+            if (Env.appEnv != 'prod') ...[
+              const _GroupLabel('Diagnostic'),
+              _MenuGroup(
+                items: [
+                  _MenuItem.status(
+                    Icons.cloud_outlined,
+                    'Supabase',
+                    Env.isConfigured ? 'Configuré' : 'Non configuré',
+                    ok: Env.isConfigured,
+                  ),
+                  _MenuItem.status(
+                    Icons.verified_user_outlined,
+                    'Session',
+                    isAuthenticated ? 'Connecté' : 'Non connecté',
+                    ok: isAuthenticated,
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.lg),
+            ],
 
             if (isAuthenticated)
               AeemgSecondaryButton(
                 label: 'Se déconnecter',
                 icon: Icons.logout,
-                onPressed: () async {
-                  await ref.read(authRepositoryProvider).signOut();
-                },
+                onPressed: () => ref.read(authRepositoryProvider).signOut(),
               )
             else
               AeemgPrimaryButton(
                 label: 'Se connecter',
-                icon: Icons.email_outlined,
+                icon: Icons.login,
                 onPressed: () => context.push('/login'),
               ),
           ],
+        ).animate().fadeIn(duration: 250.ms),
+      ),
+    );
+  }
+}
+
+class _RoleBadge extends StatelessWidget {
+  const _RoleBadge({required this.label, required this.staff});
+
+  final String label;
+  final bool staff;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = staff ? AppColors.gold : AppColors.brightGreen;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        label,
+        style: AppTypography.caption.copyWith(
+          color: color,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
   }
 }
 
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.title});
+class _GroupLabel extends StatelessWidget {
+  const _GroupLabel(this.title);
+
   final String title;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.sm, left: AppSpacing.xs, top: AppSpacing.xs),
-      child: Row(
+      padding: const EdgeInsets.only(
+        left: AppSpacing.xs,
+        bottom: AppSpacing.sm,
+      ),
+      child: Text(title.toUpperCase(), style: AppTypography.overline),
+    );
+  }
+}
+
+class _MenuItem {
+  const _MenuItem(this.icon, this.title, this.onTap, {this.accent = false})
+    : status = null,
+      ok = false;
+
+  const _MenuItem.status(this.icon, this.title, this.status, {required this.ok})
+    : onTap = null,
+      accent = false;
+
+  final IconData icon;
+  final String title;
+  final VoidCallback? onTap;
+  final String? status;
+  final bool ok;
+  final bool accent;
+}
+
+/// Liste groupée dans une seule carte, séparateurs alignés sur le texte.
+class _MenuGroup extends StatelessWidget {
+  const _MenuGroup({required this.items});
+
+  final List<_MenuItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return AeemgCard(
+      padding: EdgeInsets.zero,
+      child: Column(
         children: [
-          Container(
-            width: 3,
-            height: 14,
-            decoration: BoxDecoration(
-              color: AppColors.gold,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Text(
-            title.toUpperCase(),
-            style: AppTypography.caption.copyWith(
-              color: AppColors.gold,
-              letterSpacing: 1.5,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          for (var i = 0; i < items.length; i++) ...[
+            if (i > 0) const Divider(indent: 56),
+            _MenuRow(item: items[i]),
+          ],
         ],
       ),
     );
   }
 }
 
-class _MenuTile extends StatelessWidget {
-  const _MenuTile({
-    required this.icon,
-    required this.title,
-    required this.onTap,
-    this.highlight = false,
-  });
+class _MenuRow extends StatelessWidget {
+  const _MenuRow({required this.item});
 
-  final IconData icon;
-  final String title;
-  final VoidCallback onTap;
-  final bool highlight;
+  final _MenuItem item;
 
   @override
   Widget build(BuildContext context) {
-    final iconColor = highlight ? AppColors.gold : AppColors.emerald;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-      child: AeemgCard(
-        onTap: onTap,
-        variant: highlight ? AeemgCardVariant.active : AeemgCardVariant.primary,
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.smMd,
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: iconColor.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(icon, color: iconColor, size: 20),
-            ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(child: Text(title, style: AppTypography.body)),
-            const Icon(Icons.chevron_right, color: AppColors.textTertiary, size: 20),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _StatusTile extends StatelessWidget {
-  const _StatusTile({
-    required this.icon,
-    required this.title,
-    required this.status,
-    required this.isOk,
-  });
-
-  final IconData icon;
-  final String title;
-  final String status;
-  final bool isOk;
-
-  @override
-  Widget build(BuildContext context) {
-    final statusColor = isOk ? AppColors.emerald : AppColors.gold;
-    return AeemgCard(
+    final iconColor = item.accent ? AppColors.gold : AppColors.textSecondary;
+    final row = Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
-        vertical: AppSpacing.sm,
+        vertical: 14,
       ),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: statusColor.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: statusColor, size: 20),
-          ),
+          Icon(item.icon, color: iconColor, size: 22),
           const SizedBox(width: AppSpacing.md),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: AppTypography.h3.copyWith(fontSize: 14)),
-                Text(status, style: AppTypography.caption.copyWith(color: AppColors.textSecondary)),
-              ],
+            child: Text(
+              item.title,
+              style: AppTypography.body.copyWith(
+                color: item.accent ? AppColors.gold : AppColors.white,
+              ),
             ),
           ),
-          Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: statusColor.withValues(alpha: 0.15),
-              shape: BoxShape.circle,
+          if (item.status != null) ...[
+            Text(item.status!, style: AppTypography.bodySmall),
+            const SizedBox(width: AppSpacing.sm),
+            Icon(
+              item.ok ? Icons.check_circle : Icons.radio_button_unchecked,
+              size: 16,
+              color: item.ok ? AppColors.emerald : AppColors.textTertiary,
             ),
-            child: Icon(
-              isOk ? Icons.check_circle : Icons.schedule,
-              color: statusColor,
-              size: 18,
+          ] else
+            const Icon(
+              Icons.chevron_right,
+              color: AppColors.textTertiary,
+              size: 20,
             ),
-          ),
         ],
       ),
     );
+    if (item.onTap == null) return row;
+    return InkWell(onTap: item.onTap, child: row);
   }
 }
