@@ -79,7 +79,7 @@ class _PrayerTimesWidgetState extends ConsumerState<PrayerTimesWidget> {
     String hours = twoDigits(duration.inHours);
     String minutes = twoDigits(duration.inMinutes.remainder(60));
     String seconds = twoDigits(duration.inSeconds.remainder(60));
-    return "-$hours:$minutes:$seconds";
+    return 'dans $hours:$minutes:$seconds';
   }
 
   String _prayerName(Prayer prayer) {
@@ -144,9 +144,37 @@ class _PrayerTimesWidgetState extends ConsumerState<PrayerTimesWidget> {
     });
 
     return prayerAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (_, _) =>
-          const AeemgCard(child: Text("Erreur lors du chargement des prières")),
+      loading: () => AeemgCard(
+        variant: AeemgCardVariant.accent,
+        child: Row(
+          children: [
+            const SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+            const SizedBox(width: AppSpacing.smMd),
+            Text(
+              'Calcul des heures de prière…',
+              style: AppTypography.bodySmall,
+            ),
+          ],
+        ),
+      ),
+      error: (_, _) => AeemgCard(
+        child: Row(
+          children: [
+            const Icon(Icons.error_outline, color: AppColors.textSecondary),
+            const SizedBox(width: AppSpacing.smMd),
+            Expanded(
+              child: Text(
+                'Heures de prière indisponibles.',
+                style: AppTypography.bodySmall,
+              ),
+            ),
+          ],
+        ),
+      ),
       data: (prayerData) {
         if (prayerData == null) {
           return AeemgCard(
@@ -161,10 +189,7 @@ class _PrayerTimesWidgetState extends ConsumerState<PrayerTimesWidget> {
                 ),
                 TextButton(
                   onPressed: () => ref.refresh(prayerTimesProvider),
-                  child: const Text(
-                    "Réessayer",
-                    style: TextStyle(color: AppColors.brightGreen),
-                  ),
+                  child: const Text('Réessayer'),
                 ),
               ],
             ),
@@ -176,23 +201,18 @@ class _PrayerTimesWidgetState extends ConsumerState<PrayerTimesWidget> {
 
         return Container(
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [AppColors.darkTeal, AppColors.emerald],
+            gradient: LinearGradient(
+              colors: [
+                AppColors.darkTeal,
+                AppColors.darkTeal.withValues(alpha: 0.55),
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: AppColors.emerald.withValues(alpha: 0.5),
-              width: 1,
+              color: AppColors.emerald.withValues(alpha: 0.35),
             ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.emerald.withValues(alpha: 0.3),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
           ),
           padding: const EdgeInsets.all(AppSpacing.md),
           child: Column(
@@ -204,15 +224,15 @@ class _PrayerTimesWidgetState extends ConsumerState<PrayerTimesWidget> {
                   Row(
                     children: [
                       const Icon(
-                        Icons.location_on,
-                        color: AppColors.white,
+                        Icons.location_on_outlined,
+                        color: AppColors.textSecondary,
                         size: 16,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         prayerData.locationName,
                         style: AppTypography.caption.copyWith(
-                          color: AppColors.white,
+                          color: AppColors.textSecondary,
                         ),
                       ),
                     ],
@@ -222,7 +242,7 @@ class _PrayerTimesWidgetState extends ConsumerState<PrayerTimesWidget> {
                       Text(
                         DateFormat('d MMM yyyy', 'fr').format(DateTime.now()),
                         style: AppTypography.caption.copyWith(
-                          color: AppColors.white,
+                          color: AppColors.textSecondary,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -238,9 +258,9 @@ class _PrayerTimesWidgetState extends ConsumerState<PrayerTimesWidget> {
                           );
                         },
                         child: const Icon(
-                          Icons.settings_suggest,
-                          color: AppColors.gold,
-                          size: 20,
+                          Icons.tune,
+                          color: AppColors.textSecondary,
+                          size: 18,
                         ),
                       ),
                     ],
@@ -250,22 +270,22 @@ class _PrayerTimesWidgetState extends ConsumerState<PrayerTimesWidget> {
               const SizedBox(height: AppSpacing.md),
               if (prayerData.nextPrayer != Prayer.none) ...[
                 Text(
-                  'Prochaine prière : ${_prayerName(prayerData.nextPrayer)}',
-                  style: AppTypography.bodySmall.copyWith(
-                    color: AppColors.white.withValues(alpha: 0.8),
+                  'PROCHAINE PRIÈRE · ${_prayerName(prayerData.nextPrayer).toUpperCase()}',
+                  style: AppTypography.overline.copyWith(
+                    color: AppColors.lightEmerald,
                   ),
                 ),
+                const SizedBox(height: AppSpacing.xs),
                 Text(
                   _formatDuration(_timeUntilNext),
                   style: AppTypography.h1.copyWith(
-                    color: AppColors.white,
-                    fontSize: 32,
+                    fontFeatures: const [FontFeature.tabularFigures()],
                   ),
                 ),
               ] else ...[
                 Text(
-                  'Toutes les prières sont passées',
-                  style: AppTypography.h2.copyWith(color: AppColors.white),
+                  'Toutes les prières du jour sont passées',
+                  style: AppTypography.h3,
                 ),
               ],
               const SizedBox(height: AppSpacing.lg),
@@ -354,42 +374,49 @@ class _PrayerTimeItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      children: [
-        Text(
-          name,
-          style: AppTypography.caption.copyWith(
-            color: isNext
-                ? AppColors.white
-                : AppColors.white.withValues(alpha: 0.6),
-            fontWeight: isNext ? FontWeight.bold : FontWeight.normal,
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 2),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+      decoration: BoxDecoration(
+        color: isNext
+            ? AppColors.emerald.withValues(alpha: 0.18)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        children: [
+          Text(
+            name,
+            style: AppTypography.caption.copyWith(
+              color: isNext ? AppColors.lightEmerald : AppColors.textSecondary,
+              fontWeight: isNext ? FontWeight.w700 : FontWeight.w500,
+            ),
           ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          time,
-          style: AppTypography.body.copyWith(
-            color: isNext
-                ? AppColors.white
-                : AppColors.white.withValues(alpha: 0.8),
-            fontWeight: isNext ? FontWeight.bold : FontWeight.normal,
+          const SizedBox(height: 4),
+          Text(
+            time,
+            style: AppTypography.h4.copyWith(
+              color: isNext ? AppColors.white : AppColors.textSecondary,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
           ),
-        ),
-        const SizedBox(height: 4),
-        InkWell(
-          onTap: () async {
-            await AdhanService().requestPermissions();
-            onToggleAlarm(!alarmEnabled);
-          },
-          child: Icon(
-            alarmEnabled ? Icons.notifications_active : Icons.notifications_off,
-            size: 16,
-            color: alarmEnabled
-                ? AppColors.gold
-                : AppColors.white.withValues(alpha: 0.4),
+          const SizedBox(height: 4),
+          InkResponse(
+            radius: 18,
+            onTap: () async {
+              await AdhanService().requestPermissions();
+              onToggleAlarm(!alarmEnabled);
+            },
+            child: Icon(
+              alarmEnabled
+                  ? Icons.notifications_active
+                  : Icons.notifications_off_outlined,
+              size: 16,
+              color: alarmEnabled ? AppColors.gold : AppColors.textTertiary,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
