@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../core/config/env.dart';
+import '../../../core/router/route_guard.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/supabase_errors.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -25,6 +26,11 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
+
+  /// Page demandée avant la redirection vers la connexion (SEC-024), sinon le profil.
+  String get _afterLogin =>
+      safeReturnPath(GoRouterState.of(context).uri.queryParameters['from']) ??
+      '/profile';
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -73,7 +79,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
             );
         if (!mounted) return;
         if (response.session != null) {
-          context.go('/profile');
+          context.go(_afterLogin);
           return;
         }
         ScaffoldMessenger.of(context).showSnackBar(
@@ -94,7 +100,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
               email: email,
               password: _passwordController.text,
             );
-        if (mounted) context.go('/profile');
+        if (mounted) context.go(_afterLogin);
       }
     } on AuthException catch (e) {
       _showError(friendlyAuthError(e.message));
@@ -139,7 +145,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
       await ref
           .read(authRepositoryProvider)
           .verifyEmailOtp(email: email, token: _otpController.text.trim());
-      if (mounted) context.go('/profile');
+      if (mounted) context.go(_afterLogin);
     } on AuthException catch (e) {
       _showError(friendlyAuthError(e.message));
     } catch (e) {
