@@ -113,8 +113,29 @@ class AdminRepository {
     }
   }
 
+  /// Supprime le compte (auth.users) via l'Edge Function `admin-delete-user`, qui
+  /// applique les règles d'ADR-0008 côté serveur (SEC-023). Le profil et les données
+  /// personnelles suivent en cascade. Lève [AdminActionDenied] en cas de refus.
   Future<void> deleteMember(String userId) async {
-    await _client?.from('profiles').delete().eq('id', userId);
+    final client = _client;
+    if (client == null) return;
+    try {
+      await client.functions.invoke(
+        'admin-delete-user',
+        body: {'user_id': userId},
+      );
+    } on FunctionException catch (e) {
+      throw AdminActionDenied(deletionErrorMessage(e));
+    }
+  }
+
+  /// Message lisible pour une réponse d'erreur de `admin-delete-user`.
+  static String deletionErrorMessage(FunctionException e) {
+    final details = e.details;
+    if (details is Map && details['error'] is String) {
+      return details['error'] as String;
+    }
+    return 'Suppression impossible (erreur ${e.status}).';
   }
 
   // ── Annonces ─────────────────────────────────────────────────
