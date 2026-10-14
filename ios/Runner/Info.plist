@@ -67,21 +67,16 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Cette application nécessite l'accès à la localisation pour calculer précisément les heures de prière selon votre position géographique.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Cette application nécessite l'accès à la localisation pour calculer les heures de prière.</string>
+	<string>Votre position approximative sert uniquement à calculer les heures de prière de votre ville. Elle n'est ni enregistrée ni partagée.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>L'application utilise la reconnaissance vocale pour corriger votre récitation du Coran.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>L'application a besoin du microphone pour écouter votre récitation du Coran et envoyer des messages vocaux.</string>
-	<key>NSCameraUsageDescription</key>
-	<string>L'application a besoin d'accéder à la caméra pour envoyer des photos dans les discussions.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>L'application a besoin d'accéder à la galerie pour envoyer des images dans les discussions.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
-		<string>fetch</string>
 	</array>
 </dict>
 </plist>

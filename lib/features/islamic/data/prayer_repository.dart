@@ -6,9 +6,15 @@ import 'package:geocoding/geocoding.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Vrai une fois que l'utilisateur a touché « Activer la localisation » : la permission
+/// n'est jamais demandée à l'ouverture de l'app (SEC-025).
+final locationRequestAllowedProvider = StateProvider<bool>((ref) => false);
+
 final prayerTimesProvider = FutureProvider<PrayerData?>((ref) async {
   final repo = ref.watch(prayerRepositoryProvider);
-  return repo.getTodayPrayerTimes();
+  return repo.getTodayPrayerTimes(
+    mayRequestPermission: ref.watch(locationRequestAllowedProvider),
+  );
 });
 
 final prayerRepositoryProvider = Provider<PrayerRepository>((ref) {
@@ -101,7 +107,11 @@ class PrayerData {
 }
 
 class PrayerRepository {
-  Future<PrayerData?> getTodayPrayerTimes() async {
+  /// Null si la position est indisponible. Sans [mayRequestPermission], n'utilise qu'une
+  /// permission déjà accordée et n'affiche aucune demande système.
+  Future<PrayerData?> getTodayPrayerTimes({
+    bool mayRequestPermission = false,
+  }) async {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
@@ -110,6 +120,7 @@ class PrayerRepository {
 
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
+        if (!mayRequestPermission) return null;
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) return null;
       }

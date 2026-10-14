@@ -108,9 +108,25 @@ class AdhanService {
       body: body,
       scheduledDate: tz.TZDateTime.from(scheduledTime, tz.local),
       notificationDetails: platformChannelSpecifics,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidScheduleMode: await scheduleMode(),
     );
   }
+
+  /// Alarme exacte si l'utilisateur l'a autorisée (Android 12+), sinon alarme approximative
+  /// (quelques minutes de décalage possibles) plutôt qu'un échec de la planification (SEC-025).
+  Future<AndroidScheduleMode> scheduleMode() async {
+    final android = flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    final exact = await android?.canScheduleExactNotifications() ?? true;
+    return exactOrInexact(exact);
+  }
+
+  @visibleForTesting
+  static AndroidScheduleMode exactOrInexact(bool exactAllowed) => exactAllowed
+      ? AndroidScheduleMode.exactAllowWhileIdle
+      : AndroidScheduleMode.inexactAllowWhileIdle;
 
   Future<void> cancelAdhan(int id) async {
     await flutterLocalNotificationsPlugin.cancel(id: id);
