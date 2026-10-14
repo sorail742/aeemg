@@ -62,7 +62,7 @@ class SettingsScreen extends ConsumerWidget {
                     if (states.contains(WidgetState.selected)) {
                       return AppColors.emerald.withValues(alpha: 0.2);
                     }
-                    return Colors.transparent;
+                    return AppColors.transparent;
                   }),
                   foregroundColor: WidgetStateProperty.resolveWith<Color>((
                     states,

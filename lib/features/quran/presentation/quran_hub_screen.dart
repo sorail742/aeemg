@@ -228,7 +228,7 @@ class _QuranHubScreenState extends ConsumerState<QuranHubScreen>
                     error: (e, _) => Center(
                       child: Text(
                         '$e',
-                        style: const TextStyle(color: Colors.red),
+                        style: const TextStyle(color: AppColors.error),
                       ),
                     ),
                     data: (bookmarks) => _BookmarksTab(

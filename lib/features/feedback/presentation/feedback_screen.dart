@@ -32,12 +32,12 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
     'Excellent !',
   ];
   final List<Color> _ratingColors = [
-    Colors.transparent,
+    AppColors.transparent,
     AppColors.error,
-    Colors.orange,
+    AppColors.warning,
     AppColors.gold,
     AppColors.emerald,
-    const Color(0xFF00E676),
+    AppColors.brightGreen,
   ];
 
   @override

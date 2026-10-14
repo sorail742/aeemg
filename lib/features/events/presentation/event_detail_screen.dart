@@ -33,7 +33,7 @@ class EventDetailScreen extends ConsumerWidget {
       backgroundColor: AppColors.background,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.white),
       ),

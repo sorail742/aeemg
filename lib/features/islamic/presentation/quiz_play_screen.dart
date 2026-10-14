@@ -22,7 +22,7 @@ class QuizPlayScreen extends ConsumerWidget {
     if (session.quiz == null) {
       return Scaffold(
         backgroundColor: AppColors.background,
-        appBar: AppBar(backgroundColor: Colors.transparent),
+        appBar: AppBar(backgroundColor: AppColors.transparent),
         body: const Center(
           child: Text(
             'Aucun quiz sélectionné',
@@ -42,7 +42,7 @@ class QuizPlayScreen extends ConsumerWidget {
         backgroundColor: AppColors.background,
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: AppColors.transparent,
           elevation: 0,
           iconTheme: const IconThemeData(color: AppColors.white),
           title: Text(
@@ -197,7 +197,7 @@ class QuizPlayScreen extends ConsumerWidget {
                         final isCorrect = index == question.correctOptionIndex;
 
                         Color bgColor = AppColors.cardSurface;
-                        Color borderColor = Colors.transparent;
+                        Color borderColor = AppColors.transparent;
 
                         if (session.isAnswered) {
                           if (isCorrect) {

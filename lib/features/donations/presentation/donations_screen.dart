@@ -396,10 +396,10 @@ class _CampaignsTab extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.orange.withValues(alpha: 0.2),
+                color: AppColors.warning.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.phone_android, color: Colors.orange),
+              child: const Icon(Icons.phone_android, color: AppColors.warning),
             ),
             const SizedBox(width: AppSpacing.sm),
             const Text(

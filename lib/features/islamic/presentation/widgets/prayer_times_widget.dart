@@ -380,7 +380,7 @@ class _PrayerTimeItem extends ConsumerWidget {
       decoration: BoxDecoration(
         color: isNext
             ? AppColors.emerald.withValues(alpha: 0.18)
-            : Colors.transparent,
+            : AppColors.transparent,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(

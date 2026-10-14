@@ -250,7 +250,7 @@ class _ContentList extends ConsumerWidget {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       builder: (context) => Container(
         decoration: BoxDecoration(
           color: AppColors.cardSurface,

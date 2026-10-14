@@ -44,7 +44,7 @@ class AyahTile extends StatelessWidget {
         border: Border.all(
           color: isPlaying
               ? AppColors.emerald.withValues(alpha: 0.5)
-              : Colors.transparent,
+              : AppColors.transparent,
           width: 1,
         ),
       ),

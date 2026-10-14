@@ -282,7 +282,7 @@ class _AdminScreenState extends ConsumerState<AdminScreen>
                     return GestureDetector(
                       onTap: _toggleSidebar,
                       child: Container(
-                        color: Colors.black.withValues(
+                        color: AppColors.scrim.withValues(
                           alpha: _sidebarAnimation.value * 0.6,
                         ),
                       ),
@@ -359,7 +359,7 @@ class _AdminAppBar extends StatelessWidget {
             decoration: BoxDecoration(
               color: sidebarOpen
                   ? AppColors.gold.withValues(alpha: 0.15)
-                  : Colors.transparent,
+                  : AppColors.transparent,
               borderRadius: BorderRadius.circular(12),
             ),
             child: IconButton(
@@ -465,7 +465,7 @@ class _AdminSidebar extends StatelessWidget {
           border: Border.all(color: AppColors.gold.withValues(alpha: 0.2)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.4),
+              color: AppColors.scrim.withValues(alpha: 0.4),
               blurRadius: 30,
               offset: const Offset(10, 0),
             ),
@@ -582,13 +582,13 @@ class _AdminSidebar extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: isActive
                                 ? section.color.withValues(alpha: 0.15)
-                                : Colors.transparent,
+                                : AppColors.transparent,
                             borderRadius: BorderRadius.circular(14),
                             border: isActive
                                 ? Border.all(
                                     color: section.color.withValues(alpha: 0.3),
                                   )
-                                : Border.all(color: Colors.transparent),
+                                : Border.all(color: AppColors.transparent),
                           ),
                           child: Row(
                             children: [
@@ -859,7 +859,7 @@ class _StatsTab extends ConsumerWidget {
                                         size: 14,
                                         color: i < (item['rating'] as int? ?? 0)
                                             ? AppColors.gold
-                                            : Colors.white24,
+                                            : AppColors.border,
                                       ),
                                     ),
                                     const Spacer(),
@@ -967,7 +967,7 @@ class _MembersTab extends ConsumerWidget {
     final repo = ref.read(adminRepositoryProvider);
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: AppColors.emerald,
         elevation: 6,
@@ -1181,7 +1181,7 @@ class _InfosTab extends ConsumerWidget {
     final repo = ref.read(adminRepositoryProvider);
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       floatingActionButton: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -1696,7 +1696,7 @@ class _FinancesTab extends ConsumerWidget {
     final repo = ref.read(adminRepositoryProvider);
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: AppColors.emerald,
         elevation: 6,
@@ -2259,7 +2259,7 @@ class _IslamTab extends ConsumerWidget {
     final repo = ref.read(adminRepositoryProvider);
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: AppColors.gold,
         elevation: 6,

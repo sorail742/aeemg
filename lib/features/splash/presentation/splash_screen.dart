@@ -99,7 +99,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: Icon(
                 Icons.mosque,
                 size: MediaQuery.sizeOf(context).width,
-                color: Colors.white,
+                color: AppColors.white,
               ),
             ),
           ),
@@ -133,11 +133,11 @@ class _SplashScreenState extends State<SplashScreen>
                         errorBuilder: (context, error, stackTrace) {
                           // Placeholder if the logo isn't there yet
                           return Container(
-                            color: Colors.white,
+                            color: AppColors.white,
                             child: const Center(
                               child: Icon(
                                 Icons.image_not_supported,
-                                color: Colors.grey,
+                                color: AppColors.textTertiary,
                               ),
                             ),
                           );
@@ -174,7 +174,7 @@ class _SplashScreenState extends State<SplashScreen>
                       'Association des Élèves et Étudiants\nMusulmans de Guinée',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Colors.white70,
+                        color: AppColors.textSecondary,
                         fontSize: 14,
                         height: 1.4,
                       ),
@@ -212,13 +212,13 @@ class _StarsPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = Colors.white;
+    final paint = Paint()..color = AppColors.white;
 
     for (var star in stars) {
       // Calculate individual blink using offset
       final blink =
           (math.sin((animationValue + star.blinkOffset) * math.pi * 2) + 1) / 2;
-      paint.color = Colors.white.withValues(alpha: 0.3 + (blink * 0.7));
+      paint.color = AppColors.white.withValues(alpha: 0.3 + (blink * 0.7));
 
       canvas.drawCircle(
         Offset(star.x * size.width, star.y * size.height),

@@ -142,7 +142,7 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
                               ),
                             )
                             ? AppColors.emerald.withValues(alpha: 0.1)
-                            : Colors.transparent,
+                            : AppColors.transparent,
                       ),
                       onPressed:
                           _selectedDate.isBefore(
