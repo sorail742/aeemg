@@ -1,50 +1,59 @@
-# AEEMG — Design System
+# Système de design AEEMG
 
-Inspiré de **Muslim Pro** : expérience sombre, spirituelle et moderne.  
-Implémentation Flutter : `lib/core/theme/` + `lib/shared/widgets/ds/`
+Inspiré de **Muslim Pro** : expérience sombre, spirituelle et moderne. Thème sobre, une seule couleur
+d'action. Les écrans utilisent les **tokens** et les **composants** ci-dessous, jamais de valeurs en dur
+(AMEL-022). Implémentation : `lib/core/theme/` et `lib/shared/widgets/ds/`.
 
----
+> Version 2 (octobre 2026) : remplace les valeurs de la première version, qui ne correspondaient plus
+> au code (polices Rethink Sans/Manrope, carte `#325859`, rayons de 30 px). Le cahier complet de
+> l'équipe produit reste la référence pour le responsive et les états interactifs détaillés.
 
-## Tokens rapides
+## Principes
 
-| Token | Hex | Usage |
-|---|---|---|
-| Dark Charcoal | `#262C38` | Fond principal |
-| Deep Navy | `#111827` | Footer, surfaces secondaires |
-| Card Surface Teal | `#325859` | Cartes, champs |
-| Emerald | `#008859` | CTA primaire |
-| Bright Green | `#00DB81` | Succès, état actif |
-| Soft Mint | `#CCEDDF` | Blocs accent (versets) |
-| Gold | `#E8C97A` | Premium, dons |
-| White | `#FFFFFF` | Texte principal |
-| Warm Gray | `#BEBABC` | Texte secondaire |
+1. **Une couleur d'action** : émeraude pour les boutons, liens, éléments actifs. L'**or** est réservé
+   aux contenus islamiques (versets, hadiths, rappels) et aux mises en avant (annonce importante,
+   administration).
+2. **Profondeur par les surfaces**, pas par les ombres : fond → carte (`cardSurface`) → surface
+   surélevée (`cardSurfaceLight`), séparés par une bordure fine (`border`).
+3. **Hiérarchie typographique courte** : un titre de page, des titres de section, du texte. Pas
+   d'emoji dans l'interface, pas de couleur sur les titres.
+4. **États vides et erreurs explicites** : icône, titre, explication, action éventuelle
+   (`AeemgEmptyState`). Jamais un texte gris seul ni une erreur brute.
+5. **Français partout** : `MaterialApp` est en `fr` (sélecteurs de date, libellés système) ; les
+   calendriers commencent le lundi.
+6. **Animations discrètes** : fondu court (≤ 250 ms) à l'ouverture d'un écran ; pas de rebond ni
+   d'apparition en cascade.
 
-## Typographie
+## Tokens (`lib/core/theme/`)
 
-- **Rethink Sans** — UI, corps, boutons, labels
-- **Manrope** — Titres H1/H2 (≥ 40px)
-
-## Composants Flutter
-
-| Widget | Fichier |
+| Fichier | Contenu |
 |---|---|
-| `AeemgCard` | `shared/widgets/ds/aeemg_card.dart` |
-| `AeemgPrimaryButton` | `shared/widgets/ds/aeemg_buttons.dart` |
-| `AeemgSecondaryButton` | `shared/widgets/ds/aeemg_buttons.dart` |
-| `AeemgAccentCard` | `shared/widgets/ds/aeemg_card.dart` |
+| `app_colors.dart` | Fonds (`deepNavy`, `darkCharcoal`, `darkTeal`), surfaces (`cardSurface`, `cardSurfaceLight`, `border`), action (`emerald`, `brightGreen`, `onPrimary`), accent (`gold`), textes (`white`, `textSecondary`, `textTertiary`), sémantique (`error`, `success`, `warning`, `info`) |
+| `app_typography.dart` | `display` 32, `h1` 26, `h2` 20, `h3` 17, `h4` 15, `body` 15, `bodyLarge` 16, `bodySmall` 13, `caption` 12, `overline` 11 (capitales espacées) ; Outfit pour les titres, Inter pour le texte, Amiri pour l'arabe |
+| `app_spacing.dart` | Grille de 4 px : `xs` 4, `sm` 8, `smMd` 12, `md` 16, `lg` 24, `xl` 32, `xxl` 40 |
+| `app_radius.dart` | `input` 12 (champs, boutons), `card` 16 (cartes), `pill` |
+| `app_shadows.dart` | Pas d'ombre sur les cartes ; `elevated` pour les éléments flottants |
+| `app_theme.dart` | Thème Material 3 : barres, champs, boutons (52 px de haut), onglets, dialogues, feuilles, menus, interrupteurs |
 
-## Espacement (base 4px)
+Contrastes (WCAG AA) : texte principal 15:1, secondaire 7:1, texte tertiaire réservé aux libellés
+secondaires ; texte sur émeraude en `onPrimary` (sombre, 8:1) et non en blanc.
 
-`4 · 8 · 12 · 16 · 20 · 24 · 32 · 40 · 48 · 56`
+## Composants (`lib/shared/widgets/ds/`)
 
-## Rayons
+| Composant | Usage |
+|---|---|
+| `IslamicBackground` | Fond de chaque écran (dégradé, motif géométrique à 2 % d'opacité avec `withPattern`) |
+| `AeemgCard` | Carte standard ; variantes `accent` (teinte émeraude) et `active` (bordure émeraude) |
+| `AeemgAccentCard` | Verset, hadith, rappel : filet doré, titre en capitales, texte en italique |
+| `AeemgPrimaryButton` / `AeemgSecondaryButton` | Action principale / secondaire, pleine largeur par défaut |
+| `AeemgSectionHeader` | Titre de section, action « Tout voir » facultative |
+| `AeemgEmptyState` | État vide ou d'erreur (`compact: true` dans une liste) |
+| `AeemgSuccessBadge` | Pastille de statut |
 
-`4 · 12 · 16 · 20 · 30 (inputs) · 9999 (pill buttons)`
+## Règles pour un nouvel écran
 
-## Ombres cartes
-
-`rgba(0,0,0,0.06) 2px 4px 20px`
-
----
-
-Voir le cahier complet fourni par l'équipe produit pour les détails responsive, do's/don'ts et états interactifs.
+- `AppBar` sans style local : le thème fixe couleurs, titre et bordure.
+- Contenu dans un `ListView` avec `EdgeInsets.fromLTRB(md, lg, md, xxl)`.
+- Listes de réglages : une carte, lignes séparées par `Divider(indent: 56)` (voir `profile_screen.dart`).
+- Champs : `InputDecoration(labelText: …, prefixIcon: …)` sans bordure ni couleur locale.
+- Avant de fusionner : capture d'écran avant/après dans la PR.

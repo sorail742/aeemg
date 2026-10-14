@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radius.dart';
-import '../../../core/theme/app_shadows.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/app_typography.dart';
 
+/// `accentMint` est conservé pour compatibilité : il s'affiche comme `accent`.
 enum AeemgCardVariant { primary, accent, accentMint, active }
 
 class AeemgCard extends StatelessWidget {
@@ -22,47 +23,47 @@ class AeemgCard extends StatelessWidget {
   final VoidCallback? onTap;
 
   BoxDecoration get _decoration => BoxDecoration(
-        color: switch (variant) {
-          AeemgCardVariant.primary => AppColors.cardSurface,
-          AeemgCardVariant.accent => AppColors.darkTeal,
-          AeemgCardVariant.accentMint => AppColors.softMint,
-          AeemgCardVariant.active => AppColors.cardSurface,
-        },
-        borderRadius: AppRadius.cardBorder,
-        border: variant == AeemgCardVariant.active
-            ? Border.all(color: AppColors.emerald, width: 2)
-            : variant == AeemgCardVariant.accent
-                ? Border.all(color: AppColors.emerald.withValues(alpha: 0.4))
-                : null,
-        boxShadow: AppShadows.card,
-      );
+    color: switch (variant) {
+      AeemgCardVariant.accent ||
+      AeemgCardVariant.accentMint => AppColors.darkTeal.withValues(alpha: 0.55),
+      _ => AppColors.cardSurface,
+    },
+    borderRadius: AppRadius.cardBorder,
+    border: Border.all(
+      color: switch (variant) {
+        AeemgCardVariant.active => AppColors.emerald,
+        AeemgCardVariant.accent || AeemgCardVariant.accentMint =>
+          AppColors.emerald.withValues(alpha: 0.35),
+        AeemgCardVariant.primary => AppColors.border,
+      },
+      width: variant == AeemgCardVariant.active ? 1.5 : 1,
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
     final content = Padding(
-      padding: padding ?? const EdgeInsets.all(AppSpacing.cardPadding),
+      padding: padding ?? const EdgeInsets.all(AppSpacing.md),
       child: child,
     );
 
-    if (onTap != null) {
-      return DecoratedBox(
-        decoration: _decoration,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: AppRadius.cardBorder,
-            child: content,
-          ),
-        ),
-      );
-    }
-
-    return DecoratedBox(decoration: _decoration, child: content);
+    return DecoratedBox(
+      decoration: _decoration,
+      child: onTap == null
+          ? content
+          : Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: onTap,
+                borderRadius: AppRadius.cardBorder,
+                child: content,
+              ),
+            ),
+    );
   }
 }
 
-/// Carte pour versets / citations islamiques.
+/// Carte pour versets, hadiths et rappels : filet doré à gauche, texte en italique.
 class AeemgAccentCard extends StatelessWidget {
   const AeemgAccentCard({
     super.key,
@@ -82,44 +83,59 @@ class AeemgAccentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AeemgCard(
-      variant: AeemgCardVariant.accentMint,
       onTap: onTap,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              Icon(icon, color: AppColors.darkTeal, size: 20),
-              const SizedBox(width: AppSpacing.sm),
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: AppColors.darkTeal,
-                      fontWeight: FontWeight.w700,
-                    ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.smMd),
-          Text(
-            '« $body »',
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.darkCharcoal,
-                  fontStyle: FontStyle.italic,
-                  height: 1.5,
+      padding: EdgeInsets.zero,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              width: 3,
+              decoration: const BoxDecoration(
+                color: AppColors.gold,
+                borderRadius: BorderRadius.horizontal(
+                  left: Radius.circular(AppRadius.card),
                 ),
-          ),
-          if (source != null && source!.isNotEmpty) ...[
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              source!,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.darkTeal,
-                  ),
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(icon, color: AppColors.gold, size: 18),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: Text(
+                            title.toUpperCase(),
+                            style: AppTypography.overline.copyWith(
+                              color: AppColors.gold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.smMd),
+                    Text(
+                      body.trimLeft().startsWith('«') ? body : '« $body »',
+                      style: AppTypography.bodyLarge.copyWith(
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                    if (source != null && source!.isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      Text(source!, style: AppTypography.bodySmall),
+                    ],
+                  ],
+                ),
+              ),
             ),
           ],
-        ],
+        ),
       ),
     );
   }
