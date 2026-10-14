@@ -29,7 +29,10 @@ class SettingsScreen extends ConsumerWidget {
         backgroundColor: AppColors.background.withValues(alpha: 0.9),
         elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.white),
-        title: Text(AppStrings.t('settings', locale), style: AppTypography.h2.copyWith(color: AppColors.white)),
+        title: Text(
+          AppStrings.t('settings', locale),
+          style: AppTypography.h2.copyWith(color: AppColors.white),
+        ),
       ),
       body: IslamicBackground(
         withPattern: true,
@@ -53,20 +56,30 @@ class SettingsScreen extends ConsumerWidget {
                 selected: {locale},
                 onSelectionChanged: (set) => setAppLocale(ref, set.first),
                 style: ButtonStyle(
-                  backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+                  backgroundColor: WidgetStateProperty.resolveWith<Color>((
+                    states,
+                  ) {
                     if (states.contains(WidgetState.selected)) {
                       return AppColors.emerald.withValues(alpha: 0.2);
                     }
                     return Colors.transparent;
                   }),
-                  foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+                  foregroundColor: WidgetStateProperty.resolveWith<Color>((
+                    states,
+                  ) {
                     if (states.contains(WidgetState.selected)) {
                       return AppColors.emerald;
                     }
                     return AppColors.textSecondary;
                   }),
-                  side: WidgetStateProperty.all(BorderSide(color: AppColors.emerald.withValues(alpha: 0.5))),
-                  shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                  side: WidgetStateProperty.all(
+                    BorderSide(color: AppColors.emerald.withValues(alpha: 0.5)),
+                  ),
+                  shape: WidgetStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                 ),
               ),
             ).animate().fade().slideY(begin: 0.1),
@@ -86,7 +99,11 @@ class SettingsScreen extends ConsumerWidget {
                           color: AppColors.gold.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Icon(Icons.offline_bolt_outlined, color: AppColors.gold, size: 20),
+                        child: const Icon(
+                          Icons.offline_bolt_outlined,
+                          color: AppColors.gold,
+                          size: 20,
+                        ),
                       ),
                       const SizedBox(width: AppSpacing.md),
                       Expanded(
@@ -99,14 +116,18 @@ class SettingsScreen extends ConsumerWidget {
                         value: true,
                         onChanged: (v) {},
                         activeThumbColor: AppColors.emerald,
-                        activeTrackColor: AppColors.emerald.withValues(alpha: 0.3),
+                        activeTrackColor: AppColors.emerald.withValues(
+                          alpha: 0.3,
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
                     AppStrings.t('offline_hint', locale),
-                    style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+                    style: AppTypography.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ],
               ),
@@ -116,7 +137,9 @@ class SettingsScreen extends ConsumerWidget {
               const SizedBox(height: AppSpacing.lg),
               _SectionHeader(title: 'Notifications'),
               prefsAsync.when(
-                loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald)),
+                loading: () => const Center(
+                  child: CircularProgressIndicator(color: AppColors.emerald),
+                ),
                 error: (_, _) => const SizedBox.shrink(),
                 data: (prefs) => AeemgCard(
                   padding: const EdgeInsets.all(AppSpacing.md),
@@ -128,7 +151,11 @@ class SettingsScreen extends ConsumerWidget {
                           color: AppColors.emerald.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Icon(Icons.sms_outlined, color: AppColors.emerald, size: 20),
+                        child: const Icon(
+                          Icons.sms_outlined,
+                          color: AppColors.emerald,
+                          size: 20,
+                        ),
                       ),
                       const SizedBox(width: AppSpacing.md),
                       Expanded(
@@ -139,7 +166,9 @@ class SettingsScreen extends ConsumerWidget {
                             const SizedBox(height: 2),
                             Text(
                               'Recevoir un SMS si les notifications in-app échouent',
-                              style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+                              style: AppTypography.bodySmall.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
                             ),
                           ],
                         ),
@@ -154,7 +183,9 @@ class SettingsScreen extends ConsumerWidget {
                           ref.invalidate(notificationPreferencesProvider);
                         },
                         activeThumbColor: AppColors.emerald,
-                        activeTrackColor: AppColors.emerald.withValues(alpha: 0.3),
+                        activeTrackColor: AppColors.emerald.withValues(
+                          alpha: 0.3,
+                        ),
                       ),
                     ],
                   ),
@@ -175,7 +206,11 @@ class _SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.sm, left: AppSpacing.xs, top: AppSpacing.xs),
+      padding: const EdgeInsets.only(
+        bottom: AppSpacing.sm,
+        left: AppSpacing.xs,
+        top: AppSpacing.xs,
+      ),
       child: Row(
         children: [
           Container(

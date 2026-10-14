@@ -23,7 +23,14 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
   int _rating = 4;
   bool _isSending = false;
 
-  final List<String> _ratingLabels = ['', 'Mauvais', 'Passable', 'Bien', 'Très bien', 'Excellent !'];
+  final List<String> _ratingLabels = [
+    '',
+    'Mauvais',
+    'Passable',
+    'Bien',
+    'Très bien',
+    'Excellent !',
+  ];
   final List<Color> _ratingColors = [
     Colors.transparent,
     AppColors.error,
@@ -47,17 +54,27 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
     setState(() => _isSending = true);
     try {
       final user = ref.read(currentUserProvider);
-      await client.from('feedback').insert({'user_id': user?.id, 'message': message, 'rating': _rating});
+      await client.from('feedback').insert({
+        'user_id': user?.id,
+        'message': message,
+        'rating': _rating,
+      });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Merci pour votre retour !'), backgroundColor: AppColors.emerald),
+          const SnackBar(
+            content: Text('Merci pour votre retour !'),
+            backgroundColor: AppColors.emerald,
+          ),
         );
         Navigator.of(context).pop();
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur : $e'), backgroundColor: AppColors.error),
+          SnackBar(
+            content: Text('Erreur : $e'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     } finally {
@@ -76,7 +93,10 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
         backgroundColor: AppColors.background.withValues(alpha: 0.9),
         elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.white),
-        title: Text('Retour beta', style: AppTypography.h2.copyWith(color: AppColors.white)),
+        title: Text(
+          'Retour beta',
+          style: AppTypography.h2.copyWith(color: AppColors.white),
+        ),
       ),
       body: IslamicBackground(
         withPattern: true,
@@ -95,19 +115,36 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: AppColors.emerald.withValues(alpha: 0.15),
-                  border: Border.all(color: AppColors.emerald.withValues(alpha: 0.4), width: 2),
-                  boxShadow: [BoxShadow(color: AppColors.emerald.withValues(alpha: 0.2), blurRadius: 20)],
+                  border: Border.all(
+                    color: AppColors.emerald.withValues(alpha: 0.4),
+                    width: 2,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.emerald.withValues(alpha: 0.2),
+                      blurRadius: 20,
+                    ),
+                  ],
                 ),
-                child: const Icon(Icons.feedback_outlined, size: 48, color: AppColors.emerald),
+                child: const Icon(
+                  Icons.feedback_outlined,
+                  size: 48,
+                  color: AppColors.emerald,
+                ),
               ).animate().scale(curve: Curves.easeOutBack),
             ),
             const SizedBox(height: AppSpacing.lg),
-            Text('Aidez-nous à améliorer AEEMG', style: AppTypography.h2, textAlign: TextAlign.center)
-                .animate(delay: 100.ms).fade(),
+            Text(
+              'Aidez-nous à améliorer AEEMG',
+              style: AppTypography.h2,
+              textAlign: TextAlign.center,
+            ).animate(delay: 100.ms).fade(),
             const SizedBox(height: AppSpacing.xs),
             Text(
               'Votre avis nous aide à construire une meilleure expérience.',
-              style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
               textAlign: TextAlign.center,
             ).animate(delay: 150.ms).fade(),
             const SizedBox(height: AppSpacing.xl),
@@ -127,11 +164,18 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
                         onTap: () => setState(() => _rating = starIndex),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: Icon(
-                            starIndex <= _rating ? Icons.star_rounded : Icons.star_outline_rounded,
-                            size: 40,
-                            color: starIndex <= _rating ? ratingColor : AppColors.textTertiary,
-                          ).animate(target: starIndex <= _rating ? 1 : 0).scale(begin: const Offset(0.9, 0.9)),
+                          child:
+                              Icon(
+                                    starIndex <= _rating
+                                        ? Icons.star_rounded
+                                        : Icons.star_outline_rounded,
+                                    size: 40,
+                                    color: starIndex <= _rating
+                                        ? ratingColor
+                                        : AppColors.textTertiary,
+                                  )
+                                  .animate(target: starIndex <= _rating ? 1 : 0)
+                                  .scale(begin: const Offset(0.9, 0.9)),
                         ),
                       );
                     }),
@@ -160,17 +204,22 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
                     maxLines: 5,
                     style: const TextStyle(color: AppColors.white),
                     decoration: InputDecoration(
-                      hintText: 'Ce qui fonctionne, ce qui manque, vos suggestions…',
+                      hintText:
+                          'Ce qui fonctionne, ce qui manque, vos suggestions…',
                       hintStyle: TextStyle(color: AppColors.textTertiary),
                       filled: true,
-                      fillColor: AppColors.cardSurfaceLight.withValues(alpha: 0.5),
+                      fillColor: AppColors.cardSurfaceLight.withValues(
+                        alpha: 0.5,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: AppColors.emerald.withValues(alpha: 0.5)),
+                        borderSide: BorderSide(
+                          color: AppColors.emerald.withValues(alpha: 0.5),
+                        ),
                       ),
                     ),
                   ),
