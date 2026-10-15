@@ -3,9 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_gradients.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../shared/widgets/ds/aeemg_card.dart';
+import '../../../../core/utils/supabase_errors.dart';
+import '../../../../shared/widgets/ds/aeemg_avatar.dart';
+import '../../../../shared/widgets/ds/aeemg_motion.dart';
+import '../../../../shared/widgets/ds/aeemg_section.dart';
+import '../../../../shared/widgets/ds/islamic_background.dart';
+import '../data/models/comment_model.dart';
 import '../data/models/post_model.dart';
 import 'providers/social_providers.dart';
 import 'widgets/post_card.dart';
@@ -31,17 +38,17 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
     try {
       final repo = ref.read(socialRepositoryProvider);
       await repo.addComment(postId: widget.post.id, content: content);
-      
+
       _commentController.clear();
       ref.read(feedProvider.notifier).incrementCommentCount(widget.post.id);
       ref.invalidate(postCommentsProvider(widget.post.id));
-      
+
       if (mounted) FocusScope.of(context).unfocus();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur : $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(friendlySupabaseError(e))));
       }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -60,103 +67,199 @@ class _PostDetailScreenState extends ConsumerState<PostDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Publication')),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              children: [
-                PostCard(post: widget.post, isDetail: true),
-                const SizedBox(height: AppSpacing.lg),
-                Text('Commentaires', style: AppTypography.h3),
-                const SizedBox(height: AppSpacing.md),
-                commentsAsync.when(
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (err, stack) => Center(child: Text('Erreur : $err')),
-                  data: (comments) {
-                    if (comments.isEmpty) {
-                      return const Center(child: Text('Aucun commentaire. Soyez le premier !'));
-                    }
-                    return Column(
-                      children: comments.map((comment) => Padding(
-                        padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                        child: AeemgCard(
-                          padding: const EdgeInsets.all(AppSpacing.smMd),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              CircleAvatar(
-                                radius: 16,
-                                backgroundColor: AppColors.darkTeal,
-                                child: Text(
-                                  (comment.author?.fullName ?? 'A')[0].toUpperCase(),
-                                  style: const TextStyle(color: AppColors.white, fontSize: 12),
-                                ),
-                              ),
-                              const SizedBox(width: AppSpacing.smMd),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          comment.author?.fullName ?? 'Utilisateur',
-                                          style: AppTypography.h3.copyWith(fontSize: 14),
-                                        ),
-                                        Text(
-                                          timeago.format(comment.createdAt, locale: 'fr'),
-                                          style: AppTypography.caption,
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(comment.content, style: AppTypography.bodySmall),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )).toList(),
-                    );
-                  },
+      body: IslamicBackground(
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.md,
+                  AppSpacing.lg,
+                  AppSpacing.md,
+                  AppSpacing.xl,
                 ),
-              ],
+                children: [
+                  PostCard(post: widget.post, isDetail: true).reveal(context),
+                  const SizedBox(height: AppSpacing.lg),
+                  const AeemgSectionHeader(title: 'Commentaires'),
+                  ...commentsAsync.when(
+                    loading: () => const [
+                      AeemgSkeletonTile(),
+                      SizedBox(height: AppSpacing.sm),
+                      AeemgSkeletonTile(),
+                    ],
+                    error: (error, _) => [
+                      AeemgEmptyState(
+                        compact: true,
+                        icon: Icons.cloud_off_outlined,
+                        title: 'Commentaires indisponibles',
+                        message: friendlySupabaseError(error),
+                      ),
+                    ],
+                    data: (comments) => comments.isEmpty
+                        ? const [
+                            AeemgEmptyState(
+                              compact: true,
+                              icon: Icons.mode_comment_outlined,
+                              title: 'Aucun commentaire',
+                              message: 'Soyez le premier à réagir.',
+                            ),
+                          ]
+                        : [
+                            for (var i = 0; i < comments.length; i++)
+                              _CommentBubble(
+                                comment: comments[i],
+                              ).reveal(context, index: i + 1),
+                          ],
+                  ),
+                ],
+              ),
+            ),
+            _CommentInput(
+              controller: _commentController,
+              isSubmitting: _isSubmitting,
+              onSend: _submitComment,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CommentBubble extends StatelessWidget {
+  const _CommentBubble({required this.comment});
+
+  final CommentModel comment;
+
+  @override
+  Widget build(BuildContext context) {
+    final author = comment.author?.fullName ?? 'Membre AEEMG';
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.smMd),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AeemgAvatar(name: author, size: 34),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(AppSpacing.smMd),
+              decoration: const BoxDecoration(
+                color: AppColors.cardSurface,
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(AppRadius.large),
+                  bottomLeft: Radius.circular(AppRadius.large),
+                  bottomRight: Radius.circular(AppRadius.large),
+                  topLeft: Radius.circular(AppRadius.small),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          author,
+                          style: AppTypography.h4.copyWith(fontSize: 14),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      Text(
+                        timeago.format(comment.createdAt, locale: 'fr'),
+                        style: AppTypography.caption,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(comment.content, style: AppTypography.body),
+                ],
+              ),
             ),
           ),
-          Container(
-            padding: EdgeInsets.only(
-              left: AppSpacing.md,
-              right: AppSpacing.md,
-              top: AppSpacing.sm,
-              bottom: AppSpacing.sm + MediaQuery.of(context).viewInsets.bottom,
-            ),
-            decoration: const BoxDecoration(
-              color: AppColors.cardSurface,
-              border: Border(top: BorderSide(color: AppColors.darkCharcoal)),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _commentController,
-                    decoration: const InputDecoration(
-                      hintText: 'Ajouter un commentaire...',
-                      border: InputBorder.none,
-                    ),
-                    maxLines: null,
-                  ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Barre de saisie : champ arrondi et bouton d'envoi en dégradé.
+class _CommentInput extends StatelessWidget {
+  const _CommentInput({
+    required this.controller,
+    required this.isSubmitting,
+    required this.onSend,
+  });
+
+  final TextEditingController controller;
+  final bool isSubmitting;
+  final VoidCallback onSend;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        AppSpacing.sm,
+        AppSpacing.sm,
+        AppSpacing.sm + MediaQuery.paddingOf(context).bottom,
+      ),
+      decoration: const BoxDecoration(
+        color: AppColors.navBar,
+        border: Border(top: BorderSide(color: AppColors.border)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: controller,
+              minLines: 1,
+              maxLines: 4,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: InputDecoration(
+                hintText: 'Ajouter un commentaire…',
+                border: OutlineInputBorder(
+                  borderRadius: AppRadius.pillBorder,
+                  borderSide: const BorderSide(color: AppColors.border),
                 ),
-                _isSubmitting
-                    ? const CircularProgressIndicator()
-                    : IconButton(
-                        icon: const Icon(Icons.send, color: AppColors.brightGreen),
-                        onPressed: _submitComment,
-                      ),
-              ],
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: AppRadius.pillBorder,
+                  borderSide: const BorderSide(color: AppColors.border),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: AppRadius.pillBorder,
+                  borderSide: const BorderSide(color: AppColors.emerald),
+                ),
+              ),
             ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          SizedBox(
+            width: 48,
+            height: 48,
+            child: isSubmitting
+                ? const Padding(
+                    padding: EdgeInsets.all(AppSpacing.smMd),
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : AeemgPressable(
+                    child: DecoratedBox(
+                      decoration: const BoxDecoration(
+                        gradient: AppGradients.primary,
+                        shape: BoxShape.circle,
+                      ),
+                      child: IconButton(
+                        tooltip: 'Envoyer',
+                        onPressed: onSend,
+                        icon: const Icon(
+                          Icons.send_rounded,
+                          color: AppColors.onPrimary,
+                        ),
+                      ),
+                    ),
+                  ),
           ),
         ],
       ),
