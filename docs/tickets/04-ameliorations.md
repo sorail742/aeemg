@@ -336,7 +336,8 @@ sans alourdir l'application (téléphones d'entrée de gamme, 3G).
 - [ ] Lot 2 — Social (fil, publication, détail, création) ; l'écran ne plante plus sans Supabase
 - [ ] Lot 3 — Messagerie (liste et conversation)
 - [ ] Lot 4 — Coran (accueil, lecteurs, test de récitation)
-- [ ] Lot 5 — Hadiths, bibliothèque, quiz, suivi spirituel
+- [x] Lot 5 — Hadiths (filtres par thème, copie) et liste des quiz
+- [ ] Lot 5b — Bibliothèque, déroulé du quiz, suivi spirituel
 - [ ] Lot 6 — Événements, notifications, paramètres, membres, profil, retours
 - [ ] Lot 7 — Dons et finances
 - [ ] Lot 8 — Splash et connexion
