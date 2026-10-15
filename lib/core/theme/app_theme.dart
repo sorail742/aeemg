@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -42,6 +43,18 @@ abstract final class AppTheme {
       scaffoldBackgroundColor: AppColors.scaffold,
       textTheme: AppTypography.textTheme,
       splashFactory: InkSparkle.splashFactory,
+      // Transitions de page (v3) : fondu enchaîné court sur Android, Web et desktop ;
+      // geste natif conservé sur iOS et macOS.
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.fuchsia: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.linux: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.windows: FadeForwardsPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.appBar,
         foregroundColor: AppColors.white,
