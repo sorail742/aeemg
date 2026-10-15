@@ -310,3 +310,14 @@ que les fichiers modifiés par la PR.
 - [ ] Clé de version de schéma ; cache invalidé proprement si le format change
 - [ ] Données personnelles non stockées en clair (ou stockage chiffré)
 - [ ] Taille maximale et politique d'expiration testées
+
+### AMEL-026 — Guide de contribution pour les assistants IA (`CLAUDE.md`)
+**Type** : Maintenabilité · **Priorité** : P3 · **Estimation** : XS · **Composant** : documentation
+
+**Contexte** — Les assistants IA (Claude Code) contribuent au dépôt. Sans guide, ils redécouvrent à chaque session les
+conventions, les commandes et les pièges du projet, et les relecteurs corrigent les mêmes écarts.
+
+**Critères d'acceptation**
+- [x] `CLAUDE.md` à la racine : commandes, conventions de PR, architecture, règles bloquantes de la CI, sécurité,
+      pièges connus ; renvoie vers les documents de référence sans les dupliquer
+- [x] Mis à jour dans la même PR que tout changement de convention qu'il décrit
