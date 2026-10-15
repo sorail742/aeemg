@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:adhan/adhan.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
@@ -183,13 +184,23 @@ class _PrayerTimesWidgetState extends ConsumerState<PrayerTimesWidget> {
                 const Icon(Icons.location_off, color: AppColors.warmGray),
                 const SizedBox(height: AppSpacing.sm),
                 Text(
-                  "Activez la localisation pour voir les heures de prière.",
+                  "Les heures de prière utilisent votre position approximative, "
+                  "jamais enregistrée.",
                   textAlign: TextAlign.center,
                   style: AppTypography.bodySmall,
                 ),
+                // La permission n'est demandée qu'ici, sur action de l'utilisateur (SEC-025).
                 TextButton(
-                  onPressed: () => ref.refresh(prayerTimesProvider),
-                  child: const Text('Réessayer'),
+                  onPressed: () async {
+                    final permission = await Geolocator.checkPermission();
+                    if (permission == LocationPermission.deniedForever) {
+                      await Geolocator.openAppSettings();
+                    }
+                    ref.read(locationRequestAllowedProvider.notifier).state =
+                        true;
+                    ref.invalidate(prayerTimesProvider);
+                  },
+                  child: const Text('Activer la localisation'),
                 ),
               ],
             ),
