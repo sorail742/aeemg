@@ -1,5 +1,6 @@
 import 'package:aeemg/shared/widgets/ds/aeemg_motion.dart';
 import 'package:aeemg/shared/widgets/ds/aeemg_nav_bar.dart';
+import 'package:aeemg/shared/widgets/ds/aeemg_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -95,6 +96,32 @@ void main() {
 
     expect(find.byType(Animate), findsOneWidget);
     await tester.pumpAndSettle();
+    expect(find.text('Contenu'), findsOneWidget);
+  });
+
+  testWidgets('AeemgPage : titre, actions et contenu affichés', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AeemgPage(
+          title: 'Paramètres',
+          subtitle: 'Langue et préférences',
+          actions: [
+            IconButton(
+              tooltip: 'Aide',
+              onPressed: () {},
+              icon: const Icon(Icons.help_outline),
+            ),
+          ],
+          children: const [Text('Contenu')],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Paramètres'), findsOneWidget);
+    expect(find.text('Langue et préférences'), findsOneWidget);
+    expect(find.byTooltip('Retour'), findsOneWidget);
+    expect(find.byTooltip('Aide'), findsOneWidget);
     expect(find.text('Contenu'), findsOneWidget);
   });
 }
