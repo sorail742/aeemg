@@ -4,11 +4,14 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/providers/supabase_provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
 import '../../../core/utils/supabase_errors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/ds/aeemg_buttons.dart';
 import '../../../shared/widgets/ds/aeemg_card.dart';
+import '../../../shared/widgets/ds/aeemg_hero.dart';
+import '../../../shared/widgets/ds/aeemg_motion.dart';
 import '../../../shared/widgets/ds/aeemg_section.dart';
 import '../../../shared/widgets/ds/islamic_background.dart';
 import '../../auth/presentation/providers/auth_provider.dart';
@@ -30,13 +33,15 @@ class MosqueScreen extends ConsumerWidget {
     final needsAsync = ref.watch(mosqueNeedsProvider);
     final user = ref.watch(currentUserProvider);
 
+    var index = 0;
+    Widget item(Widget child) => child.reveal(context, index: index++);
+
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Espace islamique')),
       body: IslamicBackground(
         withPattern: true,
         child: SafeArea(
-          top: false,
+          bottom: false,
           child: RefreshIndicator(
             color: AppColors.emerald,
             backgroundColor: AppColors.cardSurface,
@@ -44,97 +49,142 @@ class MosqueScreen extends ConsumerWidget {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.md,
-                AppSpacing.lg,
+                AppSpacing.md,
                 AppSpacing.md,
                 AppSpacing.md,
               ),
               physics: const AlwaysScrollableScrollPhysics(),
               children: [
-                Text('Découvrez votre religion', style: AppTypography.h1),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  'Outils, ressources et suivi spirituel au quotidien.',
-                  style: AppTypography.bodySmall,
+                item(
+                  AeemgHero(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'ESPACE ISLAMIQUE',
+                                style: AppTypography.overline.copyWith(
+                                  color: AppColors.goldLight,
+                                  letterSpacing: 1.6,
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.sm),
+                              Text(
+                                'Nourrir sa foi, chaque jour',
+                                style: AppTypography.h1,
+                              ),
+                              const SizedBox(height: AppSpacing.xs),
+                              Text(
+                                'Coran, hadiths, quiz et suivi spirituel.',
+                                style: AppTypography.body.copyWith(
+                                  color: AppColors.lightEmerald,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.md),
+                        const Icon(
+                          Icons.mosque_rounded,
+                          size: 56,
+                          color: AppColors.goldLight,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                GridView.count(
-                  crossAxisCount: 2,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  mainAxisSpacing: AppSpacing.smMd,
-                  crossAxisSpacing: AppSpacing.smMd,
-                  childAspectRatio: 1.3,
-                  children: [
-                    _FeatureCard(
-                      title: 'Coran',
-                      subtitle: 'Lecture et audio',
-                      icon: Icons.menu_book_outlined,
-                      onTap: () => context.push('/quran'),
-                    ),
-                    _FeatureCard(
-                      title: 'Quiz',
-                      subtitle: 'Testez vos acquis',
-                      icon: Icons.quiz_outlined,
-                      onTap: () => context.push('/islamic/quiz'),
-                    ),
-                    _FeatureCard(
-                      title: 'Suivi spirituel',
-                      subtitle: 'Prières et jeûnes',
-                      icon: Icons.insights_outlined,
-                      onTap: () => context.push('/islamic/tracking'),
-                    ),
-                    _FeatureCard(
-                      title: 'Hadiths',
-                      subtitle: 'Classés par thèmes',
-                      icon: Icons.collections_bookmark_outlined,
-                      onTap: () => context.push('/hadith'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.xl),
-                AeemgCard(
-                  onTap: () => context.push('/islamic'),
-                  padding: const EdgeInsets.all(AppSpacing.md),
-                  child: Row(
+                item(
+                  GridView.count(
+                    crossAxisCount: 2,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    mainAxisSpacing: AppSpacing.smMd,
+                    crossAxisSpacing: AppSpacing.smMd,
+                    childAspectRatio: 1.3,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: AppColors.emerald.withValues(alpha: 0.15),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.auto_stories_outlined,
-                          color: AppColors.brightGreen,
-                        ),
+                      _FeatureCard(
+                        title: 'Coran',
+                        subtitle: 'Lecture et audio',
+                        icon: Icons.menu_book_rounded,
+                        tint: AppColors.brightGreen,
+                        onTap: () => context.push('/quran'),
                       ),
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Rappels islamiques', style: AppTypography.h4),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Invocations, adhkar et méditations',
-                              style: AppTypography.bodySmall.copyWith(
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                          ],
-                        ),
+                      _FeatureCard(
+                        title: 'Quiz',
+                        subtitle: 'Testez vos acquis',
+                        icon: Icons.quiz_rounded,
+                        tint: AppColors.violet,
+                        onTap: () => context.push('/islamic/quiz'),
                       ),
-                      const Icon(
-                        Icons.chevron_right,
-                        color: AppColors.textTertiary,
+                      _FeatureCard(
+                        title: 'Suivi spirituel',
+                        subtitle: 'Prières et jeûnes',
+                        icon: Icons.insights_rounded,
+                        tint: AppColors.info,
+                        onTap: () => context.push('/islamic/tracking'),
+                      ),
+                      _FeatureCard(
+                        title: 'Hadiths',
+                        subtitle: 'Classés par thèmes',
+                        icon: Icons.format_quote_rounded,
+                        tint: AppColors.gold,
+                        onTap: () => context.push('/hadith'),
                       ),
                     ],
                   ),
                 ),
+                const SizedBox(height: AppSpacing.lg),
+                item(
+                  AeemgCard(
+                    onTap: () => context.push('/islamic'),
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.gold.withValues(alpha: 0.15),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.auto_stories_rounded,
+                            color: AppColors.goldLight,
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Rappels islamiques',
+                                style: AppTypography.h4,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Invocations, adhkar et méditations',
+                                style: AppTypography.bodySmall.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(
+                          Icons.chevron_right,
+                          color: AppColors.textTertiary,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 const SizedBox(height: AppSpacing.xl),
-                const AeemgSectionHeader(title: 'Besoins de la mosquée'),
+                item(const AeemgSectionHeader(title: 'Besoins de la mosquée')),
                 needsAsync.when(
-                  loading: () => const LinearProgressIndicator(minHeight: 2),
+                  loading: () => const AeemgSkeletonTile(),
                   error: (e, _) => AeemgEmptyState(
                     compact: true,
                     icon: Icons.cloud_off_outlined,
@@ -214,7 +264,7 @@ class MosqueScreen extends ConsumerWidget {
                                   borderRadius: BorderRadius.circular(8),
                                   child: LinearProgressIndicator(
                                     value: progress.clamp(0, 1),
-                                    minHeight: 6,
+                                    minHeight: 8,
                                     color: AppColors.emerald,
                                     backgroundColor: AppColors.cardSurfaceLight,
                                   ),
@@ -305,17 +355,20 @@ class MosqueScreen extends ConsumerWidget {
   }
 }
 
+/// Tuile de l'espace islamique : pastille teintée (une couleur par rubrique).
 class _FeatureCard extends StatelessWidget {
   const _FeatureCard({
     required this.title,
     required this.subtitle,
     required this.icon,
+    required this.tint,
     required this.onTap,
   });
 
   final String title;
   final String subtitle;
   final IconData icon;
+  final Color tint;
   final VoidCallback onTap;
 
   @override
@@ -326,12 +379,20 @@ class _FeatureCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(AppSpacing.sm),
+            padding: const EdgeInsets.all(AppSpacing.smMd - 2),
             decoration: BoxDecoration(
-              color: AppColors.brightGreen.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(10),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  tint.withValues(alpha: 0.28),
+                  tint.withValues(alpha: 0.08),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(AppRadius.medium),
+              border: Border.all(color: tint.withValues(alpha: 0.35)),
             ),
-            child: Icon(icon, color: AppColors.brightGreen, size: 22),
+            child: Icon(icon, color: tint, size: 22),
           ),
           const Spacer(),
           Text(

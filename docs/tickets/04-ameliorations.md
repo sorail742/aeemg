@@ -333,6 +333,7 @@ sans alourdir l'application (téléphones d'entrée de gamme, 3G).
 - [x] Lot 1 — Fondations v3 : mouvement (`AppMotion`, transitions de page), dégradés, halo et motif étoilé,
       navigation flottante, bandeau `AeemgHero`, squelettes de chargement, retour tactile
 - [ ] Lot 1b — Accueil (bandeau, raccourcis, apparitions, chargements)
+- [x] Lot 1c — Onglets Espace islamique, Agenda et Profil (bandeaux, tuiles teintées, en-têtes)
 - [ ] Lot 2 — Social (fil, publication, détail, création) ; l'écran ne plante plus sans Supabase
 - [ ] Lot 3 — Messagerie (liste et conversation)
 - [ ] Lot 4 — Coran (accueil, lecteurs, test de récitation)
