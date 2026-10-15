@@ -334,7 +334,7 @@ sans alourdir l'application (téléphones d'entrée de gamme, 3G).
       navigation flottante, bandeau `AeemgHero`, squelettes de chargement, retour tactile
 - [ ] Lot 1b — Accueil (bandeau, raccourcis, apparitions, chargements)
 - [x] Lot 2 — Social (fil, publication, détail) ; l'écran gris sans Supabase est corrigé dans une PR dédiée
-- [ ] Lot 3 — Messagerie (liste et conversation)
+- [x] Lot 3 — Messagerie : liste (en-tête, onglets en pilule, états) ; conversation : bulles v3 et couleurs du thème (plus de couleurs en dur)
 - [ ] Lot 4 — Coran (accueil, lecteurs, test de récitation)
 - [ ] Lot 5 — Hadiths, bibliothèque, quiz, suivi spirituel
 - [ ] Lot 6 — Événements, notifications, paramètres, membres, profil, retours
