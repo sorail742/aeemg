@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Hook commit-msg (OPS-012) : Conventional Commits, mêmes types que le titre de PR (pr-quality / title).
+# Installation : tool/install_hooks.sh. Contournement exceptionnel : git commit --no-verify.
+set -euo pipefail
+
+# Première ligne non vide qui n'est pas un commentaire de git.
+subject="$(grep -v '^#' "$1" | grep -m1 -v '^[[:space:]]*$' || true)"
+
+# Messages produits par git lui-même : acceptés tels quels.
+if [[ "$subject" =~ ^(Merge\ |Revert\ \"|fixup!\ |squash!\ |amend!\ ) ]]; then
+  exit 0
+fi
+
+types='feat|fix|sec|perf|refactor|test|docs|ci|build|chore|revert|style'
+if [[ ! "$subject" =~ ^($types)(\([^\)]+\))?!?:\ .{5,100}$ ]]; then
+  cat >&2 <<MSG
+✗ Message de commit non conforme : « ${subject} »
+  Attendu : type(portée): description (ID-TICKET), entre 5 et 100 caractères après « : ».
+  Types   : ${types//|/, }
+  Exemple : feat(finance): saisie des transactions (FEAT-002)
+  Règles  : docs/team/REGLES_EQUIPE.md §4
+MSG
+  exit 1
+fi

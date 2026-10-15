@@ -17,6 +17,7 @@ Merci de contribuer ! Ce guide résume l'essentiel ; les règles complètes sont
 ```bash
 cp config/example.json config/dev.json   # puis renseigner l'URL et la clé anon du projet de dev
 flutter pub get
+tool/install_hooks.sh                    # hooks Git : format, analyse, politiques, message de commit
 supabase start                           # base locale (migrations appliquées)
 flutter run -d chrome --dart-define-from-file=config/dev.json   # ou un émulateur Android
 ```
@@ -44,6 +45,19 @@ flutter run -d chrome --dart-define-from-file=config/dev.json   # ou un émulate
   ne pas committer ce changement.
 - **Monter de version** = une PR dédiée (`build(flutter): Flutter X.Y.Z (OPS-014)`) qui ne change que `.fvmrc`
   (et `pubspec.lock` si nécessaire), et qui passe toute la matrice `compatibility`.
+
+## Hooks Git (OPS-012)
+
+`tool/install_hooks.sh` active les hooks versionnés dans `tool/hooks/` (`git config core.hooksPath tool/hooks`) :
+
+| Hook | Contrôle | Équivalent CI |
+|---|---|---|
+| `pre-commit` | `dart format` et `dart analyze --fatal-infos` sur les fichiers Dart indexés ; règles bloquantes de `tool/ci/check_repo_policies.sh` | `flutter / format`, `analyze`, `policy-checks` |
+| `commit-msg` | Conventional Commits, mêmes types que le titre de PR | `pr-quality / title` |
+
+- Environ une seconde par commit : seuls les fichiers indexés sont analysés.
+- Contournement exceptionnel : `git commit --no-verify`. La CI refera les mêmes contrôles.
+- Désactivation : `git config --unset core.hooksPath`.
 
 ## Conventions
 
