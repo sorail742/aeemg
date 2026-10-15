@@ -17,7 +17,7 @@ dart format <fichiers modifiés>          # la CI vérifie chaque fichier modifi
 flutter analyze                          # échoue aussi sur les « info »
 flutter test
 tool/ci/check_repo_policies.sh           # politiques du dépôt (secrets, couleurs en dur…)
-tool/ci/check_migrations.sh origin/main  # si supabase/migrations/ change
+tool/ci/check_migrations.sh origin/develop  # si supabase/migrations/ change
 supabase test db                         # pgTAP, si supabase/ change (Docker requis)
 (cd supabase/functions && deno task check)   # si supabase/functions/ change
 tool/install_hooks.sh                    # hooks Git : format, analyse, politiques, message de commit
@@ -29,6 +29,8 @@ Lancer l'application : `flutter run --dart-define-from-file=config/dev.json` (co
 
 - **Un ticket par changement** (`SEC-`, `REL-`, `DEL-`, `AMEL-`, `FEAT-`, `OPS-` ou `#123`). Une découverte en cours
   de route devient un nouveau ticket, jamais un élargissement silencieux.
+- **Branches (ADR-0025)** : `develop` = intégration, `main` = production. Partir de `origin/develop` et ouvrir
+  la PR **vers `develop`**. Vers `main` : seulement la release `develop` → `main` (merge commit) et `hotfix/*`.
 - **Une PR par ticket**, branche `<type>/<ID>-<description>` (ex. `sec/SEC-025-permissions`).
 - Titre de PR = message du commit squashé : `type(portée): description (ID)`.
   Types : `feat fix sec perf refactor test docs ci build chore revert style`.
@@ -71,7 +73,7 @@ supabase/migrations/  schéma (source de vérité)   supabase/tests/  pgTAP   su
 - **La RLS est la frontière de sécurité.** Un contrôle fait seulement dans l'UI n'est pas un contrôle.
   Toute politique RLS nouvelle ou modifiée a son test pgTAP dans `supabase/tests/` : cas autorisé **et** cas refusé.
 - Nouvelle migration : `supabase migration new <description>`, fichier `AAAAMMJJHHMMSS_description.sql`, idempotente.
-  **Jamais modifier une migration déjà sur `main`** (seule exception : `AMENDED.txt`, ADR-0022).
+  **Jamais modifier une migration déjà sur `develop` ou `main`** (seule exception : `AMENDED.txt`, ADR-0022).
 - Pas de données de démo dans les migrations. Changement destructif = en deux releases.
 - **Actions à demander avant de les faire** :
   - appliquer une migration, supprimer des données, déployer une fonction, toucher la production ;
@@ -103,13 +105,13 @@ supabase/migrations/  schéma (source de vérité)   supabase/tests/  pgTAP   su
 - **Format** : le job `format` vérifie chaque fichier modifié en entier. Toucher un ancien fichier non formaté oblige
   à le reformater. Mettre ce reformatage dans un **commit séparé** pour la relecture ; il peut faire dépasser la
   limite de taille.
-- **PR empilées** : une PR basée sur une autre branche fusionne dans cette branche, pas dans `main`. La recibler
-  sur `main` après la fusion de sa base.
+- **PR empilées** : une PR basée sur une autre branche fusionne dans cette branche, pas dans `develop`. La recibler
+  sur `develop` après la fusion de sa base.
 - **CI instable connue** :
   - téléchargements Gradle/Maven, NDK ;
   - cache Swift Package Manager du runner macOS (le job iOS retente déjà une fois) ;
   - émulateur Android : API 24 tourne seulement la nuit.
 
   Une seule relance au plus ; un deuxième échec est un vrai problème. Ne jamais désactiver un test pour passer.
-- **Git** : jamais de force-push sur `main` ni sur la branche d'un autre ; pas de commit vide pour relancer la CI ;
+- **Git** : jamais de force-push sur `main`, `develop` ni sur la branche d'un autre ; pas de commit vide pour relancer la CI ;
   fusion en squash.
