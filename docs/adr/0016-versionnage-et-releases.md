@@ -14,7 +14,7 @@ Version actuelle `1.1.0+2`, incrémentée à la main, sans changelog. Les stores
   avec les anciennes versions installées (API/schéma) ; MINEUR : fonctionnalité ; CORRECTIF : correction.
 - **Conventional Commits** pour les titres de PR (squash) : `feat(events): …`, `fix(auth): …`, `sec(rls): …`,
   `refactor`, `perf`, `test`, `docs`, `ci`, `build`, `chore`, `revert`. `!` ou `BREAKING CHANGE:` pour une rupture.
-- Release = tag annoté `vX.Y.Z` sur `main` → workflow `release` (build, artefacts, CHANGELOG, déploiement prod après approbation).
+- Release = PR `develop` → `main` (merge commit, ADR-0025) puis tag annoté `vX.Y.Z` sur `main` → workflow `release` (build, artefacts, CHANGELOG, déploiement prod après approbation).
 - Pré-releases : `vX.Y.Z-beta.N` → distribution testeurs uniquement.
 - Correctif urgent : branche `hotfix/…` depuis `main`, PR accélérée (1 approbation lead), tag CORRECTIF.
 
