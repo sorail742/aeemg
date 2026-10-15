@@ -129,3 +129,46 @@ class AeemgSkeletonTile extends StatelessWidget {
     );
   }
 }
+
+/// Bouton d'icône rond (v3) : surface de carte, bordure fine, badge facultatif.
+class AeemgRoundIconButton extends StatelessWidget {
+  const AeemgRoundIconButton({
+    super.key,
+    required this.icon,
+    required this.tooltip,
+    required this.onPressed,
+    this.badge = 0,
+  });
+
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback onPressed;
+  final int badge;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: AeemgPressable(
+        child: Material(
+          color: AppColors.cardSurface,
+          shape: const CircleBorder(side: BorderSide(color: AppColors.border)),
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            onTap: onPressed,
+            child: SizedBox(
+              width: 44,
+              height: 44,
+              child: Badge(
+                isLabelVisible: badge > 0,
+                backgroundColor: AppColors.error,
+                label: Text('$badge'),
+                child: Icon(icon, color: AppColors.white, size: 22),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
