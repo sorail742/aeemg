@@ -5,8 +5,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:quran/quran.dart' as q;
 
 import '../../../core/theme/app_colors.dart';
-import '../../../core/theme/app_gradients.dart';
-import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/supabase_errors.dart';
@@ -14,6 +12,7 @@ import '../../../shared/widgets/ds/aeemg_buttons.dart';
 import '../../../shared/widgets/ds/aeemg_card.dart';
 import '../../../shared/widgets/ds/aeemg_hero.dart';
 import '../../../shared/widgets/ds/aeemg_motion.dart';
+import '../../../shared/widgets/ds/aeemg_pill_tab_bar.dart';
 import '../../../shared/widgets/ds/aeemg_section.dart';
 import '../../../shared/widgets/ds/islamic_background.dart';
 import '../data/models/quran_models.dart';
@@ -145,7 +144,10 @@ class _QuranHubScreenState extends ConsumerState<QuranHubScreen>
                     ),
                   ).reveal(context),
                   const SizedBox(height: AppSpacing.md),
-                  _QuranTabs(controller: _tabController),
+                  AeemgPillTabBar(
+                    controller: _tabController,
+                    labels: const ['Sourates', 'Mushaf', 'Juz', 'Signets'],
+                  ),
                 ],
               ),
             ),
@@ -585,47 +587,6 @@ class _BookmarksTab extends StatelessWidget {
                   .slideX(begin: 0.1),
         );
       },
-    );
-  }
-}
-
-/// Onglets en pilule : l'onglet actif porte le dégradé du bouton principal.
-class _QuranTabs extends StatelessWidget {
-  const _QuranTabs({required this.controller});
-
-  final TabController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 44,
-      padding: const EdgeInsets.all(AppSpacing.xs),
-      decoration: BoxDecoration(
-        color: AppColors.cardSurface,
-        borderRadius: AppRadius.pillBorder,
-        border: Border.all(color: AppColors.border),
-      ),
-      child: TabBar(
-        controller: controller,
-        indicator: BoxDecoration(
-          gradient: AppGradients.primary,
-          borderRadius: AppRadius.pillBorder,
-        ),
-        indicatorSize: TabBarIndicatorSize.tab,
-        dividerColor: AppColors.transparent,
-        labelColor: AppColors.onPrimary,
-        unselectedLabelColor: AppColors.textSecondary,
-        labelStyle: AppTypography.caption.copyWith(fontWeight: FontWeight.w700),
-        unselectedLabelStyle: AppTypography.caption.copyWith(
-          fontWeight: FontWeight.w500,
-        ),
-        tabs: const [
-          Tab(text: 'Sourates'),
-          Tab(text: 'Mushaf'),
-          Tab(text: 'Juz'),
-          Tab(text: 'Signets'),
-        ],
-      ),
     );
   }
 }
