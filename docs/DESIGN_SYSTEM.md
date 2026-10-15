@@ -74,6 +74,7 @@ secondaires ; texte sur émeraude en `onPrimary` (sombre, 8:1) et non en blanc.
 | `.reveal(context, index: i)` | Apparition en cascade d'un bloc (fondu + glissement de 6 %) |
 | `AeemgSkeleton`, `AeemgSkeletonTile` | Chargement à la forme du contenu attendu, à la place d'un indicateur circulaire |
 | `AeemgPillTabBar` | Onglets en pilule (onglet actif en dégradé), à la place d'une TabBar soulignée |
+| `AeemgStarBadge` | Numéro dans une étoile à huit branches (sourates, versets, juz, hadiths) |
 | `AeemgRoundIconButton` | Bouton d'icône rond (surface de carte, bordure fine, badge facultatif) pour les en-têtes sans AppBar |
 | `IslamicPatternPainter` | Motif d'étoiles à huit branches (fond à 2 %, bandeau à 6 %) |
 
