@@ -54,13 +54,16 @@ Les horaires des réunions évitent les heures de prière (prévoir une marge au
 
 Résumé de l'[ADR-0021](../adr/0021-workflow-git.md) :
 
-- `main` protégée : aucun push direct, PR obligatoire, CI verte obligatoire.
+- **`develop`** = intégration (staging), **`main`** = production ([ADR-0025](../adr/0025-branches-develop-et-main.md)).
+  Les deux sont protégées : aucun push direct, PR obligatoire, CI verte obligatoire.
+- Les branches partent de `develop` et y reviennent (squash). Vers `main` : uniquement la PR de release
+  `develop` → `main` (merge commit, puis tag) et les `hotfix/*` (puis `main` fusionné dans `develop`).
 - Branche : `<type>/<ID-ticket>-<description>` — ex. `sec/SEC-001-role-escalation`, `feat/FEAT-002-transactions`.
   Types : `feat`, `fix`, `sec`, `refactor`, `perf`, `test`, `docs`, `ci`, `chore`, `hotfix`.
 - Durée de vie d'une branche ≤ 3 jours ; au-delà, découper ou utiliser un feature flag.
 - Commits : [Conventional Commits](https://www.conventionalcommits.org/fr/) en français ou anglais (cohérent dans une PR).
 - **Titre de PR** = message du commit final (squash) : `feat(finance): saisie des transactions (FEAT-002)`.
-- Interdits : `git push --force` sur `main` ou sur la branche d'un autre ; commit de fichiers générés de build, de `.env`, de keystores.
+- Interdits : `git push --force` sur `main`, `develop` ou la branche d'un autre ; commit de fichiers générés de build, de `.env`, de keystores.
 
 ## 5. Pull Requests et revue de code
 

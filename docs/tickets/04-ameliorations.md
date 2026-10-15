@@ -321,3 +321,25 @@ conventions, les commandes et les pièges du projet, et les relecteurs corrigent
 - [x] `CLAUDE.md` à la racine : commandes, conventions de PR, architecture, règles bloquantes de la CI, sécurité,
       pièges connus ; renvoie vers les documents de référence sans les dupliquer
 - [x] Mis à jour dans la même PR que tout changement de convention qu'il décrit
+
+### AMEL-027 — Refonte visuelle complète (design system v3)
+**Type** : UX · **Priorité** : P2 · **Estimation** : L (découpé en lots) · **Composant** : flutter, design
+
+**Contexte** — Le design system v2 (AMEL-022) a posé des tokens cohérents, mais seuls quelques écrans ont été
+retravaillés et l'ensemble reste statique. Objectif : une interface remarquable, cohérente sur tous les écrans,
+sans alourdir l'application (téléphones d'entrée de gamme, 3G).
+
+**Critères d'acceptation**
+- [x] Lot 1 — Fondations v3 : mouvement (`AppMotion`, transitions de page), dégradés, halo et motif étoilé,
+      navigation flottante, bandeau `AeemgHero`, squelettes de chargement, retour tactile
+- [ ] Lot 1b — Accueil (bandeau, raccourcis, apparitions, chargements)
+- [x] Lot 2 — Social (fil, publication, détail) ; l'écran gris sans Supabase est corrigé dans une PR dédiée
+- [ ] Lot 3 — Messagerie (liste et conversation)
+- [ ] Lot 4 — Coran (accueil, lecteurs, test de récitation)
+- [ ] Lot 5 — Hadiths, bibliothèque, quiz, suivi spirituel
+- [ ] Lot 6 — Événements, notifications, paramètres, membres, profil, retours
+- [ ] Lot 7 — Dons et finances
+- [ ] Lot 8 — Splash et connexion
+- [ ] Lot 9 — Administration
+- [ ] Toutes les animations respectent « réduire les animations » ; aucun `BackdropFilter`
+- [ ] Captures avant/après dans chaque PR
