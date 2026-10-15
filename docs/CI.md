@@ -86,3 +86,5 @@ supabase start && supabase db reset && supabase db lint && supabase test db
 - Aucune action tierce ne reçoit de secret sauf la release ; secrets effacés du runner après usage.
 - Versions des actions mises à jour par Dependabot (épinglage par SHA recommandé une fois l'équipe GitHub en place).
 - Les outils (gitleaks, osv-scanner) sont installés en version figée.
+- Flutter aussi : tous les jobs lisent la version de `.fvmrc` (OPS-014), sauf `android (beta)`, qui suit la dernière beta.
+  Une nouvelle version de Flutter ne peut plus casser la CI sans changement dans le dépôt.
