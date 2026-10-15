@@ -37,60 +37,19 @@ class HomeTopBar extends StatelessWidget {
         const SizedBox(width: AppSpacing.smMd),
         Text('AEEMG', style: AppTypography.h3.copyWith(letterSpacing: 1.5)),
         const Spacer(),
-        _RoundAction(
+        AeemgRoundIconButton(
           tooltip: 'Messages',
           icon: Icons.chat_bubble_outline_rounded,
-          onTap: () => context.push('/messages'),
+          onPressed: () => context.push('/messages'),
         ),
         const SizedBox(width: AppSpacing.sm),
-        _RoundAction(
+        AeemgRoundIconButton(
           tooltip: 'Notifications',
           icon: Icons.notifications_none_rounded,
           badge: unreadCount,
-          onTap: () => context.push('/notifications'),
+          onPressed: () => context.push('/notifications'),
         ),
       ],
-    );
-  }
-}
-
-class _RoundAction extends StatelessWidget {
-  const _RoundAction({
-    required this.tooltip,
-    required this.icon,
-    required this.onTap,
-    this.badge = 0,
-  });
-
-  final String tooltip;
-  final IconData icon;
-  final VoidCallback onTap;
-  final int badge;
-
-  @override
-  Widget build(BuildContext context) {
-    return Tooltip(
-      message: tooltip,
-      child: AeemgPressable(
-        child: Material(
-          color: AppColors.cardSurface,
-          shape: const CircleBorder(side: BorderSide(color: AppColors.border)),
-          child: InkWell(
-            customBorder: const CircleBorder(),
-            onTap: onTap,
-            child: SizedBox(
-              width: 44,
-              height: 44,
-              child: Badge(
-                isLabelVisible: badge > 0,
-                backgroundColor: AppColors.error,
-                label: Text('$badge'),
-                child: Icon(icon, color: AppColors.white, size: 22),
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
