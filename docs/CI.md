@@ -15,7 +15,7 @@ Tous les workflows sont dans `.github/workflows/`. Chaque job couvre un ou plusi
 | | `android (beta)` | idem | Compatibilité future | ❌ informatif |
 | | `web (wasm)` | idem | Compatibilité, performance | ❌ jusqu'à AMEL-011 |
 | | `ios (no codesign)` | PR (code/plateformes), push, nuit — dépôt public : minutes macOS gratuites | Compatibilité | ❌ (à rendre bloquant après quelques semaines vertes) |
-| | `android integration (API 24, 34)` | PR (code/plateformes), push, nuit — `integration_test/app_test.dart` | Fiabilité, compatibilité | ❌ (à rendre bloquant après quelques semaines vertes) |
+| | `android integration (API 34)` / `(API 24)` | API 34 : PR (code/plateformes), push, nuit. API 24 (minSdk, émulateur lent) : nuit et à la demande. Durée de chaque job bornée (démarrage de l'émulateur ≤ 7 min, step ≤ 20 min) — `integration_test/app_test.dart` | Fiabilité, compatibilité | ❌ (à rendre bloquant après quelques semaines vertes) |
 | `security` | `secrets (gitleaks)` | PR, push, hebdo | Sécurité | ✅ |
 | | `dependencies (osv-scanner)` | PR, push, hebdo | Sécurité | ✅ |
 | | `dependency-review` | PR | Sécurité, conformité licences | ✅ |
