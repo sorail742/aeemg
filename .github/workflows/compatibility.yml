@@ -81,7 +81,18 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
-      - run: flutter build ios --release --no-codesign --dart-define-from-file=config/example.json
+      # Le cache Swift Package Manager du runner macOS est parfois corrompu (« Could not resolve
+      # package dependencies … cannot change to …/org.swift.swiftpm/repositories/… »). Dans ce cas
+      # seulement, on vide ce cache et on relance le build une fois. Toute autre erreur échoue tout de suite.
+      - name: flutter build ios
+        run: |
+          set -o pipefail
+          build() { flutter build ios --release --no-codesign --dart-define-from-file=config/example.json 2>&1 | tee build.log; }
+          if build; then exit 0; fi
+          if ! grep -q 'Could not resolve package dependencies' build.log; then exit 1; fi
+          echo "::warning::Résolution SwiftPM échouée (cache du runner) : cache vidé, nouvelle tentative."
+          rm -rf ~/Library/Caches/org.swift.swiftpm ~/Library/org.swift.swiftpm ios/build build/ios
+          build
 
   android-integration:
     name: android integration (API ${{ matrix.api-level }})
