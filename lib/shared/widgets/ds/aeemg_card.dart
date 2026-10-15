@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_gradients.dart';
 import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import 'aeemg_motion.dart';
 
 /// `accentMint` est conservé pour compatibilité : il s'affiche comme `accent`.
 enum AeemgCardVariant { primary, accent, accentMint, active }
@@ -26,7 +28,13 @@ class AeemgCard extends StatelessWidget {
     color: switch (variant) {
       AeemgCardVariant.accent ||
       AeemgCardVariant.accentMint => AppColors.darkTeal.withValues(alpha: 0.55),
-      _ => AppColors.cardSurface,
+      _ => null,
+    },
+    // Reflet en haut des cartes standard (v3) : du relief sans ombre.
+    gradient: switch (variant) {
+      AeemgCardVariant.primary ||
+      AeemgCardVariant.active => AppGradients.surface,
+      _ => null,
     },
     borderRadius: AppRadius.cardBorder,
     border: Border.all(
@@ -47,7 +55,7 @@ class AeemgCard extends StatelessWidget {
       child: child,
     );
 
-    return DecoratedBox(
+    final card = DecoratedBox(
       decoration: _decoration,
       child: onTap == null
           ? content
@@ -60,6 +68,7 @@ class AeemgCard extends StatelessWidget {
               ),
             ),
     );
+    return onTap == null ? card : AeemgPressable(child: card);
   }
 }
 

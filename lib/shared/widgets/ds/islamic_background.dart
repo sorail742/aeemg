@@ -1,9 +1,13 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_gradients.dart';
 
-/// Fond des écrans : dégradé sombre et, en option, un motif géométrique à peine
-/// perceptible (identité islamique sans charger l'interface).
+/// Fond des écrans : dégradé sombre, halo émeraude en haut et, en option, un motif
+/// d'étoiles à huit branches (khatam) à peine perceptible. Tout est peint une seule fois
+/// (RepaintBoundary) : aucun coût pendant le défilement.
 class IslamicBackground extends StatelessWidget {
   const IslamicBackground({
     super.key,
@@ -24,52 +28,62 @@ class IslamicBackground extends StatelessWidget {
           colors: [AppColors.deepNavy, AppColors.darkCharcoal],
         ),
       ),
-      child: withPattern
-          ? Stack(
-              fit: StackFit.expand,
-              children: [
-                const IgnorePointer(
-                  child: RepaintBoundary(
-                    child: CustomPaint(painter: _IslamicPatternPainter()),
-                  ),
-                ),
-                child,
-              ],
-            )
-          : child,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          const IgnorePointer(
+            child: DecoratedBox(
+              decoration: BoxDecoration(gradient: AppGradients.glow),
+            ),
+          ),
+          if (withPattern)
+            const IgnorePointer(
+              child: RepaintBoundary(
+                child: CustomPaint(painter: IslamicPatternPainter()),
+              ),
+            ),
+          child,
+        ],
+      ),
     );
   }
 }
 
-class _IslamicPatternPainter extends CustomPainter {
-  const _IslamicPatternPainter();
+/// Motif d'étoiles à huit branches (deux carrés superposés, l'un tourné de 45°).
+class IslamicPatternPainter extends CustomPainter {
+  const IslamicPatternPainter({this.opacity = 0.022, this.step = 64});
+
+  final double opacity;
+  final double step;
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppColors.white.withValues(alpha: 0.018)
+      ..color = AppColors.white.withValues(alpha: opacity)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
 
-    const step = 72.0;
-    const s = step / 3;
-    for (double y = 0; y < size.height; y += step) {
-      for (double x = 0; x < size.width; x += step) {
-        final path = Path()
-          ..moveTo(x + s, y)
-          ..lineTo(x + 2 * s, y)
-          ..lineTo(x + step, y + s)
-          ..lineTo(x + step, y + 2 * s)
-          ..lineTo(x + 2 * s, y + step)
-          ..lineTo(x + s, y + step)
-          ..lineTo(x, y + 2 * s)
-          ..lineTo(x, y + s)
-          ..close();
-        canvas.drawPath(path, paint);
+    final half = step * 0.22;
+    final star = Path();
+    for (final angle in const [0.0, math.pi / 4]) {
+      final points = [
+        for (var k = 0; k < 4; k++)
+          Offset(
+            math.cos(angle + k * math.pi / 2) * half * math.sqrt2,
+            math.sin(angle + k * math.pi / 2) * half * math.sqrt2,
+          ),
+      ];
+      star.addPolygon(points, true);
+    }
+
+    for (double y = step / 2; y < size.height + step; y += step) {
+      for (double x = step / 2; x < size.width + step; x += step) {
+        canvas.drawPath(star.shift(Offset(x, y)), paint);
       }
     }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant IslamicPatternPainter oldDelegate) =>
+      oldDelegate.opacity != opacity || oldDelegate.step != step;
 }

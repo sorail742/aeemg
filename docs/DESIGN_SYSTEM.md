@@ -4,6 +4,11 @@ Inspiré de **Muslim Pro** : expérience sombre, spirituelle et moderne. Thème 
 d'action. Les écrans utilisent les **tokens** et les **composants** ci-dessous, jamais de valeurs en dur
 (AMEL-022). Implémentation : `lib/core/theme/` et `lib/shared/widgets/ds/`.
 
+> **Version 3 (octobre 2026, AMEL-027)** : mouvement, profondeur et identité. Même palette et mêmes règles
+> que la v2, plus des dégradés, un halo, un motif étoilé, une navigation flottante et des animations
+> courtes (section « v3 » ci-dessous). Tout reste léger : aucune image, aucun flou, aucune nouvelle
+> dépendance.
+>
 > Version 2 (octobre 2026) : remplace les valeurs de la première version, qui ne correspondaient plus
 > au code (polices Rethink Sans/Manrope, carte `#325859`, rayons de 30 px). Le cahier complet de
 > l'équipe produit reste la référence pour le responsive et les états interactifs détaillés.
@@ -21,8 +26,9 @@ d'action. Les écrans utilisent les **tokens** et les **composants** ci-dessous,
    (`AeemgEmptyState`). Jamais un texte gris seul ni une erreur brute.
 5. **Français partout** : `MaterialApp` est en `fr` (sélecteurs de date, libellés système) ; les
    calendriers commencent le lundi.
-6. **Animations discrètes** : fondu court (≤ 250 ms) à l'ouverture d'un écran ; pas de rebond ni
-   d'apparition en cascade.
+6. **Animations courtes et utiles** (v3) : apparition en cascade des blocs d'un écran (≤ 400 ms,
+   8 éléments au plus), retour tactile, transitions de page. Toutes sont coupées quand le système
+   demande de réduire les animations.
 
 ## Tokens (`lib/core/theme/`)
 
@@ -42,13 +48,39 @@ secondaires ; texte sur émeraude en `onPrimary` (sombre, 8:1) et non en blanc.
 
 | Composant | Usage |
 |---|---|
-| `IslamicBackground` | Fond de chaque écran (dégradé, motif géométrique à 2 % d'opacité avec `withPattern`) |
-| `AeemgCard` | Carte standard ; variantes `accent` (teinte émeraude) et `active` (bordure émeraude) |
+| `IslamicBackground` | Fond de chaque écran : dégradé, halo émeraude en haut (v3), motif étoilé à 2 % avec `withPattern` |
+| `AeemgCard` | Carte standard (reflet en haut, v3) ; variantes `accent` (teinte émeraude) et `active` (bordure émeraude) ; s'enfonce sous le doigt si `onTap` |
 | `AeemgAccentCard` | Verset, hadith, rappel : filet doré, titre en capitales, texte en italique |
-| `AeemgPrimaryButton` / `AeemgSecondaryButton` | Action principale / secondaire, pleine largeur par défaut |
+| `AeemgPrimaryButton` / `AeemgSecondaryButton` | Action principale (dégradé émeraude et halo, v3) / secondaire, pleine largeur par défaut |
 | `AeemgSectionHeader` | Titre de section, action « Tout voir » facultative |
 | `AeemgEmptyState` | État vide ou d'erreur (`compact: true` dans une liste) |
 | `AeemgSuccessBadge` | Pastille de statut |
+
+## v3 : mouvement et profondeur
+
+| Élément | Où | Règle |
+|---|---|---|
+| `AppMotion` | `app_motion.dart` | Durées `fast` 150 ms, `base` 250 ms, `slow` 400 ms ; décalage 45 ms ; `AppMotion.reduced(context)` |
+| `AppGradients` | `app_gradients.dart` | `primary` (bouton principal), `hero` (bandeau), `gold`, `surface` (reflet des cartes), `glow` (halo du fond) |
+| Transitions de page | `app_theme.dart` | Fondu enchaîné (Android, Web, desktop), geste natif (iOS, macOS) |
+| `AppShadows.glow` / `floating` | `app_shadows.dart` | Halo du bouton principal ; ombre de la barre flottante |
+| `AppColors.violet` | `app_colors.dart` | Teinte d'accent secondaire (raccourcis, catégories) |
+
+| Composant v3 | Usage |
+|---|---|
+| `AeemgNavBar` | Barre de navigation flottante (îlot arrondi, pastille émeraude animée sous l'onglet actif) |
+| `AeemgHero` | Bandeau en tête d'écran de section : dégradé émeraude, motif étoilé, halo doré |
+| `AeemgPressable` | Retour tactile (l'élément s'enfonce à 97 %) ; déjà intégré aux cartes cliquables et au bouton principal |
+| `.reveal(context, index: i)` | Apparition en cascade d'un bloc (fondu + glissement de 6 %) |
+| `AeemgSkeleton`, `AeemgSkeletonTile` | Chargement à la forme du contenu attendu, à la place d'un indicateur circulaire |
+| `IslamicPatternPainter` | Motif d'étoiles à huit branches (fond à 2 %, bandeau à 6 %) |
+
+Règles v3 :
+- Un écran de section commence par un `AeemgHero` ou par un titre de page, jamais les deux.
+- Chargement d'une liste : `AeemgSkeletonTile`, jamais un `CircularProgressIndicator` seul au milieu de l'écran.
+- Les blocs principaux d'un écran apparaissent avec `.reveal` dans l'ordre de lecture ; pas dans les listes
+  longues paginées.
+- Pas de `BackdropFilter` (flou) : trop coûteux sur les téléphones d'entrée de gamme.
 
 ## Contrôle automatique
 
