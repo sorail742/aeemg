@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_gradients.dart';
+import '../../../../core/theme/app_radius.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/utils/supabase_errors.dart';
 import '../../../../shared/widgets/ds/aeemg_card.dart';
+import '../../../../shared/widgets/ds/aeemg_hero.dart';
+import '../../../../shared/widgets/ds/aeemg_motion.dart';
+import '../../../../shared/widgets/ds/aeemg_section.dart';
 import '../../../../shared/widgets/ds/islamic_background.dart';
+import '../data/models/quiz_model.dart';
 import 'providers/quiz_provider.dart';
 
 class QuizListScreen extends ConsumerWidget {
@@ -16,147 +22,189 @@ class QuizListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final quizzesAsync = ref.watch(quizzesProvider);
+    var index = 0;
+    Widget item(Widget child) => child.reveal(context, index: index++);
+
+    final List<Widget> content = quizzesAsync.when(
+      loading: () => const [
+        AeemgSkeletonTile(),
+        SizedBox(height: AppSpacing.sm),
+        AeemgSkeletonTile(),
+      ],
+      error: (error, _) => [
+        AeemgEmptyState(
+          compact: true,
+          icon: Icons.cloud_off_outlined,
+          title: 'Quiz indisponibles',
+          message: friendlySupabaseError(error),
+        ),
+      ],
+      data: (quizzes) {
+        if (quizzes.isEmpty) {
+          return const [
+            AeemgEmptyState(
+              compact: true,
+              icon: Icons.quiz_outlined,
+              title: 'Aucun quiz pour le moment',
+              message: 'De nouveaux quiz seront bientôt proposés.',
+            ),
+          ];
+        }
+        final byCategory = <String, List<QuizModel>>{};
+        for (final q in quizzes) {
+          byCategory.putIfAbsent(q.category, () => []).add(q);
+        }
+        return [
+          for (final entry in byCategory.entries) ...[
+            item(AeemgSectionHeader(title: entry.key)),
+            for (final quiz in entry.value)
+              Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                child: item(
+                  _QuizCard(
+                    quiz: quiz,
+                    onTap: () {
+                      ref.read(currentQuizProvider.notifier).startQuiz(quiz);
+                      context.push('/islamic/quiz/play');
+                    },
+                  ),
+                ),
+              ),
+            const SizedBox(height: AppSpacing.md),
+          ],
+        ];
+      },
+    );
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: AppColors.background.withValues(alpha: 0.9),
-        elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.white),
-        title: Text('Quiz Islamique', style: AppTypography.h2.copyWith(color: AppColors.white)),
-      ),
       body: IslamicBackground(
         withPattern: true,
-        child: quizzesAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald)),
-          error: (err, _) => Center(child: Text('Erreur : $err', style: const TextStyle(color: AppColors.error))),
-          data: (quizzes) {
-            if (quizzes.isEmpty) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+        child: ListView(
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.md,
+            AppSpacing.sm + MediaQuery.paddingOf(context).top,
+            AppSpacing.md,
+            AppSpacing.xxl,
+          ),
+          children: [
+            Row(
+              children: [
+                AeemgRoundIconButton(
+                  icon: Icons.arrow_back_rounded,
+                  tooltip: 'Retour',
+                  onPressed: () =>
+                      context.canPop() ? context.pop() : context.go('/home'),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.smMd),
+            item(
+              AeemgHero(
+                child: Row(
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.textTertiary.withValues(alpha: 0.1),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Quiz islamique', style: AppTypography.h1),
+                          const SizedBox(height: AppSpacing.xs),
+                          Text(
+                            'Testez et approfondissez vos connaissances.',
+                            style: AppTypography.bodySmall.copyWith(
+                              color: AppColors.lightEmerald,
+                            ),
+                          ),
+                        ],
                       ),
-                      child: const Icon(Icons.quiz_outlined, size: 64, color: AppColors.textTertiary),
-                    ).animate().scale(curve: Curves.easeOutBack),
-                    const SizedBox(height: AppSpacing.md),
-                    Text('Aucun quiz disponible pour le moment.', style: TextStyle(color: AppColors.textSecondary)),
+                    ),
+                    const Icon(
+                      Icons.emoji_events_rounded,
+                      size: 52,
+                      color: AppColors.goldLight,
+                    ),
                   ],
                 ),
-              );
-            }
-
-            final Map<String, List> categorizedQuizzes = {};
-            for (var q in quizzes) {
-              categorizedQuizzes.putIfAbsent(q.category, () => []).add(q);
-            }
-
-            return ListView(
-              padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top + kToolbarHeight + 16,
-                left: AppSpacing.md,
-                right: AppSpacing.md,
-                bottom: AppSpacing.xl,
               ),
-              physics: const BouncingScrollPhysics(),
-              children: categorizedQuizzes.entries.toList().asMap().entries.map((categoryEntry) {
-                final catIndex = categoryEntry.key;
-                final entry = categoryEntry.value;
-                
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 4,
-                          height: 20,
-                          decoration: BoxDecoration(color: AppColors.gold, borderRadius: BorderRadius.circular(2)),
-                        ),
-                        const SizedBox(width: AppSpacing.sm),
-                        Text(
-                          entry.key.toUpperCase(),
-                          style: AppTypography.h3.copyWith(color: AppColors.gold, letterSpacing: 1.2),
-                        ),
-                      ],
-                    ).animate(delay: Duration(milliseconds: 100 * catIndex)).fade().slideX(),
-                    const SizedBox(height: AppSpacing.md),
-                    ...entry.value.asMap().entries.map((quizEntry) {
-                      final qIndex = quizEntry.key;
-                      final quiz = quizEntry.value;
-                      
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                        child: AeemgCard(
-                          onTap: () {
-                            ref.read(currentQuizProvider.notifier).startQuiz(quiz);
-                            context.push('/islamic/quiz/play');
-                          },
-                          padding: const EdgeInsets.all(AppSpacing.md),
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: AppColors.emerald.withValues(alpha: 0.15),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: const Icon(Icons.extension, color: AppColors.emerald),
-                              ),
-                              const SizedBox(width: AppSpacing.md),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(quiz.title, style: AppTypography.h3),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      quiz.description,
-                                      style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.gold.withValues(alpha: 0.15),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Text(
-                                        '${quiz.questions.length} questions',
-                                        style: AppTypography.caption.copyWith(color: AppColors.gold, fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: AppColors.cardSurfaceLight,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(Icons.play_arrow_rounded, color: AppColors.white),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ).animate(delay: Duration(milliseconds: 100 * catIndex + 50 * qIndex)).fade().slideY(begin: 0.1);
-                    }),
-                    const SizedBox(height: AppSpacing.lg),
-                  ],
-                );
-              }).toList(),
-            );
-          },
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            ...content,
+          ],
         ),
+      ),
+    );
+  }
+}
+
+class _QuizCard extends StatelessWidget {
+  const _QuizCard({required this.quiz, required this.onTap});
+
+  final QuizModel quiz;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return AeemgCard(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppColors.violet.withValues(alpha: 0.28),
+                  AppColors.violet.withValues(alpha: 0.08),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(AppRadius.medium),
+              border: Border.all(
+                color: AppColors.violet.withValues(alpha: 0.35),
+              ),
+            ),
+            child: const Icon(Icons.quiz_rounded, color: AppColors.violet),
+          ),
+          const SizedBox(width: AppSpacing.smMd),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(quiz.title, style: AppTypography.h4),
+                const SizedBox(height: 2),
+                Text(
+                  quiz.description,
+                  style: AppTypography.bodySmall,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: AppSpacing.sm),
+                Text(
+                  '${quiz.questions.length} questions',
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.goldLight,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          Container(
+            width: 40,
+            height: 40,
+            decoration: const BoxDecoration(
+              gradient: AppGradients.primary,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.play_arrow_rounded,
+              color: AppColors.onPrimary,
+            ),
+          ),
+        ],
       ),
     );
   }
