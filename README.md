@@ -14,6 +14,7 @@ Application **Flutter** (Android, iOS, Web) adossée à **Supabase** (PostgreSQL
 | Décisions d'architecture (ADR) | [docs/adr/](docs/adr/README.md) |
 | Règles de travail en équipe | [docs/team/REGLES_EQUIPE.md](docs/team/REGLES_EQUIPE.md) |
 | Contribuer | [CONTRIBUTING.md](CONTRIBUTING.md) |
+| Résumé des règles et pièges (assistants IA, nouveaux arrivants) | [CLAUDE.md](CLAUDE.md) |
 | Intégration continue | [docs/CI.md](docs/CI.md) |
 | Sécurité | [SECURITY.md](SECURITY.md) |
 | Supabase (installation, auth) | [docs/SUPABASE_SETUP.md](docs/SUPABASE_SETUP.md), [docs/SUPABASE_AUTH.md](docs/SUPABASE_AUTH.md) |
