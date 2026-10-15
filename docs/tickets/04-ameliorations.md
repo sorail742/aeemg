@@ -332,7 +332,7 @@ sans alourdir l'application (téléphones d'entrée de gamme, 3G).
 **Critères d'acceptation**
 - [x] Lot 1 — Fondations v3 : mouvement (`AppMotion`, transitions de page), dégradés, halo et motif étoilé,
       navigation flottante, bandeau `AeemgHero`, squelettes de chargement, retour tactile
-- [ ] Lot 1b — Accueil (bandeau, raccourcis, apparitions, chargements)
+- [x] Lot 1b — Accueil (bandeau, raccourcis, apparitions, chargements)
 - [x] Lot 2 — Social (fil, publication, détail) ; l'écran gris sans Supabase est corrigé dans une PR dédiée
 - [ ] Lot 3 — Messagerie (liste et conversation)
 - [ ] Lot 4 — Coran (accueil, lecteurs, test de récitation)
