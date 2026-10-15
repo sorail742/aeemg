@@ -120,5 +120,5 @@ des plugins (Flutter récent : Android 7 / API 24 minimum, iOS 13+).
 changement de code, et chaque développeur peut avoir une version différente.
 
 **Critères d'acceptation**
-- [ ] Fichier `.fvmrc` (ou `.tool-versions`) avec la version exacte ; la CI lit cette version
-- [ ] Montée de version Flutter = PR dédiée, testée sur la matrice de compatibilité
+- [x] Fichier `.fvmrc` (ou `.tool-versions`) avec la version exacte ; la CI lit cette version
+- [x] Montée de version Flutter = PR dédiée, testée sur la matrice de compatibilité (procédure dans CONTRIBUTING.md)
