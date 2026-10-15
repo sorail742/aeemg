@@ -25,7 +25,7 @@ flutter run -d chrome --dart-define-from-file=config/dev.json   # ou un émulate
 ## Cycle de contribution
 
 1. Prendre un ticket `ready` dans le backlog ([docs/tickets/](docs/tickets/README.md)) et se l'assigner.
-2. Créer une branche : `git switch -c feat/FEAT-002-transactions`.
+2. Créer une branche depuis `develop` : `git switch -c feat/FEAT-002-transactions origin/develop`.
 3. Développer **avec tests** ; vérifier localement :
    ```bash
    dart format lib test
@@ -34,8 +34,12 @@ flutter run -d chrome --dart-define-from-file=config/dev.json   # ou un émulate
    supabase test db                       # si supabase/ a changé
    deno task check                        # si supabase/functions/ a changé (cf. supabase/functions/deno.json)
    ```
-4. Ouvrir une PR (titre Conventional Commit, modèle rempli), en Draft tant que ce n'est pas prêt.
+4. Ouvrir une PR **vers `develop`** (titre Conventional Commit, modèle rempli), en Draft tant que ce n'est pas prêt.
 5. Obtenir 2 approbations (dont 1 CODEOWNER) + CI verte, puis **squash merge**.
+
+Mise en production (Tech Lead, [ADR-0025](docs/adr/0025-branches-develop-et-main.md)) : PR `develop` → `main`
+titrée `chore(release): vX.Y.Z`, fusionnée en **merge commit** (jamais en squash), puis tag `vX.Y.Z` sur `main`.
+Correctif urgent : `hotfix/<ID>-…` depuis `main`, PR vers `main`, puis fusion de `main` dans `develop`.
 
 ## Version de Flutter (OPS-014)
 

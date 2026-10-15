@@ -3,7 +3,7 @@ name: compatibility
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
     paths:
       - '.fvmrc'

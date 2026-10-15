@@ -6,11 +6,9 @@ import '../../data/social_repository.dart';
 import '../../data/models/post_model.dart';
 import '../../data/models/comment_model.dart';
 
-final socialRepositoryProvider = Provider<SocialRepository>((ref) {
-  final client = ref.watch(supabaseClientProvider);
-  if (client == null) throw Exception('Supabase client is not initialized');
-  return SocialRepository(client);
-});
+final socialRepositoryProvider = Provider<SocialRepository>(
+  (ref) => SocialRepository(ref.watch(supabaseClientProvider)),
+);
 
 final feedProvider =
     StateNotifierProvider<FeedNotifier, AsyncValue<List<PostModel>>>((ref) {

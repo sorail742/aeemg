@@ -122,3 +122,14 @@ changement de code, et chaque développeur peut avoir une version différente.
 **Critères d'acceptation**
 - [x] Fichier `.fvmrc` (ou `.tool-versions`) avec la version exacte ; la CI lit cette version
 - [x] Montée de version Flutter = PR dédiée, testée sur la matrice de compatibilité (procédure dans CONTRIBUTING.md)
+
+### OPS-015 — Branche `develop` pour l'intégration, `main` pour la production
+**Type** : DevOps · **Priorité** : P1 · **Estimation** : S · **Composant** : github, ci
+**Dépendances** : OPS-001 · [ADR-0025](../adr/0025-branches-develop-et-main.md)
+
+**Critères d'acceptation**
+- [x] `develop` créée à partir de `main` ; workflows déclenchés sur les push vers `develop` et `main`
+- [x] `pr-quality` : vers `main`, seules les PR `develop` (release) et `hotfix/*` sont acceptées ; Dependabot vise `develop`
+- [x] Workflow `release` : le tag doit pointer sur un commit de `main`
+- [x] Documentation à jour (ADR-0025, REGLES_EQUIPE, CONTRIBUTING, CI, CLAUDE.md)
+- [ ] Réglages GitHub : branche par défaut `develop`, ruleset sur `develop` et `main`, merge commits autorisés (Tech Lead)

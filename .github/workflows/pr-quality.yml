@@ -45,7 +45,25 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+      # develop = intégration, main = production (ADR-0025). Vers main, seules les PR de release
+      # (develop → main) et les correctifs urgents (hotfix/*) sont acceptés.
+      - name: Branche cible
+        id: target
+        env:
+          BASE: ${{ github.base_ref }}
+          HEAD: ${{ github.head_ref }}
+        run: |
+          if [[ "$BASE" == "main" && "$HEAD" == "develop" ]]; then
+            echo "PR de release develop → main : nom de branche, ticket et taille non vérifiés."
+            echo "release=true" >> "$GITHUB_OUTPUT"
+          elif [[ "$BASE" == "main" && ! "$HEAD" =~ ^hotfix/ ]]; then
+            echo "::error::Les PR visent develop. Vers main : uniquement develop (release) ou hotfix/* (ADR-0025)."
+            exit 1
+          else
+            echo "release=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Nom de branche
+        if: steps.target.outputs.release != 'true'
         env:
           BRANCH: ${{ github.head_ref }}
         run: |
@@ -58,6 +76,7 @@ jobs:
             exit 1
           fi
       - name: Référence au ticket
+        if: steps.target.outputs.release != 'true'
         env:
           TITLE: ${{ github.event.pull_request.title }}
           BODY: ${{ github.event.pull_request.body }}
@@ -71,6 +90,7 @@ jobs:
             exit 1
           fi
       - name: Taille de la PR
+        if: steps.target.outputs.release != 'true'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           MAX_LINES: ${{ vars.PR_MAX_LINES || '1000' }}
