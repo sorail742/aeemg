@@ -46,7 +46,8 @@ Obligatoire si la PR :
 | [0018](./0018-stockage-medias-prives.md) | Médias privés : buckets privés et URL signées | Proposé |
 | [0019](./0019-conventions-edge-functions.md) | Conventions des Edge Functions (Deno) | Accepté |
 | [0020](./0020-strategie-hors-ligne.md) | Stratégie hors ligne : cache en lecture, file d'envoi | Proposé |
-| [0021](./0021-workflow-git.md) | Workflow Git : trunk-based, branches courtes, squash merge | Accepté |
+| [0021](./0021-workflow-git.md) | Workflow Git : trunk-based, branches courtes, squash merge | Accepté, amendé par 0025 |
 | [0022](./0022-migrations-historiques-rejouables.md) | Rendre rejouables les migrations historiques (amende 0010) | Accepté |
 | [0023](./0023-identifiant-et-signature-application.md) | Identifiant `org.aeemg`, nom « AEEMG » et signature release | Accepté |
 | [0024](./0024-reconciliation-production.md) | Réconcilier la production avec l'historique des migrations | Accepté |
+| [0025](./0025-branches-develop-et-main.md) | Branches `develop` (intégration) et `main` (production) — amende 0021 | Accepté |

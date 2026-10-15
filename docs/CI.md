@@ -4,7 +4,9 @@ Tous les workflows sont dans `.github/workflows/`. Chaque job couvre un ou plusi
 
 ## Vue d'ensemble
 
-| Workflow | Job | Déclencheur | Attribut qualité | Bloquant sur `main` |
+Les « push » ci-dessous concernent `develop` (intégration) et `main` (production), cf. ADR-0025.
+
+| Workflow | Job | Déclencheur | Attribut qualité | Bloquant |
 |---|---|---|---|---|
 | `flutter` | `format` | PR, push | Maintenabilité | ✅ |
 | | `analyze` | PR, push | Maintenabilité, fiabilité | ✅ |
@@ -67,7 +69,7 @@ sur les fichiers indexés (OPS-012). Contrôles complets :
 ```bash
 dart format lib test && flutter analyze && flutter test --coverage
 tool/ci/check_repo_policies.sh
-tool/ci/check_migrations.sh origin/main
+tool/ci/check_migrations.sh origin/develop
 supabase start && supabase db reset && supabase db lint && supabase test db
 (cd supabase/functions && deno task check)
 ```

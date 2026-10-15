@@ -334,7 +334,7 @@ sans alourdir l'application (téléphones d'entrée de gamme, 3G).
       navigation flottante, bandeau `AeemgHero`, squelettes de chargement, retour tactile
 - [ ] Lot 1b — Accueil (bandeau, raccourcis, apparitions, chargements)
 - [x] Lot 1c — Onglets Espace islamique, Agenda et Profil (bandeaux, tuiles teintées, en-têtes)
-- [ ] Lot 2 — Social (fil, publication, détail, création) ; l'écran ne plante plus sans Supabase
+- [x] Lot 2 — Social (fil, publication, détail) ; l'écran gris sans Supabase est corrigé dans une PR dédiée
 - [ ] Lot 3 — Messagerie (liste et conversation)
 - [ ] Lot 4 — Coran (accueil, lecteurs, test de récitation)
 - [ ] Lot 5 — Hadiths, bibliothèque, quiz, suivi spirituel
