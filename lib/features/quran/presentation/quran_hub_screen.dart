@@ -7,8 +7,13 @@ import 'package:quran/quran.dart' as q;
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/utils/supabase_errors.dart';
 import '../../../shared/widgets/ds/aeemg_buttons.dart';
 import '../../../shared/widgets/ds/aeemg_card.dart';
+import '../../../shared/widgets/ds/aeemg_hero.dart';
+import '../../../shared/widgets/ds/aeemg_motion.dart';
+import '../../../shared/widgets/ds/aeemg_pill_tab_bar.dart';
+import '../../../shared/widgets/ds/aeemg_section.dart';
 import '../../../shared/widgets/ds/islamic_background.dart';
 import '../data/models/quran_models.dart';
 import '../data/quran_audio_service.dart';
@@ -71,86 +76,102 @@ class _QuranHubScreenState extends ConsumerState<QuranHubScreen>
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: AppColors.background.withValues(alpha: 0.9),
-        elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.white),
-        title: Text(
-          'Le Noble Coran',
-          style: AppTypography.h2.copyWith(color: AppColors.white),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.record_voice_over_outlined,
-              color: AppColors.gold,
-            ),
-            tooltip: reciterLabel,
-            onPressed: () => showReciterPicker(context, ref),
-          ),
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          indicatorColor: AppColors.emerald,
-          labelColor: AppColors.emerald,
-          unselectedLabelColor: AppColors.textSecondary,
-          tabs: const [
-            Tab(text: 'Sourates'),
-            Tab(text: 'Mushaf'),
-            Tab(text: 'Juz'),
-            Tab(text: 'Signets'),
-          ],
-        ),
-      ),
       body: IslamicBackground(
         withPattern: true,
         child: Column(
           children: [
-            SizedBox(
-              height: MediaQuery.of(context).padding.top + kToolbarHeight + 48,
+            // Pas d'AppBar : en-tête sous la barre d'état.
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.md,
+                AppSpacing.sm + MediaQuery.paddingOf(context).top,
+                AppSpacing.md,
+                0,
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      AeemgRoundIconButton(
+                        icon: Icons.arrow_back_rounded,
+                        tooltip: 'Retour',
+                        // Ouvert par un lien direct (web) : retour à l'accueil.
+                        onPressed: () => context.canPop()
+                            ? context.pop()
+                            : context.go('/home'),
+                      ),
+                      const Spacer(),
+                      AeemgRoundIconButton(
+                        icon: Icons.record_voice_over_outlined,
+                        tooltip: 'Récitateur : $reciterLabel',
+                        onPressed: () => showReciterPicker(context, ref),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.smMd),
+                  AeemgHero(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.mdLg,
+                      vertical: AppSpacing.md,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Le Noble Coran', style: AppTypography.h1),
+                              const SizedBox(height: AppSpacing.xs),
+                              Text(
+                                '114 sourates · 30 juz',
+                                style: AppTypography.bodySmall.copyWith(
+                                  color: AppColors.lightEmerald,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Text(
+                          'القرآن الكريم',
+                          textDirection: TextDirection.rtl,
+                          style: AppTypography.quranArabic(
+                            size: 30,
+                          ).copyWith(color: AppColors.goldLight),
+                        ),
+                      ],
+                    ),
+                  ).reveal(context),
+                  const SizedBox(height: AppSpacing.md),
+                  AeemgPillTabBar(
+                    controller: _tabController,
+                    labels: const ['Sourates', 'Mushaf', 'Juz', 'Signets'],
+                  ),
+                ],
+              ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.md,
-                AppSpacing.sm,
+                AppSpacing.smMd,
                 AppSpacing.md,
                 AppSpacing.sm,
               ),
               child: TextField(
                 controller: _searchController,
-                style: const TextStyle(color: AppColors.white),
                 decoration: InputDecoration(
                   hintText: 'Rechercher une sourate ou un mot…',
-                  hintStyle: TextStyle(color: AppColors.textSecondary),
-                  prefixIcon: const Icon(
-                    Icons.search,
-                    color: AppColors.emerald,
-                  ),
-                  filled: true,
-                  fillColor: AppColors.cardSurface.withValues(alpha: 0.8),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide(
-                      color: AppColors.emerald.withValues(alpha: 0.5),
-                    ),
-                  ),
+                  prefixIcon: const Icon(Icons.search_rounded),
                   suffixIcon: _searchQuery.isNotEmpty
                       ? IconButton(
-                          icon: const Icon(
-                            Icons.clear,
-                            color: AppColors.textSecondary,
-                          ),
+                          tooltip: 'Effacer',
+                          icon: const Icon(Icons.clear_rounded),
                           onPressed: () => _searchController.clear(),
                         )
                       : null,
                 ),
-              ).animate().fade().slideY(begin: -0.2),
+              ),
             ),
             if (_verseHits.isNotEmpty)
               SizedBox(
@@ -220,16 +241,14 @@ class _QuranHubScreenState extends ConsumerState<QuranHubScreen>
                   ),
                   _JuzTab(onOpenJuz: (n) => context.push('/quran/juz/$n')),
                   bookmarksAsync.when(
-                    loading: () => const Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.emerald,
-                      ),
+                    loading: () => const Padding(
+                      padding: EdgeInsets.all(AppSpacing.md),
+                      child: AeemgSkeletonTile(),
                     ),
-                    error: (e, _) => Center(
-                      child: Text(
-                        '$e',
-                        style: const TextStyle(color: AppColors.error),
-                      ),
+                    error: (e, _) => AeemgEmptyState(
+                      icon: Icons.bookmark_border_rounded,
+                      title: 'Signets indisponibles',
+                      message: friendlySupabaseError(e),
                     ),
                     data: (bookmarks) => _BookmarksTab(
                       bookmarks: bookmarks,
@@ -356,7 +375,7 @@ class _SurahsTab extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.only(bottom: AppSpacing.md),
                 child: AeemgCard(
-                  variant: AeemgCardVariant.active,
+                  variant: AeemgCardVariant.accent,
                   onTap: () => onResume(last.surahNumber, last.ayahNumber),
                   child: Row(
                     children: [
@@ -394,7 +413,7 @@ class _SurahsTab extends StatelessWidget {
                       ),
                     ],
                   ),
-                ).animate().fade().scale(begin: const Offset(0.95, 0.95)),
+                ).reveal(context),
               );
             },
             loading: () => const SizedBox.shrink(),
@@ -402,16 +421,11 @@ class _SurahsTab extends StatelessWidget {
           );
         }
         final surah = surahs[index - 1];
-        // Apply a staggered animation to the list items
+        // Cascade limitée aux premiers éléments ; coupée si les animations sont réduites.
         return SurahListTile(
-              surah: surah,
-              onTap: () => onOpenSurah(surah.number),
-            )
-            .animate(
-              delay: Duration(milliseconds: 50 * (index < 15 ? index : 0)),
-            ) // Only animate first 15 to avoid lag
-            .fade()
-            .slideX(begin: 0.05);
+          surah: surah,
+          onTap: () => onOpenSurah(surah.number),
+        ).reveal(context, index: index);
       },
     );
   }
