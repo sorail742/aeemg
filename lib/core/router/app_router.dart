@@ -34,14 +34,37 @@ import '../../features/social/presentation/post_detail_screen.dart';
 import '../../features/social/data/models/post_model.dart';
 import '../../features/quran/presentation/recitation_test_screen.dart';
 import '../../features/splash/presentation/splash_screen.dart';
+import '../../features/auth/presentation/providers/auth_provider.dart';
+import '../../features/members/presentation/providers/members_provider.dart';
 import '../../shared/widgets/main_shell.dart';
+import 'route_guard.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
+/// Réévalue les redirections quand la session ou le profil change (SEC-024).
+class _GuardRefresh extends ChangeNotifier {
+  void refresh() => notifyListeners();
+}
+
 final routerProvider = Provider<GoRouter>((ref) {
+  final guardRefresh = _GuardRefresh();
+  ref.listen(isAuthenticatedProvider, (_, _) => guardRefresh.refresh());
+  ref.listen(myProfileProvider, (_, _) => guardRefresh.refresh());
+  ref.onDispose(guardRefresh.dispose);
+
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/',
+    refreshListenable: guardRefresh,
+    redirect: (context, state) {
+      final profile = ref.read(myProfileProvider);
+      return guardRedirect(
+        uri: state.uri,
+        isAuthenticated: ref.read(isAuthenticatedProvider),
+        profile: profile.value,
+        profileLoaded: profile.hasValue && !profile.isLoading,
+      );
+    },
     routes: [
       GoRoute(
         path: '/',

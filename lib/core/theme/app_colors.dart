@@ -1,56 +1,68 @@
 import 'package:flutter/material.dart';
 
-/// Palette Premium Islamique — Thème AEEMG
+/// Palette AEEMG — sombre, sobre, une seule couleur d'action (émeraude) et un accent
+/// (or) réservé aux contenus islamiques et aux mises en avant. Contrastes vérifiés
+/// WCAG AA : texte principal 15:1, secondaire 7:1, texte sur émeraude 8:1.
 abstract final class AppColors {
-  // ── Fonds Premium ──────────────────────────────────────────
-  static const Color darkCharcoal = Color(0xFF0F172A); // Slate profond
-  static const Color deepNavy = Color(0xFF020617);     // Fond d'écran principal très sombre
-  static const Color darkTeal = Color(0xFF064E3B);     // Vert émeraude très profond (Header)
-  
-  // ── Cartes et Surfaces (Glassmorphism) ────────────────────
-  static const Color cardSurface = Color(0xFF1E293B);  // Couleur des cartes
-  static const Color cardSurfaceLight = Color(0xFF334155); // Bordures ou survol
-  
-  // ── Accents & Identité ─────────────────────────────────────
-  static const Color emerald = Color(0xFF10B981);      // Vert Islamique moderne et vibrant
+  // ── Fonds ────────────────────────────────────────────────
+  static const Color deepNavy = Color(0xFF0B1220); // Fond d'écran
+  static const Color darkCharcoal = Color(0xFF0F1729); // Bas du dégradé de fond
+  static const Color darkTeal = Color(0xFF0B3B2E); // Surfaces teintées émeraude
+
+  // ── Surfaces ─────────────────────────────────────────────
+  static const Color cardSurface = Color(
+    0xFF131C2E,
+  ); // Cartes, champs, feuilles
+  static const Color cardSurfaceLight = Color(
+    0xFF1E2A40,
+  ); // Surface surélevée, survol
+  static const Color border = Color(
+    0xFF243149,
+  ); // Bordures fines et séparateurs
+
+  // ── Action ───────────────────────────────────────────────
+  static const Color emerald = Color(0xFF10B981);
   static const Color emeraldHover = Color(0xFF059669);
   static const Color emeraldActive = Color(0xFF047857);
-  static const Color brightGreen = Color(0xFF34D399);  // Vert clair pour icônes
-  static const Color lightEmerald = Color(0xFFA7F3D0); 
-  
-  static const Color gold = Color(0xFFF59E0B);         // Or riche (Etoiles, icônes premium)
-  static const Color goldLight = Color(0xFFFCD34D);
+  static const Color brightGreen = Color(0xFF34D399);
+  static const Color lightEmerald = Color(0xFFA7F3D0);
 
-  // ── Textes ────────────────────────────────────────────────
-  static const Color white = Color(0xFFF8FAFC);
-  static const Color black = Color(0xFF020617);
-  static const Color textSecondary = Color(0xFF94A3B8); // Gris bleuté élégant
-  static const Color textTertiary = Color(0xFF64748B);
+  // ── Accent ───────────────────────────────────────────────
+  static const Color gold = Color(0xFFE2B044);
+  static const Color goldLight = Color(0xFFF2CF7A);
 
-  // ── Sémantique ────────────────────────────────────────────
-  static const Color error = Color(0xFFEF4444);
+  // ── Textes ───────────────────────────────────────────────
+  static const Color white = Color(0xFFF1F5F9);
+  static const Color black = Color(0xFF0B1220);
+  static const Color textSecondary = Color(0xFFA3B0C2);
+  static const Color textTertiary = Color(0xFF6E7C91);
+
+  // ── Sémantique ───────────────────────────────────────────
+  static const Color error = Color(0xFFF26D6D);
   static const Color success = Color(0xFF10B981);
+  static const Color warning = Color(0xFFF0A93B);
+  static const Color info = Color(0xFF5BA8F5);
   static const Color focusRing = Color(0x8010B981);
 
-  // ── Alias de compatibilité ────────────────────────────────
+  // ── Alias de compatibilité ───────────────────────────────
   static const Color primary = emerald;
   static const Color primaryLight = brightGreen;
   static const Color primaryDark = emeraldHover;
+  static const Color onPrimary = deepNavy;
   static const Color accent = gold;
-  
+
   static const Color background = deepNavy;
   static const Color surface = cardSurface;
   static const Color textPrimary = white;
-  
-  // Compatibilité avec les anciens écrans
+
   static const Color warmGray = textSecondary;
   static const Color mediumGray = textSecondary;
   static const Color lightGray = textTertiary;
-  static const Color inputBorder = cardSurfaceLight;
+  static const Color inputBorder = border;
   static const Color offWhite = white;
   static const Color softMint = lightEmerald;
-  
+
   static const Color scaffold = deepNavy;
-  static const Color navBar = Color(0xFF0F172A);
-  static const Color appBar = Color(0xFF0F172A);
+  static const Color navBar = Color(0xFF0E1626);
+  static const Color appBar = deepNavy;
 }

@@ -29,7 +29,7 @@ class AeemgPrimaryButton extends StatelessWidget {
             width: 22,
             child: CircularProgressIndicator(
               strokeWidth: 2,
-              color: AppColors.white,
+              color: AppColors.onPrimary,
             ),
           )
         : Row(
