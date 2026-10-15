@@ -1,6 +1,6 @@
 # 0021 — Workflow Git : trunk-based, branches courtes, squash merge
 
-- **Statut** : Accepté
+- **Statut** : Accepté — amendé par [0025](./0025-branches-develop-et-main.md) (`develop` pour l'intégration, `main` pour la production)
 - **Date** : 2026-10-12
 - **Tickets liés** : OPS-001, OPS-002
 
