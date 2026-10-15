@@ -27,7 +27,7 @@ jobs:
   android:
     name: android (${{ matrix.channel }})
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
@@ -55,7 +55,7 @@ jobs:
   web-wasm:
     name: web (wasm)
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
     # Informatif tant que AMEL-011 (suppression de dart:io) n'est pas livré.
     continue-on-error: true
     steps:
@@ -73,7 +73,7 @@ jobs:
     # (limitées par les chemins du déclencheur ci-dessus). Si le dépôt devient privé, remettre
     # `if: github.event_name != 'pull_request'` (macOS coûte 10× plus de minutes).
     runs-on: macos-latest
-    timeout-minutes: 60
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
       - uses: subosito/flutter-action@v2
@@ -97,12 +97,14 @@ jobs:
   android-integration:
     name: android integration (API ${{ matrix.api-level }})
     # Tests de démarrage sur émulateur (OPS-010) : integration_test/app_test.dart.
+    # Un émulateur est lourd (~8 min) : les PR et `main` testent seulement API 34. API 24 (minSdk),
+    # dont l'image démarre lentement et se bloque parfois, tourne la nuit et à la demande.
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
-        api-level: [24, 34]
+        api-level: ${{ fromJSON((github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && '[24, 34]' || '[34]') }}
     steps:
       - uses: actions/checkout@v7
       - name: Présence de tests d'intégration
@@ -119,6 +121,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+          cache: gradle
       - uses: subosito/flutter-action@v2
         if: steps.detect.outputs.present == 'true'
         with:
@@ -134,8 +137,14 @@ jobs:
           sudo udevadm trigger --name-match=kvm
       - uses: reactivecircus/android-emulator-runner@v2
         if: steps.detect.outputs.present == 'true'
+        # Un émulateur bloqué échoue au bout de 20 min au lieu d'attendre la limite du job.
+        timeout-minutes: 20
         with:
           api-level: ${{ matrix.api-level }}
           arch: x86_64
           target: ${{ matrix.api-level >= 30 && 'google_apis' || 'default' }}
+          # Émulateur allégé : sans fenêtre, audio, caméra, animation de démarrage ni snapshot.
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none
+          # Démarrage limité à 7 min (10 par défaut) : un boot bloqué échoue plus tôt.
+          emulator-boot-timeout: 420
           script: flutter test integration_test --dart-define-from-file=config/example.json
