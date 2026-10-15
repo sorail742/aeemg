@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Hook pre-commit (OPS-012) : les contrôles bloquants de la CI, limités aux fichiers indexés.
+# Installation : tool/install_hooks.sh. Contournement exceptionnel : git commit --no-verify.
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+# Fichiers Dart indexés (ajoutés, copiés, modifiés, renommés), hors fichiers générés.
+mapfile -t dart_files < <(git diff --cached --name-only --diff-filter=ACMR -- '*.dart' |
+  grep -vE '\.(g|freezed)\.dart$' || true)
+
+if ((${#dart_files[@]})); then
+  if ! command -v dart >/dev/null 2>&1; then
+    echo "pre-commit : dart introuvable dans le PATH, contrôles Dart ignorés." >&2
+  elif [[ ! -f .dart_tool/package_config.json ]]; then
+    echo "pre-commit : lancer d'abord « flutter pub get »." >&2
+    exit 1
+  else
+    # Comme le job « format » : le fichier entier doit être au format.
+    if ! dart format --output=none --set-exit-if-changed "${dart_files[@]}" >/dev/null; then
+      echo "✗ Fichiers à reformater :" >&2
+      dart format --output=none --set-exit-if-changed "${dart_files[@]}" 2>&1 | grep '^Changed' >&2 || true
+      echo "  → dart format ${dart_files[*]} && git add ${dart_files[*]}" >&2
+      exit 1
+    fi
+    # Comme le job « analyze » (flutter analyze échoue aussi sur les infos).
+    if ! dart analyze --fatal-infos "${dart_files[@]}"; then
+      echo "✗ Analyse statique : corriger les problèmes ci-dessus." >&2
+      exit 1
+    fi
+  fi
+fi
+
+# Règles bloquantes de policy-checks (secrets, fichiers interdits, couleurs en dur…).
+# Les avertissements restent visibles en CI ; seules les erreurs sont affichées ici.
+if ! out="$(tool/ci/check_repo_policies.sh 2>&1)"; then
+  echo "✗ Politiques du dépôt (tool/ci/check_repo_policies.sh) :" >&2
+  grep '^::error' <<<"$out" >&2 || true
+  exit 1
+fi

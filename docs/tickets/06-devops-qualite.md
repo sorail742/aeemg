@@ -103,8 +103,8 @@ des plugins (Flutter récent : Android 7 / API 24 minimum, iOS 13+).
 **Type** : Qualité · **Priorité** : P3 · **Estimation** : XS · **Composant** : outillage
 
 **Critères d'acceptation**
-- [ ] Hook `pre-commit` (format + analyse des fichiers indexés) et `commit-msg` (Conventional Commits) installables via `tool/install_hooks.sh`
-- [ ] Documenté dans CONTRIBUTING.md
+- [x] Hook `pre-commit` (format + analyse des fichiers indexés) et `commit-msg` (Conventional Commits) installables via `tool/install_hooks.sh`
+- [x] Documenté dans CONTRIBUTING.md
 
 ### OPS-013 — Labels et tableau de projet GitHub
 **Type** : DevOps · **Priorité** : P1 · **Estimation** : XS · **Composant** : github

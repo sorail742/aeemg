@@ -61,6 +61,9 @@ Pour un test pgTAP `todo()` : retirer le `todo()` dans la PR qui corrige la fail
 
 ## Exécuter les contrôles en local
 
+`tool/install_hooks.sh` lance automatiquement, à chaque commit, le format, l'analyse et les politiques bloquantes
+sur les fichiers indexés (OPS-012). Contrôles complets :
+
 ```bash
 dart format lib test && flutter analyze && flutter test --coverage
 tool/ci/check_repo_policies.sh
