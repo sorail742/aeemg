@@ -29,6 +29,8 @@ migrate_working_dir/
 .dart_tool/
 .flutter-plugins-dependencies
 .pub-cache/
+# SDK local installé par FVM (la version est dans .fvmrc, OPS-014)
+.fvm/
 .pub/
 /build/
 /coverage/

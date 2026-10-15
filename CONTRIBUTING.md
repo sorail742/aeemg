@@ -7,7 +7,7 @@ Merci de contribuer ! Ce guide résume l'essentiel ; les règles complètes sont
 
 | Outil | Version | Usage |
 |---|---|---|
-| Flutter | version de la CI (stable, figée par OPS-014) | Application |
+| Flutter | **exactement** celle de [`.fvmrc`](.fvmrc) (OPS-014) — `fvm use` avec [FVM](https://fvm.app), sinon vérifier `flutter --version` | Application |
 | Supabase CLI | ≥ 2.x | Base locale, migrations, tests pgTAP |
 | Docker | récent | Supabase local |
 | Deno | 2.x | Edge Functions |
@@ -35,6 +35,15 @@ flutter run -d chrome --dart-define-from-file=config/dev.json   # ou un émulate
    ```
 4. Ouvrir une PR (titre Conventional Commit, modèle rempli), en Draft tant que ce n'est pas prêt.
 5. Obtenir 2 approbations (dont 1 CODEOWNER) + CI verte, puis **squash merge**.
+
+## Version de Flutter (OPS-014)
+
+- La version est figée dans [`.fvmrc`](.fvmrc) ; la CI et les releases la lisent (`flutter-version-file`).
+  Seul le job informatif `android (beta)` utilise la dernière beta, pour anticiper la montée suivante.
+- Avec une autre version en local, `flutter pub get` réécrit la section `sdks` de `pubspec.lock` :
+  ne pas committer ce changement.
+- **Monter de version** = une PR dédiée (`build(flutter): Flutter X.Y.Z (OPS-014)`) qui ne change que `.fvmrc`
+  (et `pubspec.lock` si nécessaire), et qui passe toute la matrice `compatibility`.
 
 ## Conventions
 
