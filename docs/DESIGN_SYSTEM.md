@@ -69,6 +69,7 @@ secondaires ; texte sur émeraude en `onPrimary` (sombre, 8:1) et non en blanc.
 | Composant v3 | Usage |
 |---|---|
 | `AeemgNavBar` | Barre de navigation flottante (îlot arrondi, pastille émeraude animée sous l'onglet actif) |
+| `AeemgPage` | Page secondaire : bouton rond Retour (accueil si lien direct), grand titre, actions rondes, contenu en apparition décalée, rafraîchissement facultatif |
 | `AeemgHero` | Bandeau en tête d'écran de section : dégradé émeraude, motif étoilé, halo doré |
 | `AeemgPressable` | Retour tactile (l'élément s'enfonce à 97 %) ; déjà intégré aux cartes cliquables et au bouton principal |
 | `.reveal(context, index: i)` | Apparition en cascade d'un bloc (fondu + glissement de 6 %) |
