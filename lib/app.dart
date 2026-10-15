@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/router/app_router.dart';
@@ -18,6 +19,10 @@ class AeemgApp extends ConsumerWidget {
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.dark,
       routerConfig: router,
+      // Widgets Material (sélecteurs de date, menus, libellés système) en français.
+      locale: const Locale('fr'),
+      supportedLocales: const [Locale('fr')],
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
     );
   }
 }

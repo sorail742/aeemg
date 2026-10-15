@@ -198,9 +198,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
         ),
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: AppColors.gold,
-          labelColor: AppColors.gold,
-          unselectedLabelColor: AppColors.textSecondary,
           tabs: const [
             Tab(text: 'Mot de passe'),
             Tab(text: 'Code email'),
@@ -245,28 +242,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   }
 }
 
+/// Champ du formulaire de connexion : style du thème (InputDecorationTheme).
 InputDecoration _islamicInputDecoration(String label, IconData icon) {
-  return InputDecoration(
-    labelText: label,
-    labelStyle: const TextStyle(color: AppColors.textSecondary),
-    prefixIcon: Icon(icon, color: AppColors.gold),
-    filled: true,
-    fillColor: AppColors.cardSurface.withValues(alpha: 0.6),
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(16),
-      borderSide: BorderSide.none,
-    ),
-    focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(16),
-      borderSide: BorderSide(color: AppColors.gold.withValues(alpha: 0.6)),
-    ),
-    enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(16),
-      borderSide: BorderSide(
-        color: AppColors.cardSurfaceLight.withValues(alpha: 0.6),
-      ),
-    ),
-  );
+  return InputDecoration(labelText: label, prefixIcon: Icon(icon, size: 20));
 }
 
 class _PasswordTab extends StatelessWidget {
@@ -299,27 +277,17 @@ class _PasswordTab extends StatelessWidget {
         const SizedBox(height: AppSpacing.xl),
         Center(
           child: Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.gold.withValues(alpha: 0.15),
-              border: Border.all(
-                color: AppColors.gold.withValues(alpha: 0.4),
-                width: 2,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.gold.withValues(alpha: 0.2),
-                  blurRadius: 20,
-                ),
-              ],
+              color: AppColors.darkTeal,
+              borderRadius: BorderRadius.circular(16),
             ),
             child: const Icon(
               Icons.lock_outline,
-              size: 48,
-              color: AppColors.gold,
+              size: 28,
+              color: AppColors.brightGreen,
             ),
-          ).animate().scale(curve: Curves.easeOutBack),
+          ),
         ),
         const SizedBox(height: AppSpacing.lg),
         Text(
@@ -378,7 +346,6 @@ class _PasswordTab extends StatelessWidget {
             isSignUp
                 ? 'Déjà un compte ? Se connecter'
                 : "Pas de compte ? S'inscrire",
-            style: const TextStyle(color: AppColors.gold),
           ),
         ).animate(delay: 400.ms).fade(),
         if (!isSignUp)
@@ -424,27 +391,17 @@ class _OtpTab extends StatelessWidget {
         const SizedBox(height: AppSpacing.xl),
         Center(
           child: Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.emerald.withValues(alpha: 0.15),
-              border: Border.all(
-                color: AppColors.emerald.withValues(alpha: 0.4),
-                width: 2,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.emerald.withValues(alpha: 0.2),
-                  blurRadius: 20,
-                ),
-              ],
+              color: AppColors.darkTeal,
+              borderRadius: BorderRadius.circular(16),
             ),
             child: const Icon(
               Icons.pin_outlined,
-              size: 48,
-              color: AppColors.emerald,
+              size: 28,
+              color: AppColors.brightGreen,
             ),
-          ).animate().scale(curve: Curves.easeOutBack),
+          ),
         ),
         const SizedBox(height: AppSpacing.lg),
         Text(
@@ -489,22 +446,8 @@ class _OtpTab extends StatelessWidget {
             ),
             decoration: InputDecoration(
               labelText: 'Code à 6 chiffres',
-              labelStyle: const TextStyle(color: AppColors.textSecondary),
               hintText: '123456',
-              hintStyle: const TextStyle(color: AppColors.textTertiary),
               counterText: '',
-              filled: true,
-              fillColor: AppColors.cardSurface.withValues(alpha: 0.6),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: BorderSide(
-                  color: AppColors.emerald.withValues(alpha: 0.6),
-                ),
-              ),
             ),
           ).animate(delay: 200.ms).fade().slideY(begin: 0.1),
           const SizedBox(height: AppSpacing.lg),

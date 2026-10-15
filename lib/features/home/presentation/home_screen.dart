@@ -10,6 +10,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/announcement_detail_dialog.dart';
 import '../../../shared/widgets/ds/aeemg_card.dart';
+import '../../../shared/widgets/ds/aeemg_section.dart';
 import '../../../shared/widgets/ds/islamic_background.dart';
 import '../../auth/presentation/providers/auth_provider.dart';
 import '../../events/presentation/event_detail_screen.dart';
@@ -21,6 +22,12 @@ import 'providers/home_provider.dart';
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
+  static String _greeting(DateTime now) {
+    if (now.hour < 5 || now.hour >= 18) return 'Bonsoir';
+    if (now.hour < 12) return 'Bonjour';
+    return 'Bon après-midi';
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final verseAsync = ref.watch(dynamicReminderProvider);
@@ -29,43 +36,33 @@ class HomeScreen extends ConsumerWidget {
     final user = ref.watch(currentUserProvider);
     final unreadAsync = ref.watch(unreadNotificationsCountProvider);
     final unreadCount = unreadAsync.maybeWhen(data: (c) => c, orElse: () => 0);
-    final dateFormat = DateFormat('d MMM · HH:mm', 'fr');
-
-    String getWelcomeMessage() {
-      final hour = DateTime.now().hour;
-      if (hour < 12) {
-        return 'Bonjour ☀️';
-      } else if (hour < 18) {
-        return 'Bonne après-midi 🌤️';
-      } else {
-        return 'Bonsoir 🌙';
-      }
-    }
+    final dateFormat = DateFormat('EEE d MMM · HH:mm', 'fr');
+    final now = DateTime.now();
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
         title: Text(
           'AEEMG',
-          style: AppTypography.h2.copyWith(color: AppColors.white),
+          style: AppTypography.h3.copyWith(letterSpacing: 1),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.chat_bubble_outline, color: AppColors.white),
+            tooltip: 'Messages',
+            icon: const Icon(Icons.chat_bubble_outline),
             onPressed: () => context.push('/messages'),
           ),
           IconButton(
+            tooltip: 'Notifications',
             icon: Badge(
               isLabelVisible: unreadCount > 0,
               backgroundColor: AppColors.error,
-              label: Text('$unreadCount', style: const TextStyle(color: Colors.white)),
-              child: const Icon(Icons.notifications_outlined, color: AppColors.white),
+              label: Text('$unreadCount'),
+              child: const Icon(Icons.notifications_none),
             ),
             onPressed: () => context.push('/notifications'),
           ),
+          const SizedBox(width: AppSpacing.xs),
         ],
       ),
       body: IslamicBackground(
@@ -78,278 +75,267 @@ class HomeScreen extends ConsumerWidget {
             ref.invalidate(dynamicReminderProvider);
           },
           child: ListView(
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top + kToolbarHeight + 16,
-              left: AppSpacing.md,
-              right: AppSpacing.md,
-              bottom: 100,
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.md,
+              AppSpacing.lg,
+              AppSpacing.md,
+              AppSpacing.xxl,
             ),
             children: [
-              // ── Welcome Message ──
+              Text(_greeting(now), style: AppTypography.h1),
+              const SizedBox(height: AppSpacing.xs),
               Text(
-                getWelcomeMessage(),
-                style: AppTypography.h1.copyWith(color: AppColors.emerald),
-              ).animate().fade(duration: 400.ms).slideY(begin: 0.2, end: 0),
-              
-              const SizedBox(height: AppSpacing.sm),
-              
-              // ── Prayer Times ──
-              const PrayerTimesWidget()
-                  .animate(delay: 200.ms)
-                  .fade(duration: 400.ms)
-                  .scale(begin: const Offset(0.95, 0.95)),
-              
-              const SizedBox(height: AppSpacing.lg),
-
-              // ── Quick Access Row (Glassmorphism shortcuts) ──
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                child: Row(
-                  children: [
-                    _QuickAccessIcon(
-                      icon: Icons.menu_book,
-                      label: 'Coran',
-                      color: AppColors.emerald,
-                      onTap: () => context.push('/quran'),
-                    ),
-                    _QuickAccessIcon(
-                      icon: Icons.format_quote,
-                      label: 'Hadiths',
-                      color: AppColors.gold,
-                      onTap: () => context.push('/hadith'),
-                    ),
-                    _QuickAccessIcon(
-                      icon: Icons.event,
-                      label: 'Agenda',
-                      color: AppColors.brightGreen,
-                      onTap: () => context.push('/agenda'),
-                    ),
-                    _QuickAccessIcon(
-                      icon: Icons.volunteer_activism,
-                      label: 'Dons',
-                      color: AppColors.error, // Reddish
-                      onTap: () => context.push('/donations'),
-                    ),
-                  ],
+                toBeginningOfSentenceCase(
+                  DateFormat('EEEE d MMMM y', 'fr').format(now),
                 ),
-              ).animate(delay: 300.ms).fade().slideX(begin: 0.1),
-
+                style: AppTypography.bodySmall,
+              ),
               const SizedBox(height: AppSpacing.lg),
-              
-              // ── Inspiration of the Day ──
+
+              const PrayerTimesWidget(),
+              const SizedBox(height: AppSpacing.lg),
+
+              Row(
+                children: [
+                  _QuickAccess(
+                    icon: Icons.menu_book_outlined,
+                    label: 'Coran',
+                    onTap: () => context.push('/quran'),
+                  ),
+                  const SizedBox(width: AppSpacing.smMd),
+                  _QuickAccess(
+                    icon: Icons.format_quote_outlined,
+                    label: 'Hadiths',
+                    onTap: () => context.push('/hadith'),
+                  ),
+                  const SizedBox(width: AppSpacing.smMd),
+                  _QuickAccess(
+                    icon: Icons.event_outlined,
+                    label: 'Agenda',
+                    onTap: () => context.go('/agenda'),
+                  ),
+                  const SizedBox(width: AppSpacing.smMd),
+                  _QuickAccess(
+                    icon: Icons.volunteer_activism_outlined,
+                    label: 'Dons',
+                    onTap: () => context.push('/donations'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.lg),
+
               verseAsync.when(
                 data: (verse) => AeemgAccentCard(
-                  title: verse.title ?? 'Rappel Islamique',
+                  title: verse.title ?? 'Rappel du jour',
                   body: verse.body,
                   source: verse.source,
                   onTap: () => context.push('/hadith'),
                 ),
                 loading: () => const AeemgAccentCard(
-                  title: 'Rappel Islamique',
+                  title: 'Rappel du jour',
                   body: 'Chargement…',
                 ),
                 error: (_, _) => const AeemgAccentCard(
-                  title: 'Rappel Islamique',
-                  body: 'Et cramponnez-vous tous ensemble au câble d\'Allah et ne vous divisez pas.',
+                  title: 'Rappel du jour',
+                  body:
+                      'Et cramponnez-vous tous ensemble au câble d\'Allah et ne vous divisez pas.',
                   source: 'Coran 3:103',
                 ),
-              ).animate(delay: 400.ms).fade().slideY(begin: 0.1),
-              
+              ),
               const SizedBox(height: AppSpacing.xl),
-              
-              // ── Announcements ──
-              Text('Dernières annonces', style: AppTypography.h2)
-                  .animate(delay: 500.ms).fade(),
-              const SizedBox(height: AppSpacing.sm),
+
+              const AeemgSectionHeader(title: 'Dernières annonces'),
               announcementsAsync.when(
                 data: (announcements) {
                   if (announcements.isEmpty) {
-                    return const AeemgCard(
-                      child: Text('Aucune annonce pour le moment', style: TextStyle(color: Colors.white70)),
+                    return const AeemgEmptyState(
+                      compact: true,
+                      icon: Icons.campaign_outlined,
+                      title: 'Aucune annonce',
+                      message: 'Les annonces du bureau apparaîtront ici.',
                     );
                   }
                   return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: announcements.asMap().entries.map((entry) {
-                      final idx = entry.key;
-                      final a = entry.value;
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                        child: AeemgCard(
-                          variant: a.isImportant
-                              ? AeemgCardVariant.active
-                              : AeemgCardVariant.primary,
-                          onTap: () async {
-                            if (user != null) {
-                              await ref
-                                  .read(messagesRepositoryProvider)
-                                  .markAnnouncementRead(a.id, user.id);
-                            }
-                            if (context.mounted) {
-                              await showAnnouncementDetail(context, a);
-                            }
-                          },
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: (a.isImportant ? AppColors.gold : AppColors.emerald).withValues(alpha: 0.15),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Icon(
-                                  Icons.campaign,
-                                  color: a.isImportant ? AppColors.gold : AppColors.emerald,
-                                ),
-                              ),
-                              const SizedBox(width: AppSpacing.md),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(a.title, style: AppTypography.h3),
-                                    const SizedBox(height: AppSpacing.xs),
-                                    Text(
-                                      a.content,
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: AppTypography.bodySmall,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const Icon(
-                                Icons.chevron_right,
-                                color: AppColors.textTertiary,
-                              ),
-                            ],
+                    children: [
+                      for (final a in announcements)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                          child: _ListCard(
+                            icon: Icons.campaign_outlined,
+                            highlight: a.isImportant,
+                            title: a.title,
+                            subtitle: a.content,
+                            onTap: () async {
+                              if (user != null) {
+                                await ref
+                                    .read(messagesRepositoryProvider)
+                                    .markAnnouncementRead(a.id, user.id);
+                              }
+                              if (context.mounted) {
+                                await showAnnouncementDetail(context, a);
+                              }
+                            },
                           ),
                         ),
-                      ).animate(delay: Duration(milliseconds: 500 + (idx * 100))).fade().slideX(begin: 0.05);
-                    }).toList(),
+                    ],
                   );
                 },
-                loading: () => const LinearProgressIndicator(color: AppColors.emerald),
-                error: (e, _) => AeemgCard(
-                  child: Text(friendlySupabaseError(e), style: const TextStyle(color: Colors.red)),
+                loading: () => const _SectionLoading(),
+                error: (e, _) => AeemgEmptyState(
+                  compact: true,
+                  icon: Icons.cloud_off_outlined,
+                  title: 'Annonces indisponibles',
+                  message: friendlySupabaseError(e),
                 ),
               ),
-              
               const SizedBox(height: AppSpacing.xl),
-              
-              // ── Next Event ──
-              Text('Prochain événement', style: AppTypography.h2)
-                  .animate(delay: 600.ms).fade(),
-              const SizedBox(height: AppSpacing.sm),
+
+              const AeemgSectionHeader(title: 'Prochain événement'),
               nextEventAsync.when(
                 data: (event) {
                   if (event == null) {
-                    return const AeemgCard(
-                      child: Text('Aucun événement à venir', style: TextStyle(color: Colors.white70)),
+                    return const AeemgEmptyState(
+                      compact: true,
+                      icon: Icons.event_available_outlined,
+                      title: 'Aucun événement à venir',
+                      message:
+                          'Consultez l\'agenda pour les activités passées.',
                     );
                   }
-                  return AeemgCard(
-                    variant: AeemgCardVariant.active,
-                    onTap: () => Navigator.of(context, rootNavigator: true).push(
-                      MaterialPageRoute<void>(
-                        builder: (_) => EventDetailScreen(event: event),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: AppColors.brightGreen.withValues(alpha: 0.2),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(Icons.event, color: AppColors.brightGreen),
-                        ),
-                        const SizedBox(width: AppSpacing.md),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(event.title, style: AppTypography.h3),
-                              const SizedBox(height: AppSpacing.xs),
-                              Text(
-                                '${event.typeLabel} · ${dateFormat.format(event.startsAt)}',
-                                style: AppTypography.bodySmall.copyWith(color: AppColors.emerald),
-                              ),
-                            ],
+                  return _ListCard(
+                    icon: Icons.event_outlined,
+                    highlight: true,
+                    title: event.title,
+                    subtitle:
+                        '${event.typeLabel} · ${dateFormat.format(event.startsAt)}',
+                    onTap: () =>
+                        Navigator.of(context, rootNavigator: true).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => EventDetailScreen(event: event),
                           ),
                         ),
-                        const Icon(Icons.chevron_right, color: AppColors.textTertiary),
-                      ],
-                    ),
-                  ).animate(delay: 700.ms).fade().scale(begin: const Offset(0.98, 0.98));
+                  );
                 },
-                loading: () => const LinearProgressIndicator(color: AppColors.emerald),
-                error: (e, _) => AeemgCard(
-                  child: Text(friendlySupabaseError(e), style: const TextStyle(color: Colors.red)),
+                loading: () => const _SectionLoading(),
+                error: (e, _) => AeemgEmptyState(
+                  compact: true,
+                  icon: Icons.cloud_off_outlined,
+                  title: 'Agenda indisponible',
+                  message: friendlySupabaseError(e),
                 ),
               ),
             ],
-          ),
+          ).animate().fadeIn(duration: 250.ms),
         ),
       ),
     );
   }
 }
 
-class _QuickAccessIcon extends StatelessWidget {
-  const _QuickAccessIcon({
+/// Raccourci de l'accueil : quatre tuiles de même largeur, une seule couleur d'icône.
+class _QuickAccess extends StatelessWidget {
+  const _QuickAccess({
     required this.icon,
     required this.label,
-    required this.color,
     required this.onTap,
   });
 
   final IconData icon;
   final String label;
-  final Color color;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(right: 16),
-        width: 80,
+    return Expanded(
+      child: AeemgCard(
+        onTap: onTap,
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.smMd),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: AppColors.cardSurface.withValues(alpha: 0.8),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: color.withValues(alpha: 0.3), width: 1.5),
-                boxShadow: [
-                  BoxShadow(
-                    color: color.withValues(alpha: 0.1),
-                    blurRadius: 10,
-                    spreadRadius: 2,
-                  )
-                ],
-              ),
-              child: Icon(icon, color: color, size: 28),
-            ),
-            const SizedBox(height: 8),
+            Icon(icon, color: AppColors.brightGreen, size: 24),
+            const SizedBox(height: AppSpacing.sm),
             Text(
               label,
-              style: AppTypography.caption.copyWith(color: AppColors.white, fontWeight: FontWeight.w500),
-              textAlign: TextAlign.center,
+              style: AppTypography.caption.copyWith(color: AppColors.white),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Ligne de liste en carte : pastille d'icône, titre, sous-titre sur deux lignes.
+class _ListCard extends StatelessWidget {
+  const _ListCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+    this.highlight = false,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+  final bool highlight;
+
+  @override
+  Widget build(BuildContext context) {
+    final tint = highlight ? AppColors.gold : AppColors.brightGreen;
+    return AeemgCard(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.sm),
+            decoration: BoxDecoration(
+              color: tint.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: tint, size: 20),
+          ),
+          const SizedBox(width: AppSpacing.smMd),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppTypography.h4,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.bodySmall,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSpacing.sm),
+          const Icon(Icons.chevron_right, color: AppColors.textTertiary),
+        ],
+      ),
+    );
+  }
+}
+
+class _SectionLoading extends StatelessWidget {
+  const _SectionLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return const ClipRRect(
+      borderRadius: BorderRadius.all(Radius.circular(4)),
+      child: LinearProgressIndicator(minHeight: 2),
     );
   }
 }
