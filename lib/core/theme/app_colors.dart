@@ -44,6 +44,25 @@ abstract final class AppColors {
   static const Color info = Color(0xFF5BA8F5);
   static const Color focusRing = Color(0x8010B981);
 
+  // ── Utilitaires ──────────────────────────────────────────
+  // Seul fichier autorisé à utiliser `Colors.` de Material (contrôle design-tokens, AMEL-022).
+  static const Color transparent = Color(0x00000000);
+
+  /// Voile sombre sous les médias, superpositions et ombres (`scrim.withValues(alpha: …)`).
+  static const Color scrim = Color(0xFF000000);
+
+  /// Couleurs des noms d'expéditeurs dans les groupes (lisibles sur fond sombre).
+  static const List<Color> avatarPalette = [
+    Color(0xFF6EE7B7),
+    Color(0xFF93C5FD),
+    Color(0xFFFCD34D),
+    Color(0xFFF9A8D4),
+    Color(0xFFC4B5FD),
+    Color(0xFFFDBA74),
+    Color(0xFF67E8F9),
+    Color(0xFFBEF264),
+  ];
+
   // ── Alias de compatibilité ───────────────────────────────
   static const Color primary = emerald;
   static const Color primaryLight = brightGreen;

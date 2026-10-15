@@ -10,25 +10,28 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin {
   late final AnimationController _fadeController;
   late final AnimationController _starsController;
-  
+
   final List<_Star> _stars = [];
 
   @override
   void initState() {
     super.initState();
-    
+
     // Create random stars
     final random = math.Random();
     for (int i = 0; i < 50; i++) {
-      _stars.add(_Star(
-        x: random.nextDouble(),
-        y: random.nextDouble() * 0.7, // Stars only in the top 70% of screen
-        size: random.nextDouble() * 2 + 1,
-        blinkOffset: random.nextDouble(),
-      ));
+      _stars.add(
+        _Star(
+          x: random.nextDouble(),
+          y: random.nextDouble() * 0.7, // Stars only in the top 70% of screen
+          size: random.nextDouble() * 2 + 1,
+          blinkOffset: random.nextDouble(),
+        ),
+      );
     }
 
     _fadeController = AnimationController(
@@ -76,7 +79,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               ),
             ),
           ),
-          
+
           // Animated Stars
           AnimatedBuilder(
             animation: _starsController,
@@ -87,7 +90,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               );
             },
           ),
-          
+
           // Mosque Silhouette (Bottom)
           Align(
             alignment: Alignment.bottomCenter,
@@ -96,11 +99,11 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               child: Icon(
                 Icons.mosque,
                 size: MediaQuery.sizeOf(context).width,
-                color: Colors.white,
+                color: AppColors.white,
               ),
             ),
           ),
-          
+
           // Center Content (Logo)
           Center(
             child: FadeTransition(
@@ -130,9 +133,12 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                         errorBuilder: (context, error, stackTrace) {
                           // Placeholder if the logo isn't there yet
                           return Container(
-                            color: Colors.white,
+                            color: AppColors.white,
                             child: const Center(
-                              child: Icon(Icons.image_not_supported, color: Colors.grey),
+                              child: Icon(
+                                Icons.image_not_supported,
+                                color: AppColors.textTertiary,
+                              ),
                             ),
                           );
                         },
@@ -168,7 +174,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                       'Association des Élèves et Étudiants\nMusulmans de Guinée',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Colors.white70,
+                        color: AppColors.textSecondary,
                         fontSize: 14,
                         height: 1.4,
                       ),
@@ -206,13 +212,14 @@ class _StarsPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = Colors.white;
+    final paint = Paint()..color = AppColors.white;
 
     for (var star in stars) {
       // Calculate individual blink using offset
-      final blink = (math.sin((animationValue + star.blinkOffset) * math.pi * 2) + 1) / 2;
-      paint.color = Colors.white.withValues(alpha: 0.3 + (blink * 0.7));
-      
+      final blink =
+          (math.sin((animationValue + star.blinkOffset) * math.pi * 2) + 1) / 2;
+      paint.color = AppColors.white.withValues(alpha: 0.3 + (blink * 0.7));
+
       canvas.drawCircle(
         Offset(star.x * size.width, star.y * size.height),
         star.size,
@@ -222,6 +229,6 @@ class _StarsPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_StarsPainter oldDelegate) => 
+  bool shouldRepaint(_StarsPainter oldDelegate) =>
       animationValue != oldDelegate.animationValue;
 }

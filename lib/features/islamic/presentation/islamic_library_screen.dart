@@ -16,7 +16,8 @@ class IslamicLibraryScreen extends ConsumerStatefulWidget {
   const IslamicLibraryScreen({super.key});
 
   @override
-  ConsumerState<IslamicLibraryScreen> createState() => _IslamicLibraryScreenState();
+  ConsumerState<IslamicLibraryScreen> createState() =>
+      _IslamicLibraryScreenState();
 }
 
 class _IslamicLibraryScreenState extends ConsumerState<IslamicLibraryScreen>
@@ -48,7 +49,10 @@ class _IslamicLibraryScreenState extends ConsumerState<IslamicLibraryScreen>
         backgroundColor: AppColors.background.withValues(alpha: 0.9),
         elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.white),
-        title: Text('Rappels islamiques', style: AppTypography.h2.copyWith(color: AppColors.white)),
+        title: Text(
+          'Rappels islamiques',
+          style: AppTypography.h2.copyWith(color: AppColors.white),
+        ),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: AppColors.gold,
@@ -63,11 +67,23 @@ class _IslamicLibraryScreenState extends ConsumerState<IslamicLibraryScreen>
       body: IslamicBackground(
         withPattern: true,
         child: contentsAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald)),
-          error: (e, _) => Center(child: Text('Erreur : $e', style: const TextStyle(color: AppColors.error))),
+          loading: () => const Center(
+            child: CircularProgressIndicator(color: AppColors.emerald),
+          ),
+          error: (e, _) => Center(
+            child: Text(
+              'Erreur : $e',
+              style: const TextStyle(color: AppColors.error),
+            ),
+          ),
           data: (contents) {
-            final favoriteIds = favoritesAsync.maybeWhen(data: (ids) => ids, orElse: () => <String>{});
-            final favorites = contents.where((c) => favoriteIds.contains(c.id)).toList();
+            final favoriteIds = favoritesAsync.maybeWhen(
+              data: (ids) => ids,
+              orElse: () => <String>{},
+            );
+            final favorites = contents
+                .where((c) => favoriteIds.contains(c.id))
+                .toList();
 
             return TabBarView(
               controller: _tabController,
@@ -83,9 +99,16 @@ class _IslamicLibraryScreenState extends ConsumerState<IslamicLibraryScreen>
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.favorite_border, size: 64, color: AppColors.textTertiary),
+                            const Icon(
+                              Icons.favorite_border,
+                              size: 64,
+                              color: AppColors.textTertiary,
+                            ),
                             const SizedBox(height: AppSpacing.md),
-                            Text('Aucun favori pour le moment.', style: TextStyle(color: AppColors.textSecondary)),
+                            Text(
+                              'Aucun favori pour le moment.',
+                              style: TextStyle(color: AppColors.textSecondary),
+                            ),
                           ],
                         ),
                       )
@@ -93,7 +116,8 @@ class _IslamicLibraryScreenState extends ConsumerState<IslamicLibraryScreen>
                         contents: favorites,
                         favoriteIds: favoriteIds,
                         userId: user?.id,
-                        onChanged: () => ref.invalidate(islamicFavoritesProvider),
+                        onChanged: () =>
+                            ref.invalidate(islamicFavoritesProvider),
                       ),
               ],
             );
@@ -121,7 +145,10 @@ class _ContentList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (contents.isEmpty) {
       return Center(
-        child: Text('Bibliothèque vide pour le moment.', style: TextStyle(color: AppColors.textSecondary)),
+        child: Text(
+          'Bibliothèque vide pour le moment.',
+          style: TextStyle(color: AppColors.textSecondary),
+        ),
       );
     }
 
@@ -142,69 +169,88 @@ class _ContentList extends ConsumerWidget {
 
         return Padding(
           padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-          child: AeemgCard(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            onTap: () => _showDetail(context, item, isFavorite, ref),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: iconColor.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(
-                    isVerse ? Icons.menu_book : Icons.auto_stories,
-                    color: iconColor,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(item.title ?? item.contentType, style: AppTypography.h3),
-                      const SizedBox(height: 4),
-                      Text(
-                        item.body,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary, height: 1.4),
-                      ),
-                    ],
-                  ),
-                ),
-                if (userId != null)
-                  IconButton(
-                    icon: Icon(
-                      isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: isFavorite ? AppColors.gold : AppColors.textTertiary,
+          child:
+              AeemgCard(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    onTap: () => _showDetail(context, item, isFavorite, ref),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: iconColor.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            isVerse ? Icons.menu_book : Icons.auto_stories,
+                            color: iconColor,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.title ?? item.contentType,
+                                style: AppTypography.h3,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                item.body,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTypography.bodySmall.copyWith(
+                                  color: AppColors.textSecondary,
+                                  height: 1.4,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (userId != null)
+                          IconButton(
+                            icon: Icon(
+                              isFavorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: isFavorite
+                                  ? AppColors.gold
+                                  : AppColors.textTertiary,
+                            ),
+                            onPressed: () async {
+                              final repo = ref.read(islamicRepositoryProvider);
+                              if (isFavorite) {
+                                await repo.removeFavorite(userId!, item.id);
+                              } else {
+                                await repo.addFavorite(userId!, item.id);
+                              }
+                              onChanged();
+                            },
+                          ),
+                      ],
                     ),
-                    onPressed: () async {
-                      final repo = ref.read(islamicRepositoryProvider);
-                      if (isFavorite) {
-                        await repo.removeFavorite(userId!, item.id);
-                      } else {
-                        await repo.addFavorite(userId!, item.id);
-                      }
-                      onChanged();
-                    },
-                  ),
-              ],
-            ),
-          ).animate(delay: Duration(milliseconds: 50 * index)).fade().slideX(begin: 0.05),
+                  )
+                  .animate(delay: Duration(milliseconds: 50 * index))
+                  .fade()
+                  .slideX(begin: 0.05),
         );
       },
     );
   }
 
-  void _showDetail(BuildContext context, IslamicContent item, bool isFavorite, WidgetRef ref) {
+  void _showDetail(
+    BuildContext context,
+    IslamicContent item,
+    bool isFavorite,
+    WidgetRef ref,
+  ) {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: AppColors.transparent,
       builder: (context) => Container(
         decoration: BoxDecoration(
           color: AppColors.cardSurface,
@@ -235,7 +281,10 @@ class _ContentList extends ConsumerWidget {
             Text(item.title ?? 'Rappel', style: AppTypography.h2),
             if (item.source != null) ...[
               const SizedBox(height: AppSpacing.xs),
-              Text(item.source!, style: AppTypography.caption.copyWith(color: AppColors.gold)),
+              Text(
+                item.source!,
+                style: AppTypography.caption.copyWith(color: AppColors.gold),
+              ),
             ],
             const SizedBox(height: AppSpacing.lg),
             Text(item.body, style: AppTypography.body.copyWith(height: 1.6)),
@@ -244,14 +293,32 @@ class _ContentList extends ConsumerWidget {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(color: AppColors.emerald.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(8)),
-                    child: Text('Peul', style: AppTypography.caption.copyWith(color: AppColors.emerald, fontWeight: FontWeight.bold)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.emerald.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      'Peul',
+                      style: AppTypography.caption.copyWith(
+                        color: AppColors.emerald,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: AppSpacing.sm),
-              Text(item.translationPeul!, style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary, height: 1.5)),
+              Text(
+                item.translationPeul!,
+                style: AppTypography.bodySmall.copyWith(
+                  color: AppColors.textSecondary,
+                  height: 1.5,
+                ),
+              ),
             ],
             const SizedBox(height: AppSpacing.xl),
             Row(
@@ -260,8 +327,12 @@ class _ContentList extends ConsumerWidget {
                   child: OutlinedButton.icon(
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.white,
-                      side: BorderSide(color: AppColors.emerald.withValues(alpha: 0.5)),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      side: BorderSide(
+                        color: AppColors.emerald.withValues(alpha: 0.5),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                     onPressed: () {
@@ -272,10 +343,12 @@ class _ContentList extends ConsumerWidget {
                       ].join('\n');
                       Clipboard.setData(ClipboardData(text: text));
                       Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content: Text('Texte copié.'),
-                        backgroundColor: AppColors.emerald,
-                      ));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Texte copié.'),
+                          backgroundColor: AppColors.emerald,
+                        ),
+                      );
                     },
                     icon: const Icon(Icons.copy, size: 20),
                     label: const Text('Copier'),
@@ -285,13 +358,21 @@ class _ContentList extends ConsumerWidget {
                   const SizedBox(width: AppSpacing.md),
                   IconButton(
                     style: IconButton.styleFrom(
-                      backgroundColor: (isFavorite ? AppColors.gold : AppColors.cardSurfaceLight).withValues(alpha: 0.15),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      backgroundColor:
+                          (isFavorite
+                                  ? AppColors.gold
+                                  : AppColors.cardSurfaceLight)
+                              .withValues(alpha: 0.15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       padding: const EdgeInsets.all(14),
                     ),
                     icon: Icon(
                       isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: isFavorite ? AppColors.gold : AppColors.textSecondary,
+                      color: isFavorite
+                          ? AppColors.gold
+                          : AppColors.textSecondary,
                     ),
                     onPressed: () async {
                       final repo = ref.read(islamicRepositoryProvider);

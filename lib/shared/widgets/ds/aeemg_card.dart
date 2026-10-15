@@ -52,7 +52,7 @@ class AeemgCard extends StatelessWidget {
       child: onTap == null
           ? content
           : Material(
-              color: Colors.transparent,
+              color: AppColors.transparent,
               child: InkWell(
                 onTap: onTap,
                 borderRadius: AppRadius.cardBorder,

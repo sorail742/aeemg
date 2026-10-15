@@ -190,7 +190,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
       backgroundColor: AppColors.background,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.white),

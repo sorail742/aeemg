@@ -58,7 +58,9 @@ class _QuranHubScreenState extends ConsumerState<QuranHubScreen>
   @override
   Widget build(BuildContext context) {
     final surahs = ref.watch(allSurahsProvider);
-    final filtered = ref.read(quranServiceProvider).filterSurahs(_searchQuery, surahs);
+    final filtered = ref
+        .read(quranServiceProvider)
+        .filterSurahs(_searchQuery, surahs);
     final lastReadAsync = ref.watch(quranLastReadProvider);
     final bookmarksAsync = ref.watch(quranBookmarksProvider);
     final lastMushafPage = ref.watch(quranLastMushafPageProvider);
@@ -74,10 +76,16 @@ class _QuranHubScreenState extends ConsumerState<QuranHubScreen>
         backgroundColor: AppColors.background.withValues(alpha: 0.9),
         elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.white),
-        title: Text('Le Noble Coran', style: AppTypography.h2.copyWith(color: AppColors.white)),
+        title: Text(
+          'Le Noble Coran',
+          style: AppTypography.h2.copyWith(color: AppColors.white),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.record_voice_over_outlined, color: AppColors.gold),
+            icon: const Icon(
+              Icons.record_voice_over_outlined,
+              color: AppColors.gold,
+            ),
             tooltip: reciterLabel,
             onPressed: () => showReciterPicker(context, ref),
           ),
@@ -100,7 +108,9 @@ class _QuranHubScreenState extends ConsumerState<QuranHubScreen>
         withPattern: true,
         child: Column(
           children: [
-            SizedBox(height: MediaQuery.of(context).padding.top + kToolbarHeight + 48),
+            SizedBox(
+              height: MediaQuery.of(context).padding.top + kToolbarHeight + 48,
+            ),
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.md,
@@ -114,7 +124,10 @@ class _QuranHubScreenState extends ConsumerState<QuranHubScreen>
                 decoration: InputDecoration(
                   hintText: 'Rechercher une sourate ou un mot…',
                   hintStyle: TextStyle(color: AppColors.textSecondary),
-                  prefixIcon: const Icon(Icons.search, color: AppColors.emerald),
+                  prefixIcon: const Icon(
+                    Icons.search,
+                    color: AppColors.emerald,
+                  ),
                   filled: true,
                   fillColor: AppColors.cardSurface.withValues(alpha: 0.8),
                   border: OutlineInputBorder(
@@ -123,11 +136,16 @@ class _QuranHubScreenState extends ConsumerState<QuranHubScreen>
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide(color: AppColors.emerald.withValues(alpha: 0.5)),
+                    borderSide: BorderSide(
+                      color: AppColors.emerald.withValues(alpha: 0.5),
+                    ),
                   ),
                   suffixIcon: _searchQuery.isNotEmpty
                       ? IconButton(
-                          icon: const Icon(Icons.clear, color: AppColors.textSecondary),
+                          icon: const Icon(
+                            Icons.clear,
+                            color: AppColors.textSecondary,
+                          ),
                           onPressed: () => _searchController.clear(),
                         )
                       : null,
@@ -139,7 +157,9 @@ class _QuranHubScreenState extends ConsumerState<QuranHubScreen>
                 height: 120,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                  ),
                   itemCount: _verseHits.length,
                   itemBuilder: (context, index) {
                     final hit = _verseHits[index];
@@ -159,7 +179,9 @@ class _QuranHubScreenState extends ConsumerState<QuranHubScreen>
                             children: [
                               Text(
                                 '${surah.nameFrench} ${hit.ayahNumber}',
-                                style: AppTypography.h3.copyWith(color: AppColors.gold),
+                                style: AppTypography.h3.copyWith(
+                                  color: AppColors.gold,
+                                ),
                               ),
                               const SizedBox(height: AppSpacing.xs),
                               Expanded(
@@ -167,7 +189,9 @@ class _QuranHubScreenState extends ConsumerState<QuranHubScreen>
                                   hit.preview,
                                   maxLines: 3,
                                   overflow: TextOverflow.ellipsis,
-                                  style: AppTypography.caption.copyWith(color: AppColors.white),
+                                  style: AppTypography.caption.copyWith(
+                                    color: AppColors.white,
+                                  ),
                                 ),
                               ),
                             ],
@@ -186,28 +210,32 @@ class _QuranHubScreenState extends ConsumerState<QuranHubScreen>
                     surahs: filtered,
                     lastReadAsync: lastReadAsync,
                     onOpenSurah: (n) => context.push('/quran/surah/$n'),
-                    onResume: (surah, ayah) => context.push(
-                      '/quran/surah/$surah',
-                      extra: ayah,
-                    ),
+                    onResume: (surah, ayah) =>
+                        context.push('/quran/surah/$surah', extra: ayah),
                   ),
                   _MushafTab(
                     lastPage: lastMushafPage,
-                    onOpen: (page) => context.push('/quran/mushaf', extra: page),
+                    onOpen: (page) =>
+                        context.push('/quran/mushaf', extra: page),
                   ),
-                  _JuzTab(
-                    onOpenJuz: (n) => context.push('/quran/juz/$n'),
-                  ),
+                  _JuzTab(onOpenJuz: (n) => context.push('/quran/juz/$n')),
                   bookmarksAsync.when(
-                    loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald)),
-                    error: (e, _) => Center(child: Text('$e', style: const TextStyle(color: Colors.red))),
+                    loading: () => const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.emerald,
+                      ),
+                    ),
+                    error: (e, _) => Center(
+                      child: Text(
+                        '$e',
+                        style: const TextStyle(color: AppColors.error),
+                      ),
+                    ),
                     data: (bookmarks) => _BookmarksTab(
                       bookmarks: bookmarks,
                       surahs: surahs,
-                      onOpen: (surah, ayah) => context.push(
-                        '/quran/surah/$surah',
-                        extra: ayah,
-                      ),
+                      onOpen: (surah, ayah) =>
+                          context.push('/quran/surah/$surah', extra: ayah),
                       onRemove: (surah, ayah) async {
                         await ref
                             .read(quranBookmarksRepositoryProvider)
@@ -283,7 +311,9 @@ class _MushafTab extends StatelessWidget {
             foregroundColor: AppColors.white,
             side: BorderSide(color: AppColors.emerald.withValues(alpha: 0.5)),
             padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
           icon: const Icon(Icons.bookmark_outline, color: AppColors.emerald),
           label: Text('Reprendre page $lastPage'),
@@ -309,7 +339,12 @@ class _SurahsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.lg),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.md,
+        0,
+        AppSpacing.md,
+        AppSpacing.lg,
+      ),
       itemCount: surahs.length + 1,
       itemBuilder: (context, index) {
         if (index == 0) {
@@ -331,14 +366,20 @@ class _SurahsTab extends StatelessWidget {
                           color: AppColors.emerald.withValues(alpha: 0.2),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.menu_book, color: AppColors.emerald),
+                        child: const Icon(
+                          Icons.menu_book,
+                          color: AppColors.emerald,
+                        ),
                       ),
                       const SizedBox(width: AppSpacing.md),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Continuer la lecture', style: AppTypography.h3),
+                            Text(
+                              'Continuer la lecture',
+                              style: AppTypography.h3,
+                            ),
                             Text(
                               '${surah.nameFrench} · verset ${last.ayahNumber}',
                               style: AppTypography.bodySmall,
@@ -346,7 +387,11 @@ class _SurahsTab extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const Icon(Icons.play_circle_fill, color: AppColors.emerald, size: 28),
+                      const Icon(
+                        Icons.play_circle_fill,
+                        color: AppColors.emerald,
+                        size: 28,
+                      ),
                     ],
                   ),
                 ).animate().fade().scale(begin: const Offset(0.95, 0.95)),
@@ -359,11 +404,14 @@ class _SurahsTab extends StatelessWidget {
         final surah = surahs[index - 1];
         // Apply a staggered animation to the list items
         return SurahListTile(
-          surah: surah,
-          onTap: () => onOpenSurah(surah.number),
-        ).animate(delay: Duration(milliseconds: 50 * (index < 15 ? index : 0))) // Only animate first 15 to avoid lag
-         .fade()
-         .slideX(begin: 0.05);
+              surah: surah,
+              onTap: () => onOpenSurah(surah.number),
+            )
+            .animate(
+              delay: Duration(milliseconds: 50 * (index < 15 ? index : 0)),
+            ) // Only animate first 15 to avoid lag
+            .fade()
+            .slideX(begin: 0.05);
       },
     );
   }
@@ -383,41 +431,60 @@ class _JuzTab extends StatelessWidget {
         final juzNumber = index + 1;
         return Padding(
           padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-          child: AeemgCard(
-            onTap: () => onOpenJuz(juzNumber),
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.smMd,
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: AppColors.gold.withValues(alpha: 0.15),
-                    border: Border.all(color: AppColors.gold.withValues(alpha: 0.3)),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    '$juzNumber',
-                    style: AppTypography.h3.copyWith(color: AppColors.gold),
-                  ),
-                ),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Text('Juz $juzNumber', style: AppTypography.h3),
-                ),
-                const Icon(Icons.chevron_right, color: AppColors.textTertiary),
-              ],
-            ),
-          ).animate(delay: Duration(milliseconds: 20 * (index < 20 ? index : 0))).fade().slideY(begin: 0.05),
+          child:
+              AeemgCard(
+                    onTap: () => onOpenJuz(juzNumber),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.smMd,
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: AppColors.gold.withValues(alpha: 0.15),
+                            border: Border.all(
+                              color: AppColors.gold.withValues(alpha: 0.3),
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            '$juzNumber',
+                            style: AppTypography.h3.copyWith(
+                              color: AppColors.gold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(
+                          child: Text(
+                            'Juz $juzNumber',
+                            style: AppTypography.h3,
+                          ),
+                        ),
+                        const Icon(
+                          Icons.chevron_right,
+                          color: AppColors.textTertiary,
+                        ),
+                      ],
+                    ),
+                  )
+                  .animate(
+                    delay: Duration(
+                      milliseconds: 20 * (index < 20 ? index : 0),
+                    ),
+                  )
+                  .fade()
+                  .slideY(begin: 0.05),
         );
       },
     );
   }
 }
+
 class _BookmarksTab extends StatelessWidget {
   const _BookmarksTab({
     required this.bookmarks,
@@ -440,12 +507,18 @@ class _BookmarksTab extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.bookmark_border, size: 64, color: AppColors.textTertiary.withValues(alpha: 0.5)),
+              Icon(
+                Icons.bookmark_border,
+                size: 64,
+                color: AppColors.textTertiary.withValues(alpha: 0.5),
+              ),
               const SizedBox(height: AppSpacing.md),
               Text(
                 'Aucun signet.\nAppuyez sur l\'icône signet pendant la lecture.',
                 textAlign: TextAlign.center,
-                style: AppTypography.body.copyWith(color: AppColors.textSecondary),
+                style: AppTypography.body.copyWith(
+                  color: AppColors.textSecondary,
+                ),
               ),
             ],
           ),
@@ -461,28 +534,43 @@ class _BookmarksTab extends StatelessWidget {
         final surah = surahs[b.surahNumber - 1];
         return Padding(
           padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-          child: AeemgCard(
-            onTap: () => onOpen(b.surahNumber, b.ayahNumber),
-            child: Row(
-              children: [
-                const Icon(Icons.bookmark, color: AppColors.gold),
-                const SizedBox(width: AppSpacing.md),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('${surah.nameFrench} · Verset ${b.ayahNumber}', style: AppTypography.h3),
-                      Text(surah.nameArabic, style: AppTypography.quranArabic(size: 18), textDirection: TextDirection.rtl),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete_outline, color: AppColors.error),
-                  onPressed: () => onRemove(b.surahNumber, b.ayahNumber),
-                ),
-              ],
-            ),
-          ).animate(delay: Duration(milliseconds: 50 * index)).fade().slideX(begin: 0.1),
+          child:
+              AeemgCard(
+                    onTap: () => onOpen(b.surahNumber, b.ayahNumber),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.bookmark, color: AppColors.gold),
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${surah.nameFrench} · Verset ${b.ayahNumber}',
+                                style: AppTypography.h3,
+                              ),
+                              Text(
+                                surah.nameArabic,
+                                style: AppTypography.quranArabic(size: 18),
+                                textDirection: TextDirection.rtl,
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: AppColors.error,
+                          ),
+                          onPressed: () =>
+                              onRemove(b.surahNumber, b.ayahNumber),
+                        ),
+                      ],
+                    ),
+                  )
+                  .animate(delay: Duration(milliseconds: 50 * index))
+                  .fade()
+                  .slideX(begin: 0.1),
         );
       },
     );

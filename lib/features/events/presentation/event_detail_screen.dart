@@ -33,7 +33,7 @@ class EventDetailScreen extends ConsumerWidget {
       backgroundColor: AppColors.background,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.white),
       ),
@@ -49,36 +49,55 @@ class EventDetailScreen extends ConsumerWidget {
           physics: const BouncingScrollPhysics(),
           children: [
             Center(
-              child: Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.gold.withValues(alpha: 0.15),
-                  border: Border.all(color: AppColors.gold.withValues(alpha: 0.3)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.gold.withValues(alpha: 0.1),
-                      blurRadius: 20,
-                      spreadRadius: 5,
-                    )
-                  ],
-                ),
-                child: const Icon(Icons.event, size: 64, color: AppColors.gold),
-              ).animate().fade().scale(begin: const Offset(0.8, 0.8), curve: Curves.easeOutBack),
+              child:
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.gold.withValues(alpha: 0.15),
+                      border: Border.all(
+                        color: AppColors.gold.withValues(alpha: 0.3),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.gold.withValues(alpha: 0.1),
+                          blurRadius: 20,
+                          spreadRadius: 5,
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.event,
+                      size: 64,
+                      color: AppColors.gold,
+                    ),
+                  ).animate().fade().scale(
+                    begin: const Offset(0.8, 0.8),
+                    curve: Curves.easeOutBack,
+                  ),
             ),
             const SizedBox(height: AppSpacing.lg),
             Align(
               alignment: Alignment.center,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.emerald.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.emerald.withValues(alpha: 0.5)),
+                  border: Border.all(
+                    color: AppColors.emerald.withValues(alpha: 0.5),
+                  ),
                 ),
                 child: Text(
                   event.typeLabel.toUpperCase(),
-                  style: AppTypography.caption.copyWith(color: AppColors.emerald, fontWeight: FontWeight.bold, letterSpacing: 1.2),
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.emerald,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.2,
+                  ),
                 ),
               ).animate(delay: 100.ms).fade().slideY(begin: 0.2),
             ),
@@ -89,7 +108,7 @@ class EventDetailScreen extends ConsumerWidget {
               style: AppTypography.h1.copyWith(color: AppColors.white),
             ).animate(delay: 200.ms).fade().slideY(begin: 0.1),
             const SizedBox(height: AppSpacing.xl),
-            
+
             AeemgCard(
               padding: const EdgeInsets.all(AppSpacing.lg),
               child: Column(
@@ -102,7 +121,10 @@ class EventDetailScreen extends ConsumerWidget {
                           color: AppColors.cardSurfaceLight,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Icon(Icons.schedule, color: AppColors.gold),
+                        child: const Icon(
+                          Icons.schedule,
+                          color: AppColors.gold,
+                        ),
                       ),
                       const SizedBox(width: AppSpacing.md),
                       Expanded(
@@ -112,7 +134,9 @@ class EventDetailScreen extends ConsumerWidget {
                             Text('Date et Heure', style: AppTypography.caption),
                             Text(
                               dateFormat.format(event.startsAt),
-                              style: AppTypography.body.copyWith(fontWeight: FontWeight.bold),
+                              style: AppTypography.body.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
@@ -122,7 +146,10 @@ class EventDetailScreen extends ConsumerWidget {
                   if (event.location != null) ...[
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                      child: Divider(color: AppColors.textTertiary, thickness: 0.3),
+                      child: Divider(
+                        color: AppColors.textTertiary,
+                        thickness: 0.3,
+                      ),
                     ),
                     Row(
                       children: [
@@ -132,7 +159,10 @@ class EventDetailScreen extends ConsumerWidget {
                             color: AppColors.cardSurfaceLight,
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Icon(Icons.place, color: AppColors.emerald),
+                          child: const Icon(
+                            Icons.place,
+                            color: AppColors.emerald,
+                          ),
                         ),
                         const SizedBox(width: AppSpacing.md),
                         Expanded(
@@ -142,7 +172,9 @@ class EventDetailScreen extends ConsumerWidget {
                               Text('Lieu', style: AppTypography.caption),
                               Text(
                                 event.location!,
-                                style: AppTypography.body.copyWith(fontWeight: FontWeight.bold),
+                                style: AppTypography.body.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ],
                           ),
@@ -153,19 +185,25 @@ class EventDetailScreen extends ConsumerWidget {
                 ],
               ),
             ).animate(delay: 300.ms).fade().slideY(begin: 0.1),
-            
+
             const SizedBox(height: AppSpacing.lg),
-            
+
             if (event.description != null) ...[
-              Text('Description', style: AppTypography.h3).animate(delay: 400.ms).fade(),
+              Text(
+                'Description',
+                style: AppTypography.h3,
+              ).animate(delay: 400.ms).fade(),
               const SizedBox(height: AppSpacing.sm),
               Text(
                 event.description!,
-                style: AppTypography.body.copyWith(color: AppColors.textSecondary, height: 1.6),
+                style: AppTypography.body.copyWith(
+                  color: AppColors.textSecondary,
+                  height: 1.6,
+                ),
               ).animate(delay: 450.ms).fade(),
               const SizedBox(height: AppSpacing.lg),
             ],
-            
+
             rsvpCountAsync.when(
               data: (count) => Container(
                 padding: const EdgeInsets.all(AppSpacing.md),
@@ -177,11 +215,17 @@ class EventDetailScreen extends ConsumerWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.people_alt_outlined, color: AppColors.gold),
+                    const Icon(
+                      Icons.people_alt_outlined,
+                      color: AppColors.gold,
+                    ),
                     const SizedBox(width: AppSpacing.sm),
                     Text(
                       '$count participant(s) inscrit(s)',
-                      style: AppTypography.body.copyWith(color: AppColors.gold, fontWeight: FontWeight.bold),
+                      style: AppTypography.body.copyWith(
+                        color: AppColors.gold,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -189,9 +233,9 @@ class EventDetailScreen extends ConsumerWidget {
               loading: () => const SizedBox.shrink(),
               error: (_, _) => const SizedBox.shrink(),
             ),
-            
+
             const SizedBox(height: AppSpacing.xl),
-            
+
             AeemgPrimaryButton(
               onPressed: () async {
                 final uri = Uri.parse(googleCalendarUrl(event));
@@ -202,14 +246,17 @@ class EventDetailScreen extends ConsumerWidget {
               icon: Icons.event_available,
               label: AppStrings.t('add_calendar', locale),
             ).animate(delay: 600.ms).fade().slideY(begin: 0.1),
-            
+
             const SizedBox(height: AppSpacing.lg),
             const Divider(color: AppColors.textTertiary, thickness: 0.3),
             const SizedBox(height: AppSpacing.lg),
-            
+
             if (user != null) ...[
-              Text('Votre participation', style: AppTypography.h3, textAlign: TextAlign.center)
-                  .animate(delay: 700.ms).fade(),
+              Text(
+                'Votre participation',
+                style: AppTypography.h3,
+                textAlign: TextAlign.center,
+              ).animate(delay: 700.ms).fade(),
               const SizedBox(height: AppSpacing.md),
               Row(
                 children: [
@@ -217,11 +264,15 @@ class EventDetailScreen extends ConsumerWidget {
                     child: OutlinedButton.icon(
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.error,
-                        side: BorderSide(color: AppColors.error.withValues(alpha: 0.5)),
+                        side: BorderSide(
+                          color: AppColors.error.withValues(alpha: 0.5),
+                        ),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                       onPressed: () async {
-                        await ref.read(eventsRepositoryProvider).setRsvp(
+                        await ref
+                            .read(eventsRepositoryProvider)
+                            .setRsvp(
                               eventId: event.id,
                               userId: user.id,
                               status: 'not_going',
@@ -229,7 +280,10 @@ class EventDetailScreen extends ConsumerWidget {
                         ref.invalidate(rsvpCountProvider(event.id));
                       },
                       icon: const Icon(Icons.close),
-                      label: const Text('Absent', style: TextStyle(fontWeight: FontWeight.bold)),
+                      label: const Text(
+                        'Absent',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ).animate(delay: 800.ms).fade().slideX(begin: -0.1),
                   ),
                   const SizedBox(width: AppSpacing.md),
@@ -241,7 +295,9 @@ class EventDetailScreen extends ConsumerWidget {
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                       onPressed: () async {
-                        await ref.read(eventsRepositoryProvider).setRsvp(
+                        await ref
+                            .read(eventsRepositoryProvider)
+                            .setRsvp(
                               eventId: event.id,
                               userId: user.id,
                               status: 'going',
@@ -249,7 +305,10 @@ class EventDetailScreen extends ConsumerWidget {
                         ref.invalidate(rsvpCountProvider(event.id));
                       },
                       icon: const Icon(Icons.check),
-                      label: const Text('Présent', style: TextStyle(fontWeight: FontWeight.bold)),
+                      label: const Text(
+                        'Présent',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ).animate(delay: 800.ms).fade().slideX(begin: 0.1),
                   ),
                 ],
@@ -258,7 +317,9 @@ class EventDetailScreen extends ConsumerWidget {
               Center(
                 child: Text(
                   'Connectez-vous pour vous inscrire à cet événement.',
-                  style: AppTypography.caption.copyWith(color: AppColors.textSecondary),
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ).animate(delay: 700.ms).fade(),
           ],

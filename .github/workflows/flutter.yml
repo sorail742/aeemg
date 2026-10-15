@@ -118,4 +118,4 @@ jobs:
       # mesure que les tickets correspondants sont livrés (cf. docs/CI.md).
       - run: tool/ci/check_repo_policies.sh
         env:
-          ERROR_RULES: ${{ vars.POLICY_ERROR_RULES || 'secrets forbidden-files service-role env-asset' }}
+          ERROR_RULES: ${{ vars.POLICY_ERROR_RULES || 'secrets forbidden-files service-role env-asset design-tokens' }}

@@ -54,8 +54,11 @@ class _DonationsScreenState extends ConsumerState<DonationsScreen>
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(currentUserProvider);
-    final currency =
-        NumberFormat.currency(locale: 'fr_GN', symbol: 'GNF ', decimalDigits: 0);
+    final currency = NumberFormat.currency(
+      locale: 'fr_GN',
+      symbol: 'GNF ',
+      decimalDigits: 0,
+    );
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -64,7 +67,10 @@ class _DonationsScreenState extends ConsumerState<DonationsScreen>
         backgroundColor: AppColors.background.withValues(alpha: 0.8),
         elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.white),
-        title: Text('Faire un don', style: AppTypography.h2.copyWith(color: AppColors.white)),
+        title: Text(
+          'Faire un don',
+          style: AppTypography.h2.copyWith(color: AppColors.white),
+        ),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: AppColors.gold,
@@ -111,7 +117,12 @@ class _CampaignsTab extends ConsumerWidget {
 
     return AsyncValueWidget(
       value: campaignsAsync,
-      empty: Center(child: Text('Aucune campagne active.', style: TextStyle(color: AppColors.textSecondary))),
+      empty: Center(
+        child: Text(
+          'Aucune campagne active.',
+          style: TextStyle(color: AppColors.textSecondary),
+        ),
+      ),
       data: (campaigns) => ListView(
         padding: EdgeInsets.only(
           top: MediaQuery.of(context).padding.top + kToolbarHeight + 64,
@@ -129,9 +140,16 @@ class _CampaignsTab extends ConsumerWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.volunteer_activism, color: AppColors.gold, size: 28),
+                    const Icon(
+                      Icons.volunteer_activism,
+                      color: AppColors.gold,
+                      size: 28,
+                    ),
                     const SizedBox(width: AppSpacing.sm),
-                    Text('Faire un don rapide', style: AppTypography.h2.copyWith(color: AppColors.gold)),
+                    Text(
+                      'Faire un don rapide',
+                      style: AppTypography.h2.copyWith(color: AppColors.gold),
+                    ),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.md),
@@ -148,23 +166,30 @@ class _CampaignsTab extends ConsumerWidget {
                       onTap: user == null
                           ? null
                           : () => _donate(
-                                context,
-                                ref,
-                                user!.id,
-                                amount.toDouble(),
-                                onDonated: onDonated,
-                              ),
+                              context,
+                              ref,
+                              user!.id,
+                              amount.toDouble(),
+                              onDonated: onDonated,
+                            ),
                       borderRadius: BorderRadius.circular(16),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.emerald.withValues(alpha: 0.15),
-                          border: Border.all(color: AppColors.emerald.withValues(alpha: 0.4)),
+                          border: Border.all(
+                            color: AppColors.emerald.withValues(alpha: 0.4),
+                          ),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Text(
                           currency.format(amount),
-                          style: AppTypography.h4.copyWith(color: AppColors.emerald),
+                          style: AppTypography.h4.copyWith(
+                            color: AppColors.emerald,
+                          ),
                         ),
                       ),
                     );
@@ -174,93 +199,130 @@ class _CampaignsTab extends ConsumerWidget {
             ),
           ).animate().fade().slideY(begin: -0.1),
           const SizedBox(height: AppSpacing.xl),
-          
-          Text('Campagnes en cours', style: AppTypography.h2.copyWith(color: AppColors.white))
-              .animate(delay: 100.ms).fade(),
+
+          Text(
+            'Campagnes en cours',
+            style: AppTypography.h2.copyWith(color: AppColors.white),
+          ).animate(delay: 100.ms).fade(),
           const SizedBox(height: AppSpacing.md),
-          
+
           ...campaigns.asMap().entries.map((entry) {
             final index = entry.key;
             final campaign = entry.value;
             final progress = campaign.progress.clamp(0.0, 1.0);
-            
+
             return Padding(
               padding: const EdgeInsets.only(bottom: AppSpacing.md),
-              child: AeemgCard(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(campaign.title, style: AppTypography.h3),
-                    if (campaign.description != null) ...[
-                      const SizedBox(height: AppSpacing.sm),
-                      Text(campaign.description!, style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary)),
-                    ],
-                    const SizedBox(height: AppSpacing.lg),
-                    
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Objectif', style: AppTypography.caption),
-                        Text(
-                          '${(progress * 100).toStringAsFixed(0)}%',
-                          style: AppTypography.caption.copyWith(color: AppColors.emerald, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        minHeight: 8,
-                        backgroundColor: AppColors.cardSurfaceLight,
-                        valueColor: const AlwaysStoppedAnimation<Color>(AppColors.emerald),
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(currency.format(campaign.raisedAmount), style: AppTypography.caption.copyWith(color: AppColors.emerald)),
-                        Text(currency.format(campaign.goalAmount), style: AppTypography.caption),
-                      ],
-                    ),
-                    
-                    const SizedBox(height: AppSpacing.lg),
-                    if (user != null)
-                      SizedBox(
-                        width: double.infinity,
-                        child: FilledButton.icon(
-                          style: FilledButton.styleFrom(
-                            backgroundColor: AppColors.emerald,
-                            foregroundColor: AppColors.deepNavy,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                          ),
-                          onPressed: () => _donate(
-                            context,
-                            ref,
-                            user!.id,
-                            10000,
-                            campaignId: campaign.id,
-                            category: campaign.category,
-                            onDonated: onDonated,
-                          ),
-                          icon: const Icon(Icons.favorite),
-                          label: const Text('Contribuer (10 000 GNF)', style: TextStyle(fontWeight: FontWeight.bold)),
+              child:
+                  AeemgCard(
+                        padding: const EdgeInsets.all(AppSpacing.lg),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(campaign.title, style: AppTypography.h3),
+                            if (campaign.description != null) ...[
+                              const SizedBox(height: AppSpacing.sm),
+                              Text(
+                                campaign.description!,
+                                style: AppTypography.bodySmall.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
+                            const SizedBox(height: AppSpacing.lg),
+
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('Objectif', style: AppTypography.caption),
+                                Text(
+                                  '${(progress * 100).toStringAsFixed(0)}%',
+                                  style: AppTypography.caption.copyWith(
+                                    color: AppColors.emerald,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: AppSpacing.xs),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: LinearProgressIndicator(
+                                value: progress,
+                                minHeight: 8,
+                                backgroundColor: AppColors.cardSurfaceLight,
+                                valueColor: const AlwaysStoppedAnimation<Color>(
+                                  AppColors.emerald,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.xs),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  currency.format(campaign.raisedAmount),
+                                  style: AppTypography.caption.copyWith(
+                                    color: AppColors.emerald,
+                                  ),
+                                ),
+                                Text(
+                                  currency.format(campaign.goalAmount),
+                                  style: AppTypography.caption,
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: AppSpacing.lg),
+                            if (user != null)
+                              SizedBox(
+                                width: double.infinity,
+                                child: FilledButton.icon(
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: AppColors.emerald,
+                                    foregroundColor: AppColors.deepNavy,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                  ),
+                                  onPressed: () => _donate(
+                                    context,
+                                    ref,
+                                    user!.id,
+                                    10000,
+                                    campaignId: campaign.id,
+                                    category: campaign.category,
+                                    onDonated: onDonated,
+                                  ),
+                                  icon: const Icon(Icons.favorite),
+                                  label: const Text(
+                                    'Contribuer (10 000 GNF)',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            else
+                              Center(
+                                child: Text(
+                                  'Connectez-vous pour contribuer.',
+                                  style: AppTypography.caption.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       )
-                    else
-                      Center(
-                        child: Text(
-                          'Connectez-vous pour contribuer.',
-                          style: AppTypography.caption.copyWith(color: AppColors.textSecondary),
-                        ),
-                      ),
-                  ],
-                ),
-              ).animate(delay: Duration(milliseconds: 200 + (index * 100))).fade().slideY(begin: 0.1),
+                      .animate(
+                        delay: Duration(milliseconds: 200 + (index * 100)),
+                      )
+                      .fade()
+                      .slideY(begin: 0.1),
             );
           }),
         ],
@@ -312,7 +374,10 @@ class _CampaignsTab extends ConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur paiement : $e', style: const TextStyle(color: AppColors.white)),
+            content: Text(
+              'Erreur paiement : $e',
+              style: const TextStyle(color: AppColors.white),
+            ),
             backgroundColor: AppColors.error,
           ),
         );
@@ -330,11 +395,17 @@ class _CampaignsTab extends ConsumerWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(color: Colors.orange.withValues(alpha: 0.2), shape: BoxShape.circle),
-              child: const Icon(Icons.phone_android, color: Colors.orange),
+              decoration: BoxDecoration(
+                color: AppColors.warning.withValues(alpha: 0.2),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.phone_android, color: AppColors.warning),
             ),
             const SizedBox(width: AppSpacing.sm),
-            const Text('Orange Money', style: TextStyle(color: AppColors.white)),
+            const Text(
+              'Orange Money',
+              style: TextStyle(color: AppColors.white),
+            ),
           ],
         ),
         content: TextField(
@@ -346,22 +417,37 @@ class _CampaignsTab extends ConsumerWidget {
             labelStyle: TextStyle(color: AppColors.textSecondary),
             hintText: '+224 6XX XX XX XX',
             hintStyle: TextStyle(color: AppColors.textTertiary),
-            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.emerald.withValues(alpha: 0.5))),
-            focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.emerald)),
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(
+                color: AppColors.emerald.withValues(alpha: 0.5),
+              ),
+            ),
+            focusedBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: AppColors.emerald),
+            ),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Annuler', style: TextStyle(color: AppColors.textSecondary)),
+            child: const Text(
+              'Annuler',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
           ),
           FilledButton(
-            style: FilledButton.styleFrom(backgroundColor: AppColors.emerald, foregroundColor: AppColors.deepNavy),
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.emerald,
+              foregroundColor: AppColors.deepNavy,
+            ),
             onPressed: () {
               final phone = controller.text.trim();
               if (phone.length >= 8) Navigator.pop(dialogContext, phone);
             },
-            child: const Text('Payer', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: const Text(
+              'Payer',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
@@ -381,7 +467,10 @@ class _MyDonationsTab extends ConsumerWidget {
 
     if (user == null) {
       return Center(
-        child: Text('Connectez-vous pour voir votre historique de dons.', style: TextStyle(color: AppColors.textSecondary)),
+        child: Text(
+          'Connectez-vous pour voir votre historique de dons.',
+          style: TextStyle(color: AppColors.textSecondary),
+        ),
       );
     }
 
@@ -394,7 +483,12 @@ class _MyDonationsTab extends ConsumerWidget {
         empty: ListView(
           children: const [
             SizedBox(height: 120),
-            Center(child: Text('Aucun don enregistré pour le moment.', style: TextStyle(color: AppColors.textSecondary))),
+            Center(
+              child: Text(
+                'Aucun don enregistré pour le moment.',
+                style: TextStyle(color: AppColors.textSecondary),
+              ),
+            ),
           ],
         ),
         data: (donations) => ListView.separated(
@@ -404,62 +498,84 @@ class _MyDonationsTab extends ConsumerWidget {
             right: AppSpacing.md,
             bottom: AppSpacing.xl,
           ),
-          physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
+          ),
           itemCount: donations.length,
           separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
           itemBuilder: (context, index) {
             final d = donations[index];
             final date = DateFormat('d MMM yyyy', 'fr').format(d.createdAt);
             return AeemgCard(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.emerald.withValues(alpha: 0.15),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.favorite, color: AppColors.emerald),
-                  ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          currency.format(d.amount),
-                          style: AppTypography.h3.copyWith(color: AppColors.emerald),
-                        ),
-                        const SizedBox(height: AppSpacing.xs),
-                        Text(
-                          d.campaignTitle ?? 'Don général',
-                          style: AppTypography.bodySmall.copyWith(color: AppColors.white),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  child: Row(
                     children: [
-                      Text(date, style: AppTypography.caption.copyWith(color: AppColors.textSecondary)),
-                      const SizedBox(height: 4),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: AppColors.gold.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(8),
+                          color: AppColors.emerald.withValues(alpha: 0.15),
+                          shape: BoxShape.circle,
                         ),
-                        child: Text(
-                          d.statusLabel,
-                          style: AppTypography.caption.copyWith(color: AppColors.gold),
+                        child: const Icon(
+                          Icons.favorite,
+                          color: AppColors.emerald,
                         ),
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              currency.format(d.amount),
+                              style: AppTypography.h3.copyWith(
+                                color: AppColors.emerald,
+                              ),
+                            ),
+                            const SizedBox(height: AppSpacing.xs),
+                            Text(
+                              d.campaignTitle ?? 'Don général',
+                              style: AppTypography.bodySmall.copyWith(
+                                color: AppColors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            date,
+                            style: AppTypography.caption.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.gold.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              d.statusLabel,
+                              style: AppTypography.caption.copyWith(
+                                color: AppColors.gold,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
-            ).animate(delay: Duration(milliseconds: 50 * index)).fade().slideX(begin: 0.05);
+                )
+                .animate(delay: Duration(milliseconds: 50 * index))
+                .fade()
+                .slideX(begin: 0.05);
           },
         ),
       ),

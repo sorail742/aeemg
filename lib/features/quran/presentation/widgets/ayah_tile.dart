@@ -37,10 +37,14 @@ class AyahTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: AppSpacing.lg),
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: isPlaying ? AppColors.emerald.withValues(alpha: 0.1) : AppColors.cardSurface.withValues(alpha: 0.4),
+        color: isPlaying
+            ? AppColors.emerald.withValues(alpha: 0.1)
+            : AppColors.cardSurface.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isPlaying ? AppColors.emerald.withValues(alpha: 0.5) : Colors.transparent,
+          color: isPlaying
+              ? AppColors.emerald.withValues(alpha: 0.5)
+              : AppColors.transparent,
           width: 1,
         ),
       ),
@@ -56,7 +60,9 @@ class AyahTile extends StatelessWidget {
                 IconButton(
                   icon: Icon(
                     isPlaying ? Icons.pause_circle : Icons.play_circle_outline,
-                    color: isPlaying ? AppColors.emerald : AppColors.textTertiary,
+                    color: isPlaying
+                        ? AppColors.emerald
+                        : AppColors.textTertiary,
                     size: 28,
                   ),
                   onPressed: onPlayAudio,
@@ -73,7 +79,11 @@ class AyahTile extends StatelessWidget {
               ),
               if (onRecite != null)
                 IconButton(
-                  icon: const Icon(Icons.mic_none, color: AppColors.emerald, size: 28),
+                  icon: const Icon(
+                    Icons.mic_none,
+                    color: AppColors.emerald,
+                    size: 28,
+                  ),
                   onPressed: onRecite,
                   tooltip: 'Réciter',
                 ),
@@ -89,9 +99,9 @@ class AyahTile extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           Text(
             ayah.arabic,
-            style: AppTypography.quranArabic(size: arabicFontSize).copyWith(
-              color: isPlaying ? AppColors.emerald : AppColors.white,
-            ),
+            style: AppTypography.quranArabic(
+              size: arabicFontSize,
+            ).copyWith(color: isPlaying ? AppColors.emerald : AppColors.white),
             textAlign: TextAlign.right,
             textDirection: TextDirection.rtl,
           ),
@@ -100,7 +110,11 @@ class AyahTile extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                const Icon(Icons.keyboard_arrow_down, color: AppColors.gold, size: 16),
+                const Icon(
+                  Icons.keyboard_arrow_down,
+                  color: AppColors.gold,
+                  size: 16,
+                ),
                 const SizedBox(width: 4),
                 Text(
                   'Verse de prosternation (Sajda)',
@@ -115,7 +129,10 @@ class AyahTile extends StatelessWidget {
             const SizedBox(height: AppSpacing.md),
             Text(
               ayah.translation,
-              style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary, height: 1.6),
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+                height: 1.6,
+              ),
             ),
           ],
         ],
@@ -137,7 +154,10 @@ class _AyahBadge extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.rectangle,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.emerald.withValues(alpha: 0.3), width: 1.5),
+        border: Border.all(
+          color: AppColors.emerald.withValues(alpha: 0.3),
+          width: 1.5,
+        ),
         color: AppColors.emerald.withValues(alpha: 0.1),
       ),
       alignment: Alignment.center,
@@ -147,7 +167,10 @@ class _AyahBadge extends StatelessWidget {
           width: 28,
           height: 28,
           decoration: BoxDecoration(
-            border: Border.all(color: AppColors.emerald.withValues(alpha: 0.5), width: 1),
+            border: Border.all(
+              color: AppColors.emerald.withValues(alpha: 0.5),
+              width: 1,
+            ),
           ),
           alignment: Alignment.center,
           child: Transform.rotate(

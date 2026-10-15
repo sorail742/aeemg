@@ -8,7 +8,7 @@
 set -uo pipefail
 
 # Règles promues en erreur bloquante. Ajouter l'ID quand le ticket est livré.
-ERROR_RULES="${ERROR_RULES:-secrets forbidden-files service-role env-asset}"
+ERROR_RULES="${ERROR_RULES:-secrets forbidden-files service-role env-asset design-tokens}"
 # Ex. après AMEL-001 : ERROR_RULES="... file-size"
 
 errors=0
@@ -112,6 +112,12 @@ while IFS=: read -r f l _; do
   [[ -z "$f" ]] && continue
   report raw-error "$f" "$l" "Exception brute affichée à l'utilisateur : passer par la gestion d'erreurs centralisée (REL-008)."
 done < <(git grep -nE "Text\(['\"][^'\"]*\\\$e['\"]" -- 'lib/*.dart' 2>/dev/null || true)
+
+# 12. Couleurs Material en dur hors du thème (AMEL-022, docs/DESIGN_SYSTEM.md)
+while IFS=: read -r f l _; do
+  [[ -z "$f" ]] && continue
+  report design-tokens "$f" "$l" "Couleur Material en dur : utiliser un token AppColors (docs/DESIGN_SYSTEM.md, AMEL-022)."
+done < <(git grep -nP '(?<![A-Za-z_])Colors\.' -- 'lib/*.dart' ':!lib/core/theme/*' 2>/dev/null || true)
 
 echo
 echo "Politiques du dépôt : ${errors} erreur(s), ${warnings} avertissement(s)."

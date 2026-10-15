@@ -53,7 +53,7 @@ sans modifier les workflows :
 | `COVERAGE_MIN` | `0` | Couverture minimale (%) | +10 points par trimestre (AMEL-007) |
 | `WEB_BUDGET_KB` | `0` (rapport) | Budget gzip de `main.dart.js` | Après mesure initiale (AMEL-010) |
 | `FORMAT_SCOPE` | `changed` | `all` = tout le dépôt | Après AMEL-024 |
-| `POLICY_ERROR_RULES` | `secrets forbidden-files service-role env-asset` | Règles de `policy-checks` bloquantes | Ajouter `dart-io` (AMEL-011), `file-size` (AMEL-001), `presentation-supabase` (AMEL-002), `raw-error` (REL-008), `todo-ticket`, `no-print` |
+| `POLICY_ERROR_RULES` | `secrets forbidden-files service-role env-asset design-tokens` | Règles de `policy-checks` bloquantes | Ajouter `dart-io` (AMEL-011), `file-size` (AMEL-001), `presentation-supabase` (AMEL-002), `raw-error` (REL-008), `todo-ticket`, `no-print` |
 | `PR_MAX_LINES` | `1000` | Taille max d'une PR (contournable par le label `taille-justifiee`) | Réduire à 600 quand l'équipe est rodée |
 | `DEPENDENCY_REVIEW` | absent (job actif) | `false` désactive le job `dependency-review` | Si le dépôt devient privé sans GitHub Advanced Security |
 

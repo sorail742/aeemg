@@ -50,7 +50,10 @@ class _MushafReaderScreenState extends ConsumerState<MushafReaderScreen> {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppColors.cardSurface,
-        title: Text('Aller à la page', style: AppTypography.h3.copyWith(color: AppColors.white)),
+        title: Text(
+          'Aller à la page',
+          style: AppTypography.h3.copyWith(color: AppColors.white),
+        ),
         content: TextField(
           controller: controller,
           keyboardType: TextInputType.number,
@@ -58,14 +61,23 @@ class _MushafReaderScreenState extends ConsumerState<MushafReaderScreen> {
           decoration: InputDecoration(
             labelText: 'Page (1–604)',
             labelStyle: TextStyle(color: AppColors.textSecondary),
-            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppColors.emerald.withValues(alpha: 0.5))),
-            focusedBorder: const UnderlineInputBorder(borderSide: BorderSide(color: AppColors.emerald)),
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(
+                color: AppColors.emerald.withValues(alpha: 0.5),
+              ),
+            ),
+            focusedBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: AppColors.emerald),
+            ),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Annuler', style: TextStyle(color: AppColors.textSecondary)),
+            child: const Text(
+              'Annuler',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: AppColors.emerald),
@@ -73,7 +85,13 @@ class _MushafReaderScreenState extends ConsumerState<MushafReaderScreen> {
               final value = int.tryParse(controller.text.trim());
               Navigator.pop(context, value);
             },
-            child: const Text('OK', style: TextStyle(color: AppColors.deepNavy, fontWeight: FontWeight.bold)),
+            child: const Text(
+              'OK',
+              style: TextStyle(
+                color: AppColors.deepNavy,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -96,7 +114,10 @@ class _MushafReaderScreenState extends ConsumerState<MushafReaderScreen> {
         backgroundColor: AppColors.background.withValues(alpha: 0.8),
         elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.white),
-        title: Text('Mushaf · Page $_currentPage', style: AppTypography.h2.copyWith(color: AppColors.white)),
+        title: Text(
+          'Mushaf · Page $_currentPage',
+          style: AppTypography.h2.copyWith(color: AppColors.white),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.pin_outlined, color: AppColors.gold),
@@ -116,7 +137,8 @@ class _MushafReaderScreenState extends ConsumerState<MushafReaderScreen> {
             return _MushafPageView(
               page: page,
               surahs: surahs,
-              arabicFontSize: arabicSize + 4, // Make mushaf slightly bigger by default
+              arabicFontSize:
+                  arabicSize + 4, // Make mushaf slightly bigger by default
             );
           },
         ),
@@ -145,10 +167,13 @@ class _MushafPageView extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFFFAF3E0), // Soft sepia/parchment color
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.gold.withValues(alpha: 0.5), width: 2),
+          border: Border.all(
+            color: AppColors.gold.withValues(alpha: 0.5),
+            width: 2,
+          ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.2),
+              color: AppColors.scrim.withValues(alpha: 0.2),
               blurRadius: 10,
               offset: const Offset(0, 5),
             ),
@@ -159,8 +184,20 @@ class _MushafPageView extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Page ${page.pageNumber}', style: AppTypography.caption.copyWith(color: AppColors.deepNavy, fontWeight: FontWeight.bold)),
-                Text('Juz ${page.juzNumber}', style: AppTypography.caption.copyWith(color: AppColors.deepNavy, fontWeight: FontWeight.bold)),
+                Text(
+                  'Page ${page.pageNumber}',
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.deepNavy,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'Juz ${page.juzNumber}',
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.deepNavy,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
             ),
             const Divider(color: AppColors.gold, thickness: 1),
@@ -185,22 +222,29 @@ class _MushafPageView extends StatelessWidget {
                             children: [
                               Text(
                                 surah.nameArabic,
-                                style: AppTypography.quranArabic(size: arabicFontSize + 6).copyWith(color: AppColors.deepNavy),
+                                style: AppTypography.quranArabic(
+                                  size: arabicFontSize + 6,
+                                ).copyWith(color: AppColors.deepNavy),
                                 textAlign: TextAlign.center,
                               ),
                               Text(
                                 surah.nameFrench,
                                 textAlign: TextAlign.center,
-                                style: AppTypography.caption.copyWith(color: AppColors.deepNavy),
+                                style: AppTypography.caption.copyWith(
+                                  color: AppColors.deepNavy,
+                                ),
                               ),
                             ],
                           ),
                         ),
-                        if (segment.surahNumber != 9 && segment.surahNumber != 1) ...[
+                        if (segment.surahNumber != 9 &&
+                            segment.surahNumber != 1) ...[
                           const SizedBox(height: AppSpacing.md),
                           Text(
                             q.basmala,
-                            style: AppTypography.quranArabic(size: arabicFontSize + 2).copyWith(color: AppColors.deepNavy),
+                            style: AppTypography.quranArabic(
+                              size: arabicFontSize + 2,
+                            ).copyWith(color: AppColors.deepNavy),
                             textAlign: TextAlign.center,
                             textDirection: TextDirection.rtl,
                           ),
@@ -212,10 +256,13 @@ class _MushafPageView extends StatelessWidget {
                           children: segment.ayahs.map((ayah) {
                             return TextSpan(
                               text: '${ayah.arabic} ',
-                              style: AppTypography.quranArabic(size: arabicFontSize).copyWith(
-                                color: AppColors.deepNavy,
-                                height: 2.2,
-                              ),
+                              style:
+                                  AppTypography.quranArabic(
+                                    size: arabicFontSize,
+                                  ).copyWith(
+                                    color: AppColors.deepNavy,
+                                    height: 2.2,
+                                  ),
                             );
                           }).toList(),
                         ),
