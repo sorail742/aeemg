@@ -28,7 +28,7 @@ void main() {
     // config/example.json ne contient pas de vrai projet : l'app démarre sans Supabase.
     await app.main();
 
-    // Le splash redirige vers /home après environ 4 s.
+    // Le splash redirige vers /home après 2,2 s.
     await attendre(tester, find.text('Hadiths'));
     expect(find.text('AEEMG'), findsWidgets);
     expect(find.text('Accueil'), findsOneWidget);
