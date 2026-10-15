@@ -73,6 +73,7 @@ secondaires ; texte sur émeraude en `onPrimary` (sombre, 8:1) et non en blanc.
 | `AeemgPressable` | Retour tactile (l'élément s'enfonce à 97 %) ; déjà intégré aux cartes cliquables et au bouton principal |
 | `.reveal(context, index: i)` | Apparition en cascade d'un bloc (fondu + glissement de 6 %) |
 | `AeemgSkeleton`, `AeemgSkeletonTile` | Chargement à la forme du contenu attendu, à la place d'un indicateur circulaire |
+| `AeemgStarBadge` | Numéro dans une étoile à huit branches (sourates, versets, juz, hadiths) |
 | `AeemgRoundIconButton` | Bouton d'icône rond (surface de carte, bordure fine, badge facultatif) pour les en-têtes sans AppBar |
 | `IslamicPatternPainter` | Motif d'étoiles à huit branches (fond à 2 %, bandeau à 6 %) |
 
