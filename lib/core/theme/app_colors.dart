@@ -19,6 +19,14 @@ abstract final class AppColors {
   static const Color border = Color(
     0xFF243149,
   ); // Bordures fines et séparateurs
+  static const Color surfaceTop = Color(
+    0xFF172239,
+  ); // Reflet en haut des cartes (v3)
+
+  // ── Dégradés et halos (v3) ───────────────────────────────
+  static const Color heroStart = Color(0xFF0F5C47);
+  static const Color heroEnd = Color(0xFF0D1E33);
+  static const Color glow = Color(0x2410B981); // Halo émeraude du fond (14 %)
 
   // ── Action ───────────────────────────────────────────────
   static const Color emerald = Color(0xFF10B981);
@@ -43,6 +51,9 @@ abstract final class AppColors {
   static const Color warning = Color(0xFFF0A93B);
   static const Color info = Color(0xFF5BA8F5);
   static const Color focusRing = Color(0x8010B981);
+
+  /// Teinte d'accent secondaire (raccourci Dons, catégories) — v3.
+  static const Color violet = Color(0xFFC4B5FD);
 
   // ── Utilitaires ──────────────────────────────────────────
   // Seul fichier autorisé à utiliser `Colors.` de Material (contrôle design-tokens, AMEL-022).

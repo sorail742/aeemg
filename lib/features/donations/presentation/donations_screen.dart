@@ -1,59 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
-import '../../../core/providers/supabase_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/utils/supabase_errors.dart';
 import '../../../shared/widgets/async_value_widget.dart';
 import '../../../shared/widgets/ds/aeemg_card.dart';
+import '../../../shared/widgets/ds/aeemg_motion.dart';
+import '../../../shared/widgets/ds/aeemg_pill_tab_bar.dart';
+import '../../../shared/widgets/ds/aeemg_section.dart';
 import '../../../shared/widgets/ds/islamic_background.dart';
 import '../../auth/presentation/providers/auth_provider.dart';
-import '../data/donations_repository.dart';
+import 'providers/donations_providers.dart';
+import 'widgets/donation_widgets.dart';
 
-final donationsRepositoryProvider = Provider<DonationsRepository>((ref) {
-  return DonationsRepository(ref.watch(supabaseClientProvider));
-});
-
-final donationCampaignsProvider = FutureProvider((ref) async {
-  return ref.read(donationsRepositoryProvider).fetchCampaigns();
-});
-
-final myDonationsProvider = FutureProvider((ref) async {
-  final user = ref.watch(currentUserProvider);
-  if (user == null) return <DonationRecord>[];
-  return ref.read(donationsRepositoryProvider).fetchMyDonations(user.id);
-});
-
-class DonationsScreen extends ConsumerStatefulWidget {
+class DonationsScreen extends ConsumerWidget {
   const DonationsScreen({super.key});
 
   @override
-  ConsumerState<DonationsScreen> createState() => _DonationsScreenState();
-}
-
-class _DonationsScreenState extends ConsumerState<DonationsScreen>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final user = ref.watch(currentUserProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
     final currency = NumberFormat.currency(
       locale: 'fr_GN',
       symbol: 'GNF ',
@@ -62,38 +31,54 @@ class _DonationsScreenState extends ConsumerState<DonationsScreen>
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: AppColors.background.withValues(alpha: 0.8),
-        elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.white),
-        title: Text(
-          'Faire un don',
-          style: AppTypography.h2.copyWith(color: AppColors.white),
-        ),
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: AppColors.gold,
-          labelColor: AppColors.gold,
-          unselectedLabelColor: AppColors.textSecondary,
-          tabs: const [
-            Tab(text: 'Campagnes'),
-            Tab(text: 'Mes dons'),
-          ],
-        ),
-      ),
       body: IslamicBackground(
         withPattern: true,
-        child: TabBarView(
-          controller: _tabController,
-          children: [
-            _CampaignsTab(
-              user: user,
-              currency: currency,
-              onDonated: () => ref.invalidate(myDonationsProvider),
-            ),
-            _MyDonationsTab(currency: currency),
-          ],
+        child: DefaultTabController(
+          length: 2,
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.md,
+                  AppSpacing.sm + MediaQuery.paddingOf(context).top,
+                  AppSpacing.md,
+                  AppSpacing.sm,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AeemgRoundIconButton(
+                      icon: Icons.arrow_back_rounded,
+                      tooltip: 'Retour',
+                      onPressed: () => context.canPop()
+                          ? context.pop()
+                          : context.go('/home'),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    Text('Faire un don', style: AppTypography.h1),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      'Paiement sécurisé par Orange Money.',
+                      style: AppTypography.bodySmall,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    const AeemgPillTabBar(labels: ['Campagnes', 'Mes dons']),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    _CampaignsTab(
+                      currency: currency,
+                      onDonated: () => ref.invalidate(myDonationsProvider),
+                    ),
+                    _MyDonationsTab(currency: currency),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -101,230 +86,95 @@ class _DonationsScreenState extends ConsumerState<DonationsScreen>
 }
 
 class _CampaignsTab extends ConsumerWidget {
-  const _CampaignsTab({
-    required this.user,
-    required this.currency,
-    required this.onDonated,
-  });
+  const _CampaignsTab({required this.currency, required this.onDonated});
 
-  final User? user;
   final NumberFormat currency;
   final VoidCallback onDonated;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final campaignsAsync = ref.watch(donationCampaignsProvider);
+    final user = ref.watch(currentUserProvider);
+    void donate(double amount, {String? campaignId, String? category}) =>
+        _donate(
+          context,
+          ref,
+          user!.id,
+          amount,
+          campaignId: campaignId,
+          category: category ?? 'general',
+          onDonated: onDonated,
+        );
 
-    return AsyncValueWidget(
-      value: campaignsAsync,
-      empty: Center(
-        child: Text(
-          'Aucune campagne active.',
-          style: TextStyle(color: AppColors.textSecondary),
-        ),
-      ),
-      data: (campaigns) => ListView(
-        padding: EdgeInsets.only(
-          top: MediaQuery.of(context).padding.top + kToolbarHeight + 64,
-          left: AppSpacing.md,
-          right: AppSpacing.md,
-          bottom: AppSpacing.xl,
-        ),
-        physics: const BouncingScrollPhysics(),
-        children: [
-          AeemgCard(
-            variant: AeemgCardVariant.active,
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.volunteer_activism,
-                      color: AppColors.gold,
-                      size: 28,
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Text(
-                      'Faire un don rapide',
-                      style: AppTypography.h2.copyWith(color: AppColors.gold),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.md),
-                Text(
-                  'Soutenez les actions de l\'AEEMG.',
-                  style: AppTypography.body.copyWith(color: AppColors.white),
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  children: [5000, 10000, 25000].map((amount) {
-                    return InkWell(
-                      onTap: user == null
-                          ? null
-                          : () => _donate(
-                              context,
-                              ref,
-                              user!.id,
-                              amount.toDouble(),
-                              onDonated: onDonated,
-                            ),
-                      borderRadius: BorderRadius.circular(16),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.emerald.withValues(alpha: 0.15),
-                          border: Border.all(
-                            color: AppColors.emerald.withValues(alpha: 0.4),
-                          ),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Text(
-                          currency.format(amount),
-                          style: AppTypography.h4.copyWith(
-                            color: AppColors.emerald,
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ],
+    final List<Widget> campaigns = ref
+        .watch(donationCampaignsProvider)
+        .when(
+          loading: () => const [
+            AeemgSkeletonTile(),
+            SizedBox(height: AppSpacing.sm),
+            AeemgSkeletonTile(),
+          ],
+          error: (error, _) => [
+            AeemgEmptyState(
+              compact: true,
+              icon: Icons.cloud_off_outlined,
+              title: 'Campagnes indisponibles',
+              message: friendlySupabaseError(error),
             ),
-          ).animate().fade().slideY(begin: -0.1),
-          const SizedBox(height: AppSpacing.xl),
-
-          Text(
-            'Campagnes en cours',
-            style: AppTypography.h2.copyWith(color: AppColors.white),
-          ).animate(delay: 100.ms).fade(),
-          const SizedBox(height: AppSpacing.md),
-
-          ...campaigns.asMap().entries.map((entry) {
-            final index = entry.key;
-            final campaign = entry.value;
-            final progress = campaign.progress.clamp(0.0, 1.0);
-
-            return Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.md),
-              child:
-                  AeemgCard(
-                        padding: const EdgeInsets.all(AppSpacing.lg),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(campaign.title, style: AppTypography.h3),
-                            if (campaign.description != null) ...[
-                              const SizedBox(height: AppSpacing.sm),
-                              Text(
-                                campaign.description!,
-                                style: AppTypography.bodySmall.copyWith(
-                                  color: AppColors.textSecondary,
-                                ),
+          ],
+          data: (list) => list.isEmpty
+              ? const [
+                  AeemgEmptyState(
+                    compact: true,
+                    icon: Icons.campaign_outlined,
+                    title: 'Aucune campagne active',
+                    message: 'Les prochaines campagnes apparaîtront ici.',
+                  ),
+                ]
+              : [
+                  for (final campaign in list)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                      child: CampaignCard(
+                        campaign: campaign,
+                        currency: currency,
+                        onContribute: user == null
+                            ? null
+                            : () => donate(
+                                10000,
+                                campaignId: campaign.id,
+                                category: campaign.category,
                               ),
-                            ],
-                            const SizedBox(height: AppSpacing.lg),
+                      ),
+                    ),
+                ],
+        );
 
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('Objectif', style: AppTypography.caption),
-                                Text(
-                                  '${(progress * 100).toStringAsFixed(0)}%',
-                                  style: AppTypography.caption.copyWith(
-                                    color: AppColors.emerald,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: AppSpacing.xs),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: LinearProgressIndicator(
-                                value: progress,
-                                minHeight: 8,
-                                backgroundColor: AppColors.cardSurfaceLight,
-                                valueColor: const AlwaysStoppedAnimation<Color>(
-                                  AppColors.emerald,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: AppSpacing.xs),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  currency.format(campaign.raisedAmount),
-                                  style: AppTypography.caption.copyWith(
-                                    color: AppColors.emerald,
-                                  ),
-                                ),
-                                Text(
-                                  currency.format(campaign.goalAmount),
-                                  style: AppTypography.caption,
-                                ),
-                              ],
-                            ),
+    final children = [
+      QuickDonateCard(
+        currency: currency,
+        onAmount: user == null ? null : (amount) => donate(amount.toDouble()),
+        onLogin: () => context.push('/login'),
+      ),
+      const SizedBox(height: AppSpacing.lg),
+      const AeemgSectionHeader(title: 'Campagnes en cours'),
+      ...campaigns,
+    ];
 
-                            const SizedBox(height: AppSpacing.lg),
-                            if (user != null)
-                              SizedBox(
-                                width: double.infinity,
-                                child: FilledButton.icon(
-                                  style: FilledButton.styleFrom(
-                                    backgroundColor: AppColors.emerald,
-                                    foregroundColor: AppColors.deepNavy,
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 16,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                  ),
-                                  onPressed: () => _donate(
-                                    context,
-                                    ref,
-                                    user!.id,
-                                    10000,
-                                    campaignId: campaign.id,
-                                    category: campaign.category,
-                                    onDonated: onDonated,
-                                  ),
-                                  icon: const Icon(Icons.favorite),
-                                  label: const Text(
-                                    'Contribuer (10 000 GNF)',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              )
-                            else
-                              Center(
-                                child: Text(
-                                  'Connectez-vous pour contribuer.',
-                                  style: AppTypography.caption.copyWith(
-                                    color: AppColors.textSecondary,
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      )
-                      .animate(
-                        delay: Duration(milliseconds: 200 + (index * 100)),
-                      )
-                      .fade()
-                      .slideY(begin: 0.1),
-            );
-          }),
+    return RefreshIndicator(
+      color: AppColors.emerald,
+      backgroundColor: AppColors.cardSurface,
+      onRefresh: () async => ref.invalidate(donationCampaignsProvider),
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.md,
+          AppSpacing.md,
+          AppSpacing.xxl,
+        ),
+        children: [
+          for (var i = 0; i < children.length; i++)
+            children[i].reveal(context, index: i),
         ],
       ),
     );
@@ -375,7 +225,7 @@ class _CampaignsTab extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Erreur paiement : $e',
+              'Paiement impossible : ${friendlySupabaseError(e)}',
               style: const TextStyle(color: AppColors.white),
             ),
             backgroundColor: AppColors.error,
@@ -492,8 +342,8 @@ class _MyDonationsTab extends ConsumerWidget {
           ],
         ),
         data: (donations) => ListView.separated(
-          padding: EdgeInsets.only(
-            top: MediaQuery.of(context).padding.top + kToolbarHeight + 64,
+          padding: const EdgeInsets.only(
+            top: AppSpacing.md,
             left: AppSpacing.md,
             right: AppSpacing.md,
             bottom: AppSpacing.xl,

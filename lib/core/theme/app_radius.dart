@@ -8,6 +8,8 @@ abstract final class AppRadius {
   static const double large = 16;
   static const double card = 16;
   static const double input = 12;
+  static const double hero =
+      24; // Bandeaux d'en-tête et barre de navigation (v3)
   static const double pill = 9999;
 
   static BorderRadius get cardBorder => BorderRadius.circular(card);

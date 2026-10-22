@@ -1,0 +1,155 @@
+import 'package:aeemg/shared/widgets/ds/aeemg_motion.dart';
+import 'package:aeemg/shared/widgets/ds/aeemg_nav_bar.dart';
+import 'package:aeemg/shared/widgets/ds/aeemg_page.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+Widget _app(Widget child, {bool reduceMotion = false}) => MaterialApp(
+  home: MediaQuery(
+    data: MediaQueryData(disableAnimations: reduceMotion),
+    child: Scaffold(body: child),
+  ),
+);
+
+const _items = [
+  AeemgNavItem(
+    icon: Icons.home_outlined,
+    selectedIcon: Icons.home,
+    label: 'Accueil',
+  ),
+  AeemgNavItem(
+    icon: Icons.person_outline,
+    selectedIcon: Icons.person,
+    label: 'Profil',
+  ),
+];
+
+void main() {
+  testWidgets('AeemgNavBar : appui sur un onglet et état sélectionné annoncé', (
+    tester,
+  ) async {
+    int? tapped;
+    await tester.pumpWidget(
+      _app(
+        AeemgNavBar(items: _items, currentIndex: 0, onTap: (i) => tapped = i),
+      ),
+    );
+
+    await tester.tap(find.text('Profil'));
+    expect(tapped, 1);
+
+    expect(
+      tester.getSemantics(find.bySemanticsLabel('Accueil')),
+      isSemantics(isButton: true, isSelected: true),
+    );
+    expect(
+      tester.getSemantics(find.bySemanticsLabel('Profil')),
+      isSemantics(isButton: true, isSelected: false),
+    );
+  });
+
+  testWidgets("AeemgPressable ne bloque pas l'appui de l'enfant", (
+    tester,
+  ) async {
+    var taps = 0;
+    await tester.pumpWidget(
+      _app(
+        AeemgPressable(
+          child: TextButton(onPressed: () => taps++, child: const Text('OK')),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    expect(taps, 1);
+  });
+
+  testWidgets('reveal et squelette : aucune animation si elles sont réduites', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _app(
+        Builder(
+          builder: (context) => Column(
+            children: [
+              const Text('Contenu').reveal(context, index: 3),
+              const AeemgSkeleton(width: 100),
+            ],
+          ),
+        ),
+        reduceMotion: true,
+      ),
+    );
+
+    expect(find.byType(Animate), findsNothing);
+    expect(find.text('Contenu'), findsOneWidget);
+  });
+
+  testWidgets('reveal anime le contenu sinon', (tester) async {
+    await tester.pumpWidget(
+      _app(
+        Builder(builder: (context) => const Text('Contenu').reveal(context)),
+      ),
+    );
+
+    expect(find.byType(Animate), findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(find.text('Contenu'), findsOneWidget);
+  });
+
+  testWidgets('AeemgPage : titre, actions et contenu affichés', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AeemgPage(
+          title: 'Paramètres',
+          subtitle: 'Langue et préférences',
+          actions: [
+            IconButton(
+              tooltip: 'Aide',
+              onPressed: () {},
+              icon: const Icon(Icons.help_outline),
+            ),
+          ],
+          children: const [Text('Contenu')],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Paramètres'), findsOneWidget);
+    expect(find.text('Langue et préférences'), findsOneWidget);
+    expect(find.byTooltip('Retour'), findsOneWidget);
+    expect(find.byTooltip('Aide'), findsOneWidget);
+    expect(find.text('Contenu'), findsOneWidget);
+  });
+
+  testWidgets('AeemgPage : la longue liste est construite à la demande', (
+    tester,
+  ) async {
+    var built = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AeemgPage(
+          title: 'Annuaire',
+          itemCount: 1000,
+          itemBuilder: (context, i) {
+            built++;
+            return SizedBox(height: 64, child: Text('Membre $i'));
+          },
+          children: const [Text('En-tête')],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('En-tête'), findsOneWidget);
+    expect(find.text('Membre 0'), findsOneWidget);
+    expect(find.text('Membre 999'), findsNothing);
+    expect(built, lessThan(40), reason: 'seuls les éléments visibles existent');
+
+    await tester.scrollUntilVisible(find.text('Membre 60'), 500);
+    expect(find.text('Membre 60'), findsOneWidget);
+  });
+}

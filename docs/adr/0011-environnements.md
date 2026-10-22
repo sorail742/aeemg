@@ -14,7 +14,7 @@ tests manuels polluent les données réelles et un développeur peut casser la b
 | Environnement | Backend | Données | Déploiement |
 |---|---|---|---|
 | **dev** | Supabase local (`supabase start`, Docker) | `seed.sql` | Poste du développeur |
-| **staging** | Projet Supabase dédié | Données fictives | Automatique à chaque merge sur `main` |
+| **staging** | Projet Supabase dédié | Données fictives | Automatique à chaque merge sur `develop` (ADR-0025) |
 | **prod** | Projet Supabase actuel | Réelles | Tag `vX.Y.Z` + approbation manuelle |
 
 Applications : flavors Android `dev`/`staging`/`prod` (suffixe d'ID, nom et icône distincts), web staging sur une URL séparée.

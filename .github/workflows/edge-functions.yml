@@ -3,7 +3,7 @@ name: edge-functions
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
     paths: ['supabase/functions/**', '.github/workflows/edge-functions.yml']
   pull_request:
     paths: ['supabase/functions/**', '.github/workflows/edge-functions.yml']

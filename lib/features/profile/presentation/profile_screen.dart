@@ -5,10 +5,12 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/config/env.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_gradients.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/ds/aeemg_buttons.dart';
 import '../../../shared/widgets/ds/aeemg_card.dart';
+import '../../../shared/widgets/ds/aeemg_hero.dart';
 import '../../../shared/widgets/ds/islamic_background.dart';
 import '../../auth/presentation/providers/auth_provider.dart';
 import '../../members/presentation/providers/members_provider.dart';
@@ -36,36 +38,42 @@ class ProfileScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Profil')),
       body: IslamicBackground(
         withPattern: true,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(
+          // Pas d'AppBar : la marge haute tient compte de la barre d'état.
+          padding: EdgeInsets.fromLTRB(
             AppSpacing.md,
-            AppSpacing.lg,
+            AppSpacing.md + MediaQuery.paddingOf(context).top,
             AppSpacing.md,
             AppSpacing.xxl,
           ),
           children: [
-            AeemgCard(
-              padding: const EdgeInsets.all(AppSpacing.md),
+            AeemgHero(
               child: Row(
                 children: [
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundColor: AppColors.darkTeal,
-                    child: isAuthenticated
-                        ? Text(
-                            _initials(displayName),
-                            style: AppTypography.h2.copyWith(
+                  Container(
+                    padding: const EdgeInsets.all(3),
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: AppGradients.gold,
+                    ),
+                    child: CircleAvatar(
+                      radius: 32,
+                      backgroundColor: AppColors.darkTeal,
+                      child: isAuthenticated
+                          ? Text(
+                              _initials(displayName),
+                              style: AppTypography.h2.copyWith(
+                                color: AppColors.lightEmerald,
+                              ),
+                            )
+                          : const Icon(
+                              Icons.person_outline_rounded,
                               color: AppColors.lightEmerald,
+                              size: 30,
                             ),
-                          )
-                        : const Icon(
-                            Icons.person_outline,
-                            color: AppColors.lightEmerald,
-                            size: 28,
-                          ),
+                    ),
                   ),
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
@@ -74,7 +82,7 @@ class ProfileScreen extends ConsumerWidget {
                       children: [
                         Text(
                           displayName,
-                          style: AppTypography.h3,
+                          style: AppTypography.h2,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -83,7 +91,9 @@ class ProfileScreen extends ConsumerWidget {
                           isAuthenticated
                               ? userContact ?? ''
                               : 'Connectez-vous pour accéder à votre espace membre.',
-                          style: AppTypography.bodySmall,
+                          style: AppTypography.bodySmall.copyWith(
+                            color: AppColors.lightEmerald,
+                          ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),

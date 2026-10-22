@@ -1,7 +1,9 @@
+# Les mises à jour visent develop (branche d'intégration, ADR-0025).
 version: 2
 updates:
   - package-ecosystem: pub
     directory: /
+    target-branch: develop
     schedule: { interval: weekly, day: monday, time: "06:00", timezone: Africa/Conakry }
     open-pull-requests-limit: 5
     labels: ["type:devops", "dependencies"]
@@ -11,6 +13,7 @@ updates:
         update-types: [minor, patch]
   - package-ecosystem: github-actions
     directory: /
+    target-branch: develop
     schedule: { interval: weekly, day: monday, time: "06:00", timezone: Africa/Conakry }
     labels: ["type:devops", "dependencies"]
     commit-message: { prefix: "ci(deps)" }
@@ -19,6 +22,7 @@ updates:
         patterns: ["*"]
   - package-ecosystem: gradle
     directory: /android
+    target-branch: develop
     schedule: { interval: monthly }
     labels: ["type:devops", "dependencies", "comp:android"]
     commit-message: { prefix: "build(deps)" }
