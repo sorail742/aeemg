@@ -337,6 +337,8 @@ sans alourdir l'application (téléphones d'entrée de gamme, 3G).
 - [x] Lot 2 — Social (fil, publication, détail) ; l'écran gris sans Supabase est corrigé dans une PR dédiée
 - [x] Lot 3 — Messagerie : liste (en-tête, onglets en pilule, états) ; conversation : bulles v3 et couleurs du thème (plus de couleurs en dur)
 - [ ] Lot 4 — Coran (accueil, lecteurs, test de récitation)
+- [x] Lot 5 — Hadiths (filtres par thème, copie) et liste des quiz
+- [ ] Lot 5b — Bibliothèque, déroulé du quiz, suivi spirituel
 - [ ] Lot 3 — Messagerie (liste et conversation)
 - [x] Lot 4 — Coran : accueil (bandeau calligraphié, onglets en pilule), sourates et versets (étoile numérotée)
 - [ ] Lot 4b — Coran : lecteurs Mushaf et Juz, test de récitation
