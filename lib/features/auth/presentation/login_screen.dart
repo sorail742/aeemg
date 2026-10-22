@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../core/config/env.dart';
 import '../../../core/router/route_guard.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_motion.dart';
 import '../../../core/utils/supabase_errors.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../core/theme/app_typography.dart';
-import '../../../shared/widgets/ds/aeemg_buttons.dart';
+import '../../../shared/widgets/ds/aeemg_motion.dart';
+import '../../../shared/widgets/ds/aeemg_pill_tab_bar.dart';
 import '../../../shared/widgets/ds/islamic_background.dart';
 import '../data/auth_repository.dart';
 import 'providers/auth_provider.dart';
+import 'widgets/login_forms.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -186,285 +186,76 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: AppColors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.white),
+    final sections = <Widget>[
+      Align(
+        alignment: Alignment.centerLeft,
+        child: AeemgRoundIconButton(
+          icon: Icons.arrow_back_rounded,
+          tooltip: 'Retour',
           onPressed: () => context.go('/profile'),
         ),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Mot de passe'),
-            Tab(text: 'Code email'),
+      ),
+      const LoginBrand(),
+      const SizedBox(height: AppSpacing.lg),
+      AeemgPillTabBar(
+        controller: _tabController,
+        labels: const ['Mot de passe', 'Code email'],
+      ),
+      const SizedBox(height: AppSpacing.md),
+      // Un seul formulaire à la fois, dans la même liste : le clavier fait défiler
+      // toute la page, sans glissement horizontal entre deux formulaires.
+      AnimatedBuilder(
+        animation: _tabController,
+        builder: (context, _) => AnimatedSwitcher(
+          duration: AppMotion.reduced(context) ? Duration.zero : AppMotion.base,
+          child: _tabController.index == 0
+              ? LoginPasswordForm(
+                  key: const ValueKey('password'),
+                  emailController: _emailController,
+                  passwordController: _passwordController,
+                  nameController: _nameController,
+                  isSignUp: _isSignUp,
+                  isLoading: _isLoading,
+                  onToggleMode: () => setState(() => _isSignUp = !_isSignUp),
+                  onSubmit: _signInWithPassword,
+                  onResetPassword: _resetPassword,
+                )
+              : LoginOtpForm(
+                  key: const ValueKey('otp'),
+                  emailController: _emailController,
+                  otpController: _otpController,
+                  otpSent: _otpSent,
+                  otpEmail: _otpEmail,
+                  isLoading: _isLoading,
+                  onSendOtp: _sendOtp,
+                  onVerifyOtp: _verifyOtp,
+                  onReset: () => setState(() {
+                    _otpSent = false;
+                    _otpEmail = null;
+                    _otpController.clear();
+                  }),
+                ),
+        ),
+      ),
+    ];
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: IslamicBackground(
+        withPattern: true,
+        child: ListView(
+          padding: EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.sm + MediaQuery.paddingOf(context).top,
+            AppSpacing.lg,
+            AppSpacing.xl,
+          ),
+          children: [
+            for (var i = 0; i < sections.length; i++)
+              sections[i].reveal(context, index: i),
           ],
         ),
       ),
-      body: IslamicBackground(
-        withPattern: true,
-        child: SafeArea(
-          child: TabBarView(
-            controller: _tabController,
-            children: [
-              _PasswordTab(
-                emailController: _emailController,
-                passwordController: _passwordController,
-                nameController: _nameController,
-                isSignUp: _isSignUp,
-                isLoading: _isLoading,
-                onToggleMode: () => setState(() => _isSignUp = !_isSignUp),
-                onSubmit: _signInWithPassword,
-                onResetPassword: _resetPassword,
-              ),
-              _OtpTab(
-                emailController: _emailController,
-                otpController: _otpController,
-                otpSent: _otpSent,
-                otpEmail: _otpEmail,
-                isLoading: _isLoading,
-                onSendOtp: _sendOtp,
-                onVerifyOtp: _verifyOtp,
-                onReset: () => setState(() {
-                  _otpSent = false;
-                  _otpEmail = null;
-                  _otpController.clear();
-                }),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Champ du formulaire de connexion : style du thème (InputDecorationTheme).
-InputDecoration _islamicInputDecoration(String label, IconData icon) {
-  return InputDecoration(labelText: label, prefixIcon: Icon(icon, size: 20));
-}
-
-class _PasswordTab extends StatelessWidget {
-  const _PasswordTab({
-    required this.emailController,
-    required this.passwordController,
-    required this.nameController,
-    required this.isSignUp,
-    required this.isLoading,
-    required this.onToggleMode,
-    required this.onSubmit,
-    required this.onResetPassword,
-  });
-
-  final TextEditingController emailController;
-  final TextEditingController passwordController;
-  final TextEditingController nameController;
-  final bool isSignUp;
-  final bool isLoading;
-  final VoidCallback onToggleMode;
-  final VoidCallback onSubmit;
-  final VoidCallback onResetPassword;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      physics: const BouncingScrollPhysics(),
-      children: [
-        const SizedBox(height: AppSpacing.xl),
-        Center(
-          child: Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: AppColors.darkTeal,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: const Icon(
-              Icons.lock_outline,
-              size: 28,
-              color: AppColors.brightGreen,
-            ),
-          ),
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        Text(
-          isSignUp ? 'Créer un compte' : 'Connexion',
-          textAlign: TextAlign.center,
-          style: AppTypography.h1.copyWith(fontSize: 28),
-        ).animate(delay: 100.ms).fade(),
-        const SizedBox(height: AppSpacing.xs),
-        Text(
-          'Bienvenue dans la communauté AEEMG',
-          textAlign: TextAlign.center,
-          style: AppTypography.bodySmall.copyWith(
-            color: AppColors.textSecondary,
-          ),
-        ).animate(delay: 150.ms).fade(),
-        const SizedBox(height: AppSpacing.xl),
-        if (isSignUp) ...[
-          TextField(
-            controller: nameController,
-            textCapitalization: TextCapitalization.words,
-            style: const TextStyle(color: AppColors.white),
-            decoration: _islamicInputDecoration(
-              'Nom complet',
-              Icons.person_outline,
-            ),
-          ).animate(delay: 200.ms).fade().slideY(begin: 0.1),
-          const SizedBox(height: AppSpacing.md),
-        ],
-        TextField(
-          controller: emailController,
-          keyboardType: TextInputType.emailAddress,
-          autocorrect: false,
-          style: const TextStyle(color: AppColors.white),
-          decoration: _islamicInputDecoration('Email', Icons.alternate_email),
-        ).animate(delay: 250.ms).fade().slideY(begin: 0.1),
-        const SizedBox(height: AppSpacing.md),
-        TextField(
-          controller: passwordController,
-          obscureText: true,
-          style: const TextStyle(color: AppColors.white),
-          decoration: _islamicInputDecoration(
-            'Mot de passe',
-            Icons.key_outlined,
-          ),
-        ).animate(delay: 300.ms).fade().slideY(begin: 0.1),
-        const SizedBox(height: AppSpacing.xl),
-        AeemgPrimaryButton(
-          label: isSignUp ? 'Créer mon compte' : 'Se connecter',
-          isLoading: isLoading,
-          onPressed: onSubmit,
-        ).animate(delay: 350.ms).fade().slideY(begin: 0.1),
-        const SizedBox(height: AppSpacing.sm),
-        TextButton(
-          onPressed: onToggleMode,
-          child: Text(
-            isSignUp
-                ? 'Déjà un compte ? Se connecter'
-                : "Pas de compte ? S'inscrire",
-          ),
-        ).animate(delay: 400.ms).fade(),
-        if (!isSignUp)
-          TextButton(
-            onPressed: isLoading ? null : onResetPassword,
-            child: const Text(
-              'Mot de passe oublié ?',
-              style: TextStyle(color: AppColors.textSecondary),
-            ),
-          ).animate(delay: 450.ms).fade(),
-      ],
-    );
-  }
-}
-
-class _OtpTab extends StatelessWidget {
-  const _OtpTab({
-    required this.emailController,
-    required this.otpController,
-    required this.otpSent,
-    required this.otpEmail,
-    required this.isLoading,
-    required this.onSendOtp,
-    required this.onVerifyOtp,
-    required this.onReset,
-  });
-
-  final TextEditingController emailController;
-  final TextEditingController otpController;
-  final bool otpSent;
-  final String? otpEmail;
-  final bool isLoading;
-  final VoidCallback onSendOtp;
-  final VoidCallback onVerifyOtp;
-  final VoidCallback onReset;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      physics: const BouncingScrollPhysics(),
-      children: [
-        const SizedBox(height: AppSpacing.xl),
-        Center(
-          child: Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: AppColors.darkTeal,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: const Icon(
-              Icons.pin_outlined,
-              size: 28,
-              color: AppColors.brightGreen,
-            ),
-          ),
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        Text(
-          'Code par email',
-          textAlign: TextAlign.center,
-          style: AppTypography.h1.copyWith(fontSize: 28),
-        ).animate(delay: 100.ms).fade(),
-        const SizedBox(height: AppSpacing.xs),
-        Text(
-          otpSent
-              ? 'Code envoyé à $otpEmail'
-              : 'Nécessite la configuration OTP dans Supabase.',
-          textAlign: TextAlign.center,
-          style: AppTypography.bodySmall.copyWith(
-            color: AppColors.textSecondary,
-          ),
-        ).animate(delay: 150.ms).fade(),
-        const SizedBox(height: AppSpacing.xl),
-        if (!otpSent) ...[
-          TextField(
-            controller: emailController,
-            keyboardType: TextInputType.emailAddress,
-            style: const TextStyle(color: AppColors.white),
-            decoration: _islamicInputDecoration('Email', Icons.alternate_email),
-          ).animate(delay: 200.ms).fade().slideY(begin: 0.1),
-          const SizedBox(height: AppSpacing.lg),
-          AeemgPrimaryButton(
-            label: 'Recevoir le code',
-            isLoading: isLoading,
-            onPressed: onSendOtp,
-          ).animate(delay: 250.ms).fade(),
-        ] else ...[
-          TextField(
-            controller: otpController,
-            keyboardType: TextInputType.number,
-            textAlign: TextAlign.center,
-            maxLength: 8,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            style: AppTypography.h2.copyWith(
-              letterSpacing: 8,
-              color: AppColors.white,
-            ),
-            decoration: InputDecoration(
-              labelText: 'Code à 6 chiffres',
-              hintText: '123456',
-              counterText: '',
-            ),
-          ).animate(delay: 200.ms).fade().slideY(begin: 0.1),
-          const SizedBox(height: AppSpacing.lg),
-          AeemgPrimaryButton(
-            label: 'Vérifier',
-            isLoading: isLoading,
-            onPressed: onVerifyOtp,
-          ).animate(delay: 250.ms).fade(),
-          TextButton(
-            onPressed: onReset,
-            child: const Text(
-              "Changer d'email",
-              style: TextStyle(color: AppColors.textSecondary),
-            ),
-          ).animate(delay: 300.ms).fade(),
-        ],
-      ],
     );
   }
 }
