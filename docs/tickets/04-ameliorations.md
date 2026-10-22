@@ -335,6 +335,8 @@ sans alourdir l'application (téléphones d'entrée de gamme, 3G).
 - [ ] Lot 1b — Accueil (bandeau, raccourcis, apparitions, chargements)
 - [x] Lot 1c — Onglets Espace islamique, Agenda et Profil (bandeaux, tuiles teintées, en-têtes)
 - [x] Lot 2 — Social (fil, publication, détail) ; l'écran gris sans Supabase est corrigé dans une PR dédiée
+- [x] Lot 3 — Messagerie : liste (en-tête, onglets en pilule, états) ; conversation : bulles v3 et couleurs du thème (plus de couleurs en dur)
+- [ ] Lot 4 — Coran (accueil, lecteurs, test de récitation)
 - [ ] Lot 3 — Messagerie (liste et conversation)
 - [x] Lot 4 — Coran : accueil (bandeau calligraphié, onglets en pilule), sourates et versets (étoile numérotée)
 - [ ] Lot 4b — Coran : lecteurs Mushaf et Juz, test de récitation

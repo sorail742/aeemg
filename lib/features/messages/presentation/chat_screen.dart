@@ -13,6 +13,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/phone_number.dart';
 import '../../../core/utils/supabase_errors.dart';
 import '../../../shared/widgets/async_value_widget.dart';
@@ -64,7 +66,7 @@ class _CallScreenState extends State<_CallScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0B1120),
+      backgroundColor: AppColors.deepNavy,
       body: SafeArea(
         child: Column(
           children: [
@@ -567,7 +569,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: const Color(0xFF1F2C34),
+        backgroundColor: AppColors.cardSurfaceLight,
         title: const Text(
           'Supprimer le message',
           style: TextStyle(color: AppColors.white),
@@ -608,7 +610,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       backgroundColor: AppColors.transparent,
       builder: (_) => Container(
         decoration: const BoxDecoration(
-          color: Color(0xFF1F2C34),
+          color: AppColors.cardSurfaceLight,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: SafeArea(
@@ -703,7 +705,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       builder: (ctx) => StatefulBuilder(
         builder: (context, setStateDialog) {
           return AlertDialog(
-            backgroundColor: const Color(0xFF1F2C34),
+            backgroundColor: AppColors.cardSurfaceLight,
             title: const Text(
               'Ajouter un membre',
               style: TextStyle(color: AppColors.white),
@@ -818,7 +820,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       backgroundColor: AppColors.transparent,
       builder: (_) => Container(
         decoration: const BoxDecoration(
-          color: Color(0xFF1F2C34),
+          color: AppColors.cardSurfaceLight,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: SafeArea(
@@ -855,7 +857,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   showDialog(
                     context: context,
                     builder: (ctx) => AlertDialog(
-                      backgroundColor: const Color(0xFF1F2C34),
+                      backgroundColor: AppColors.cardSurfaceLight,
                       title: const Text(
                         'Membres du groupe',
                         style: TextStyle(color: AppColors.white),
@@ -911,7 +913,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   showDialog(
                     context: context,
                     builder: (ctx) => AlertDialog(
-                      backgroundColor: const Color(0xFF1F2C34),
+                      backgroundColor: AppColors.cardSurfaceLight,
                       title: const Text(
                         'Effacer la discussion',
                         style: TextStyle(color: AppColors.white),
@@ -981,9 +983,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0D1B2A),
+      backgroundColor: AppColors.deepNavy,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0D1B2A).withValues(alpha: 0.95),
+        backgroundColor: AppColors.deepNavy.withValues(alpha: 0.95),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.white),
@@ -997,7 +999,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: const LinearGradient(
-                  colors: [AppColors.emerald, Color(0xFF00A86B)],
+                  colors: [AppColors.emerald, AppColors.emeraldHover],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -1149,7 +1151,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             if (_replyingTo != null)
               Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1A2833),
+                  color: AppColors.cardSurface,
                   border: Border(
                     top: BorderSide(
                       color: AppColors.emerald.withValues(alpha: 0.4),
@@ -1223,7 +1225,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           Expanded(
                             child: Container(
                               decoration: BoxDecoration(
-                                color: const Color(0xFF1F2C34),
+                                color: AppColors.cardSurfaceLight,
                                 borderRadius: BorderRadius.circular(24),
                               ),
                               child: Row(
@@ -1339,16 +1341,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           onEmojiSelected: (_, _) => setState(() {}),
                           config: const Config(
                             emojiViewConfig: EmojiViewConfig(
-                              backgroundColor: Color(0xFF1F2C34),
+                              backgroundColor: AppColors.cardSurfaceLight,
                             ),
                             categoryViewConfig: CategoryViewConfig(
-                              backgroundColor: Color(0xFF1F2C34),
+                              backgroundColor: AppColors.cardSurfaceLight,
                               iconColorSelected: AppColors.brightGreen,
                               indicatorColor: AppColors.brightGreen,
                             ),
                             bottomActionBarConfig: BottomActionBarConfig(
-                              backgroundColor: Color(0xFF1F2C34),
-                              buttonColor: Color(0xFF1F2C34),
+                              backgroundColor: AppColors.cardSurfaceLight,
+                              buttonColor: AppColors.cardSurfaceLight,
                               buttonIconColor: AppColors.textSecondary,
                             ),
                           ),
@@ -1394,7 +1396,7 @@ class _DateSeparatorWidget extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             decoration: BoxDecoration(
-              color: const Color(0xFF1F2C34).withValues(alpha: 0.9),
+              color: AppColors.cardSurfaceLight.withValues(alpha: 0.9),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
@@ -1477,21 +1479,25 @@ class _MessageBubble extends StatelessWidget {
           onLongPress: onLongPress,
           child: Container(
             margin: const EdgeInsets.only(bottom: 6),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             constraints: BoxConstraints(
               maxWidth: MediaQuery.sizeOf(context).width * 0.78,
             ),
             decoration: BoxDecoration(
               color: message.isDeleted
                   ? AppColors.white.withValues(alpha: 0.05)
-                  : (isMine
-                        ? const Color(0xFF005C4B)
-                        : const Color(0xFF202C33)),
+                  : (isMine ? AppColors.heroStart : AppColors.cardSurfaceLight),
+              // v3 : bulles plus rondes, coin du locuteur discret.
+              border: isMine ? null : Border.all(color: AppColors.border),
               borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(14),
-                topRight: const Radius.circular(14),
-                bottomLeft: isMine ? const Radius.circular(14) : Radius.zero,
-                bottomRight: isMine ? Radius.zero : const Radius.circular(14),
+                topLeft: const Radius.circular(AppRadius.large + 2),
+                topRight: const Radius.circular(AppRadius.large + 2),
+                bottomLeft: Radius.circular(
+                  isMine ? AppRadius.large + 2 : AppRadius.small - 2,
+                ),
+                bottomRight: Radius.circular(
+                  isMine ? AppRadius.small - 2 : AppRadius.large + 2,
+                ),
               ),
               boxShadow: [
                 BoxShadow(
@@ -1580,13 +1586,7 @@ class _MessageBubble extends StatelessWidget {
                         _AudioMessagePlayer(url: url, isMine: isMine),
                   )
                 else
-                  Text(
-                    message.content,
-                    style: const TextStyle(
-                      color: AppColors.white,
-                      fontSize: 15,
-                    ),
-                  ),
+                  Text(message.content, style: AppTypography.body),
                 // Timestamp + ticks
                 Align(
                   alignment: Alignment.centerRight,
