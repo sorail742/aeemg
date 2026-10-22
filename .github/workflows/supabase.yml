@@ -3,7 +3,7 @@ name: supabase
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
     paths: ['supabase/**', '.github/workflows/supabase.yml', 'tool/ci/check_migrations.sh']
   pull_request:
     paths: ['supabase/**', '.github/workflows/supabase.yml', 'tool/ci/check_migrations.sh']

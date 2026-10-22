@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../shared/widgets/ds/aeemg_star_badge.dart';
 import '../../data/models/quran_models.dart';
 
 class AyahTile extends StatelessWidget {
@@ -54,7 +55,7 @@ class AyahTile extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _AyahBadge(number: ayah.ayahNumber),
+              AeemgStarBadge(label: '${ayah.ayahNumber}', size: 40),
               const Spacer(),
               if (onPlayAudio != null)
                 IconButton(
@@ -136,51 +137,6 @@ class AyahTile extends StatelessWidget {
             ),
           ],
         ],
-      ),
-    );
-  }
-}
-
-class _AyahBadge extends StatelessWidget {
-  const _AyahBadge({required this.number});
-
-  final int number;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        shape: BoxShape.rectangle,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: AppColors.emerald.withValues(alpha: 0.3),
-          width: 1.5,
-        ),
-        color: AppColors.emerald.withValues(alpha: 0.1),
-      ),
-      alignment: Alignment.center,
-      child: Transform.rotate(
-        angle: 0.785398, // 45 degrees
-        child: Container(
-          width: 28,
-          height: 28,
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: AppColors.emerald.withValues(alpha: 0.5),
-              width: 1,
-            ),
-          ),
-          alignment: Alignment.center,
-          child: Transform.rotate(
-            angle: -0.785398,
-            child: Text(
-              '$number',
-              style: AppTypography.h4.copyWith(color: AppColors.emerald),
-            ),
-          ),
-        ),
       ),
     );
   }

@@ -6,6 +6,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/async_value_widget.dart';
@@ -71,43 +72,66 @@ class _AgendaScreenState extends ConsumerState<AgendaScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: AppColors.background.withValues(alpha: 0.8),
-        elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.white),
-        title: Text(
-          'Agenda',
-          style: AppTypography.h2.copyWith(color: AppColors.white),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Center(
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.gold.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  hijriLabel,
-                  style: AppTypography.caption.copyWith(color: AppColors.gold),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
       body: IslamicBackground(
         withPattern: true,
         child: Column(
           children: [
-            SizedBox(
-              height: MediaQuery.of(context).padding.top + kToolbarHeight,
+            // Pas d'AppBar : en-tête sous la barre d'état.
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.md,
+                AppSpacing.md + MediaQuery.paddingOf(context).top,
+                AppSpacing.md,
+                0,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Agenda', style: AppTypography.h1),
+                        const SizedBox(height: AppSpacing.xs),
+                        Text(
+                          'Activités et jours de jeûne.',
+                          style: AppTypography.bodySmall,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.smMd,
+                      vertical: AppSpacing.xs + 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.gold.withValues(alpha: 0.12),
+                      borderRadius: AppRadius.pillBorder,
+                      border: Border.all(
+                        color: AppColors.gold.withValues(alpha: 0.35),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.nightlight_round,
+                          size: 14,
+                          color: AppColors.goldLight,
+                        ),
+                        const SizedBox(width: AppSpacing.xs),
+                        Text(
+                          hijriLabel,
+                          style: AppTypography.caption.copyWith(
+                            color: AppColors.goldLight,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(AppSpacing.md),

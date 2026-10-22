@@ -124,4 +124,32 @@ void main() {
     expect(find.byTooltip('Aide'), findsOneWidget);
     expect(find.text('Contenu'), findsOneWidget);
   });
+
+  testWidgets('AeemgPage : la longue liste est construite à la demande', (
+    tester,
+  ) async {
+    var built = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: AeemgPage(
+          title: 'Annuaire',
+          itemCount: 1000,
+          itemBuilder: (context, i) {
+            built++;
+            return SizedBox(height: 64, child: Text('Membre $i'));
+          },
+          children: const [Text('En-tête')],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('En-tête'), findsOneWidget);
+    expect(find.text('Membre 0'), findsOneWidget);
+    expect(find.text('Membre 999'), findsNothing);
+    expect(built, lessThan(40), reason: 'seuls les éléments visibles existent');
+
+    await tester.scrollUntilVisible(find.text('Membre 60'), 500);
+    expect(find.text('Membre 60'), findsOneWidget);
+  });
 }

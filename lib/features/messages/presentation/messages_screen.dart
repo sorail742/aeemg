@@ -2,16 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import '../../../core/utils/supabase_errors.dart';
 import '../../../shared/widgets/announcement_detail_dialog.dart';
-import '../../../shared/widgets/async_value_widget.dart';
 import '../../../shared/widgets/ds/aeemg_card.dart';
+import '../../../shared/widgets/ds/aeemg_motion.dart';
+import '../../../shared/widgets/ds/aeemg_pill_tab_bar.dart';
+import '../../../shared/widgets/ds/aeemg_section.dart';
 import '../../../shared/widgets/ds/islamic_background.dart';
 import '../../auth/presentation/providers/auth_provider.dart';
+import '../data/models/chat_models.dart';
 import 'providers/messages_provider.dart';
 
 class MessagesScreen extends ConsumerWidget {
@@ -23,27 +27,46 @@ class MessagesScreen extends ConsumerWidget {
       length: 2,
       child: Scaffold(
         backgroundColor: AppColors.background,
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: AppColors.background.withValues(alpha: 0.9),
-          elevation: 0,
-          title: Text('Messages', style: AppTypography.h2.copyWith(color: AppColors.white)),
-          bottom: TabBar(
-            indicatorColor: AppColors.gold,
-            labelColor: AppColors.gold,
-            unselectedLabelColor: AppColors.textSecondary,
-            tabs: const [
-              Tab(text: 'Groupes'),
-              Tab(text: 'Annonces'),
-            ],
-          ),
-        ),
         body: IslamicBackground(
           withPattern: true,
-          child: const TabBarView(
+          child: Column(
             children: [
-              _GroupsTab(),
-              _AnnouncementsTab(),
+              // Pas d'AppBar : en-tête sous la barre d'état.
+              Padding(
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.md,
+                  AppSpacing.sm + MediaQuery.paddingOf(context).top,
+                  AppSpacing.md,
+                  AppSpacing.smMd,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        AeemgRoundIconButton(
+                          icon: Icons.arrow_back_rounded,
+                          tooltip: 'Retour',
+                          onPressed: () => context.canPop()
+                              ? context.pop()
+                              : context.go('/home'),
+                        ),
+                        const SizedBox(width: AppSpacing.smMd),
+                        Expanded(
+                          child: Text('Messages', style: AppTypography.h1),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    const AeemgPillTabBar(labels: ['Groupes', 'Annonces']),
+                  ],
+                ),
+              ),
+              const Expanded(
+                child: TabBarView(
+                  children: [_GroupsTab(), _AnnouncementsTab()],
+                ),
+              ),
             ],
           ),
         ),
@@ -52,149 +75,175 @@ class MessagesScreen extends ConsumerWidget {
   }
 }
 
+/// Liste défilante commune aux deux onglets (rafraîchissement par glissement).
+class _TabList extends StatelessWidget {
+  const _TabList({required this.onRefresh, required this.children});
+
+  final Future<void> Function() onRefresh;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+      color: AppColors.emerald,
+      backgroundColor: AppColors.cardSurface,
+      onRefresh: onRefresh,
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.md,
+          AppSpacing.sm,
+          AppSpacing.md,
+          AppSpacing.xxl,
+        ),
+        children: children,
+      ),
+    );
+  }
+}
+
+const _loading = [
+  AeemgSkeletonTile(),
+  SizedBox(height: AppSpacing.sm),
+  AeemgSkeletonTile(),
+  SizedBox(height: AppSpacing.sm),
+  AeemgSkeletonTile(),
+];
+
 class _GroupsTab extends ConsumerWidget {
   const _GroupsTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final groupsAsync = ref.watch(chatGroupsProvider);
     final user = ref.watch(currentUserProvider);
 
     if (user == null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.gold.withValues(alpha: 0.1),
-                  border: Border.all(color: AppColors.gold.withValues(alpha: 0.3)),
-                ),
-                child: const Icon(Icons.lock_outline, size: 48, color: AppColors.gold),
-              ).animate().fade().scale(),
-              const SizedBox(height: AppSpacing.lg),
-              Text(
-                'Connectez-vous pour accéder aux groupes',
-                style: AppTypography.body,
-                textAlign: TextAlign.center,
-              ).animate(delay: 100.ms).fade(),
-              const SizedBox(height: AppSpacing.md),
-              FilledButton.icon(
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.emerald,
-                  foregroundColor: AppColors.deepNavy,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                ),
-                icon: const Icon(Icons.login),
-                label: const Text('Se connecter', style: TextStyle(fontWeight: FontWeight.bold)),
-                onPressed: () => context.push('/login'),
-              ).animate(delay: 200.ms).fade().slideY(begin: 0.2),
-            ],
+      return _TabList(
+        onRefresh: () async {},
+        children: [
+          AeemgEmptyState(
+            compact: true,
+            icon: Icons.lock_outline_rounded,
+            title: 'Groupes réservés aux membres',
+            message: 'Connectez-vous pour rejoindre les discussions.',
+            actionLabel: 'Se connecter',
+            onAction: () => context.push('/login'),
           ),
-        ),
+        ],
       );
     }
 
-    return RefreshIndicator(
-      color: AppColors.emerald,
-      backgroundColor: AppColors.cardSurface,
+    final groupsAsync = ref.watch(chatGroupsProvider);
+    return _TabList(
       onRefresh: () async => ref.invalidate(chatGroupsProvider),
-      child: AsyncValueWidget(
-        value: groupsAsync,
-        empty: ListView(
-          children: const [
-            SizedBox(height: 80),
-            Center(child: Text('Aucun groupe disponible.', style: TextStyle(color: AppColors.textSecondary))),
-          ],
-        ),
-        data: (groups) => ListView.separated(
-          padding: EdgeInsets.only(
-            top: MediaQuery.of(context).padding.top + kToolbarHeight + 64,
-            left: AppSpacing.md,
-            right: AppSpacing.md,
-            bottom: AppSpacing.xl,
+      children: groupsAsync.when(
+        loading: () => _loading,
+        error: (error, _) => [
+          AeemgEmptyState(
+            compact: true,
+            icon: Icons.cloud_off_outlined,
+            title: 'Discussions indisponibles',
+            message: friendlySupabaseError(error),
           ),
-          physics: const BouncingScrollPhysics(),
-          itemCount: groups.length,
-          separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-          itemBuilder: (context, index) {
-            final group = groups[index];
-            final timeStr = DateFormat.Hm('fr').format(group.createdAt);
-            return AeemgCard(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.md),
-              onTap: () => context.push(
-                '/messages/chat/${group.id}',
-                extra: group.name ?? 'Discussion',
-              ),
-              child: Row(
-                children: [
-                  Stack(
-                    children: [
-                      CircleAvatar(
-                        radius: 28,
-                        backgroundColor: AppColors.emerald.withValues(alpha: 0.2),
-                        child: Icon(
-                          group.isGroup ? Icons.groups : Icons.person,
-                          color: AppColors.emerald,
-                          size: 30,
-                        ),
-                      ),
-                      Positioned(
-                        right: 0,
-                        bottom: 0,
-                        child: Container(
-                          width: 14,
-                          height: 14,
-                          decoration: BoxDecoration(
-                            color: AppColors.emerald,
-                            shape: BoxShape.circle,
-                            border: Border.all(color: AppColors.background, width: 2),
-                          ),
-                        ),
-                      ),
-                    ],
+        ],
+        data: (groups) => groups.isEmpty
+            ? const [
+                AeemgEmptyState(
+                  compact: true,
+                  icon: Icons.forum_outlined,
+                  title: 'Aucun groupe pour le moment',
+                  message:
+                      'Les groupes du bureau et de votre section apparaîtront ici.',
+                ),
+              ]
+            : [
+                for (var i = 0; i < groups.length; i++)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                    child: _GroupTile(
+                      group: groups[i],
+                    ).reveal(context, index: i),
                   ),
-                  const SizedBox(width: AppSpacing.md),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                group.name ?? 'Utilisateur',
-                                style: AppTypography.h3.copyWith(fontWeight: FontWeight.w700),
-                              ),
-                            ),
-                            Text(
-                              timeStr,
-                              style: AppTypography.caption.copyWith(color: AppColors.emerald),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          group.description ?? (group.isGroup ? 'Groupe de discussion' : 'Discussion privée'),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  const Icon(Icons.chevron_right, color: AppColors.textTertiary, size: 20),
+              ],
+      ),
+    );
+  }
+}
+
+class _GroupTile extends StatelessWidget {
+  const _GroupTile({required this.group});
+
+  final ChatGroup group;
+
+  @override
+  Widget build(BuildContext context) {
+    final name = group.name ?? 'Discussion';
+    final tint = group.isGroup ? AppColors.brightGreen : AppColors.info;
+    return AeemgCard(
+      onTap: () => context.push('/messages/chat/${group.id}', extra: name),
+      padding: const EdgeInsets.all(AppSpacing.smMd),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  tint.withValues(alpha: 0.28),
+                  tint.withValues(alpha: 0.08),
                 ],
               ),
-            ).animate(delay: Duration(milliseconds: 50 * index)).fade().slideX(begin: 0.05);
-          },
-        ),
+              shape: BoxShape.circle,
+              border: Border.all(color: tint.withValues(alpha: 0.35)),
+            ),
+            child: Icon(
+              group.isGroup ? Icons.groups_rounded : Icons.person_rounded,
+              color: tint,
+            ),
+          ),
+          const SizedBox(width: AppSpacing.smMd),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        name,
+                        style: AppTypography.h4,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Text(
+                      DateFormat('d MMM', 'fr').format(group.createdAt),
+                      style: AppTypography.caption,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  group.description ??
+                      (group.isGroup
+                          ? 'Groupe de discussion'
+                          : 'Discussion privée'),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTypography.bodySmall,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSpacing.xs),
+          const Icon(
+            Icons.chevron_right_rounded,
+            color: AppColors.textTertiary,
+          ),
+        ],
       ),
     );
   }
@@ -207,105 +256,126 @@ class _AnnouncementsTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final announcementsAsync = ref.watch(announcementsProvider);
     final user = ref.watch(currentUserProvider);
-    final dateFormat = DateFormat('d MMM yyyy', 'fr');
 
-    return RefreshIndicator(
-      color: AppColors.emerald,
-      backgroundColor: AppColors.cardSurface,
+    return _TabList(
       onRefresh: () async => ref.invalidate(announcementsProvider),
-      child: AsyncValueWidget(
-        value: announcementsAsync,
-        empty: ListView(
-          children: const [
-            SizedBox(height: 80),
-            Center(child: Text('Aucune annonce pour le moment.', style: TextStyle(color: AppColors.textSecondary))),
-          ],
-        ),
-        data: (announcements) => ListView.separated(
-          padding: EdgeInsets.only(
-            top: MediaQuery.of(context).padding.top + kToolbarHeight + 64,
-            left: AppSpacing.md,
-            right: AppSpacing.md,
-            bottom: AppSpacing.xl,
+      children: announcementsAsync.when(
+        loading: () => _loading,
+        error: (error, _) => [
+          AeemgEmptyState(
+            compact: true,
+            icon: Icons.cloud_off_outlined,
+            title: 'Annonces indisponibles',
+            message: friendlySupabaseError(error),
           ),
-          physics: const BouncingScrollPhysics(),
-          itemCount: announcements.length,
-          separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-          itemBuilder: (context, index) {
-            final announcement = announcements[index];
-            return AeemgCard(
-              variant: announcement.isImportant
-                  ? AeemgCardVariant.active
-                  : AeemgCardVariant.primary,
-              onTap: () async {
-                if (user != null) {
-                  await ref
-                      .read(messagesRepositoryProvider)
-                      .markAnnouncementRead(announcement.id, user.id);
-                }
-                if (context.mounted) {
-                  await showAnnouncementDetail(context, announcement);
-                }
-              },
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: (announcement.isImportant ? AppColors.gold : AppColors.emerald).withValues(alpha: 0.2),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          announcement.isImportant ? Icons.priority_high : Icons.campaign,
-                          color: announcement.isImportant ? AppColors.gold : AppColors.emerald,
-                          size: 20,
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.md),
-                      Expanded(
-                        child: Text(announcement.title, style: AppTypography.h3),
-                      ),
-                      if (announcement.isImportant)
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: AppColors.gold.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            'URGENT',
-                            style: AppTypography.caption.copyWith(color: AppColors.gold, fontWeight: FontWeight.bold, letterSpacing: 0.8),
-                          ),
-                        ),
-                    ],
+        ],
+        data: (announcements) => announcements.isEmpty
+            ? const [
+                AeemgEmptyState(
+                  compact: true,
+                  icon: Icons.campaign_outlined,
+                  title: 'Aucune annonce pour le moment',
+                  message: 'Les annonces du bureau apparaîtront ici.',
+                ),
+              ]
+            : [
+                for (var i = 0; i < announcements.length; i++)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                    child: _AnnouncementCard(
+                      announcement: announcements[i],
+                      onTap: () async {
+                        final a = announcements[i];
+                        if (user != null) {
+                          await ref
+                              .read(messagesRepositoryProvider)
+                              .markAnnouncementRead(a.id, user.id);
+                        }
+                        if (context.mounted) {
+                          await showAnnouncementDetail(context, a);
+                        }
+                      },
+                    ).reveal(context, index: i),
                   ),
-                  const SizedBox(height: AppSpacing.md),
-                  Text(
-                    announcement.content,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary, height: 1.5),
-                  ),
-                  const SizedBox(height: AppSpacing.sm),
-                  Row(
-                    children: [
-                      const Icon(Icons.access_time, size: 12, color: AppColors.textTertiary),
-                      const SizedBox(width: 4),
-                      Text(
-                        dateFormat.format(announcement.createdAt),
-                        style: AppTypography.caption.copyWith(color: AppColors.textTertiary),
-                      ),
-                    ],
-                  ),
-                ],
+              ],
+      ),
+    );
+  }
+}
+
+class _AnnouncementCard extends StatelessWidget {
+  const _AnnouncementCard({required this.announcement, required this.onTap});
+
+  final Announcement announcement;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final important = announcement.isImportant;
+    final tint = important ? AppColors.gold : AppColors.brightGreen;
+    return AeemgCard(
+      variant: important ? AeemgCardVariant.accent : AeemgCardVariant.primary,
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.sm),
+                decoration: BoxDecoration(
+                  color: tint.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(AppRadius.medium),
+                ),
+                child: Icon(
+                  important
+                      ? Icons.priority_high_rounded
+                      : Icons.campaign_outlined,
+                  color: tint,
+                  size: 20,
+                ),
               ),
-            ).animate(delay: Duration(milliseconds: 80 * index)).fade().slideX(begin: 0.05);
-          },
-        ),
+              const SizedBox(width: AppSpacing.smMd),
+              Expanded(
+                child: Text(
+                  announcement.title,
+                  style: AppTypography.h4,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              if (important)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.gold.withValues(alpha: 0.15),
+                    borderRadius: AppRadius.pillBorder,
+                  ),
+                  child: Text(
+                    'IMPORTANT',
+                    style: AppTypography.overline.copyWith(
+                      color: AppColors.goldLight,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.smMd),
+          Text(
+            announcement.content,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: AppTypography.bodySmall,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            DateFormat('d MMMM y', 'fr').format(announcement.createdAt),
+            style: AppTypography.caption,
+          ),
+        ],
       ),
     );
   }

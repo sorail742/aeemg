@@ -1,234 +1,249 @@
+import 'dart:async';
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../core/theme/app_colors.dart';
 
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_gradients.dart';
+import '../../../core/theme/app_motion.dart';
+import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/app_typography.dart';
+import '../../../shared/widgets/ds/islamic_background.dart';
+
+/// Écran d'ouverture (v3) : ciel étoilé, logo cerclé d'or, barre de chargement.
+/// Court (2,2 s) ; presque immédiat quand les animations sont réduites.
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
+
+  static const duration = Duration(milliseconds: 2200);
+  static const reducedDuration = Duration(milliseconds: 600);
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen>
-    with TickerProviderStateMixin {
-  late final AnimationController _fadeController;
-  late final AnimationController _starsController;
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: SplashScreen.duration,
+  );
+  Timer? _timer;
 
-  final List<_Star> _stars = [];
+  // Graine fixe : le même ciel à chaque ouverture.
+  late final List<_Star> _stars = _Star.sky(math.Random(7), 36);
 
   @override
-  void initState() {
-    super.initState();
-
-    // Create random stars
-    final random = math.Random();
-    for (int i = 0; i < 50; i++) {
-      _stars.add(
-        _Star(
-          x: random.nextDouble(),
-          y: random.nextDouble() * 0.7, // Stars only in the top 70% of screen
-          size: random.nextDouble() * 2 + 1,
-          blinkOffset: random.nextDouble(),
-        ),
-      );
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_timer != null) return;
+    final reduced = AppMotion.reduced(context);
+    if (reduced) {
+      _controller.value = 1;
+    } else {
+      _controller.forward();
     }
-
-    _fadeController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    )..forward();
-
-    _starsController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 3),
-    )..repeat(reverse: true);
-
-    // Navigate to home after 4 seconds
-    Future.delayed(const Duration(seconds: 4), () {
-      if (mounted) {
-        context.go('/home');
-      }
-    });
+    _timer = Timer(
+      reduced ? SplashScreen.reducedDuration : SplashScreen.duration,
+      () {
+        if (mounted) context.go('/home');
+      },
+    );
   }
 
   @override
   void dispose() {
-    _fadeController.dispose();
-    _starsController.dispose();
+    _timer?.cancel();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final appear = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0, 0.45, curve: AppMotion.standard),
+    );
+    final width = MediaQuery.sizeOf(context).width;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF0D1B2A), // Dark night sky
-      body: Stack(
-        children: [
-          // Background Gradient
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFF040B16), // Deep deep blue
-                  Color(0xFF0D1B2A), // Deep blue
-                  Color(0xFF1B3644), // Teal-ish blue near horizon
-                ],
+      backgroundColor: AppColors.background,
+      body: IslamicBackground(
+        withPattern: true,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: RepaintBoundary(
+                child: CustomPaint(painter: _StarsPainter(_stars, _controller)),
               ),
             ),
-          ),
-
-          // Animated Stars
-          AnimatedBuilder(
-            animation: _starsController,
-            builder: (context, child) {
-              return CustomPaint(
-                painter: _StarsPainter(_stars, _starsController.value),
-                size: Size.infinite,
-              );
-            },
-          ),
-
-          // Mosque Silhouette (Bottom)
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Opacity(
-              opacity: 0.15,
-              child: Icon(
-                Icons.mosque,
-                size: MediaQuery.sizeOf(context).width,
-                color: AppColors.white,
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: ExcludeSemantics(
+                child: Icon(
+                  Icons.mosque,
+                  size: width * 0.7,
+                  color: AppColors.emerald.withValues(alpha: 0.05),
+                ),
               ),
             ),
-          ),
-
-          // Center Content (Logo)
-          Center(
-            child: FadeTransition(
-              opacity: _fadeController,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Logo
-                  Container(
-                    width: 180,
-                    height: 180,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.brightGreen.withValues(alpha: 0.2),
-                          blurRadius: 40,
-                          spreadRadius: 10,
+            Positioned.fill(
+              child: SafeArea(
+                child: FadeTransition(
+                  opacity: appear,
+                  child: Column(
+                    children: [
+                      const Spacer(),
+                      ScaleTransition(
+                        scale: Tween(begin: 0.88, end: 1.0).animate(appear),
+                        child: const _Logo(),
+                      ),
+                      const SizedBox(height: AppSpacing.lg),
+                      Text(
+                        'A E E M G',
+                        style: AppTypography.h1.copyWith(
+                          color: AppColors.brightGreen,
+                          letterSpacing: 4,
                         ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(90),
-                      child: Image.asset(
-                        'assets/images/aeemg_logo.png',
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) {
-                          // Placeholder if the logo isn't there yet
-                          return Container(
-                            color: AppColors.white,
-                            child: const Center(
-                              child: Icon(
-                                Icons.image_not_supported,
-                                color: AppColors.textTertiary,
-                              ),
-                            ),
-                          );
-                        },
                       ),
-                    ),
+                      const SizedBox(height: AppSpacing.sm),
+                      Text(
+                        'Association des Élèves et Étudiants\n'
+                        'Musulmans de Guinée',
+                        textAlign: TextAlign.center,
+                        style: AppTypography.bodySmall,
+                      ),
+                      const Spacer(),
+                      _LoadingBar(progress: _controller),
+                      const SizedBox(height: AppSpacing.xxl),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
-          ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-          // Bottom Text (Meaning of AEEMG)
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: FadeTransition(
-              opacity: _fadeController,
-              child: const Padding(
-                padding: EdgeInsets.only(bottom: 40, left: 20, right: 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'A E E M G',
-                      style: TextStyle(
-                        color: AppColors.brightGreen,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 4,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Association des Élèves et Étudiants\nMusulmans de Guinée',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: AppColors.textSecondary,
-                        fontSize: 14,
-                        height: 1.4,
-                      ),
-                    ),
-                  ],
+class _Logo extends StatelessWidget {
+  const _Logo();
+
+  static const double _size = 132;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: _size,
+      height: _size,
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: AppColors.gold, width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.emerald.withValues(alpha: 0.4),
+            blurRadius: 48,
+            spreadRadius: 4,
+          ),
+        ],
+      ),
+      child: ClipOval(
+        child: Image.asset(
+          'assets/images/aeemg_logo.png',
+          fit: BoxFit.cover,
+          cacheWidth: (_size * MediaQuery.devicePixelRatioOf(context)).round(),
+          semanticLabel: 'Logo AEEMG',
+          errorBuilder: (_, _, _) => const ColoredBox(
+            color: AppColors.darkTeal,
+            child: Icon(Icons.mosque_rounded, color: AppColors.gold, size: 48),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Fine barre en dégradé qui se remplit pendant l'ouverture.
+class _LoadingBar extends StatelessWidget {
+  const _LoadingBar({required this.progress});
+
+  final Animation<double> progress;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: 'Chargement',
+      child: ClipRRect(
+        borderRadius: AppRadius.pillBorder,
+        child: SizedBox(
+          width: 120,
+          height: 4,
+          child: ColoredBox(
+            color: AppColors.cardSurfaceLight,
+            child: AnimatedBuilder(
+              animation: progress,
+              builder: (context, _) => FractionallySizedBox(
+                alignment: Alignment.centerLeft,
+                widthFactor: progress.value,
+                child: const DecoratedBox(
+                  decoration: BoxDecoration(gradient: AppGradients.primary),
                 ),
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
 }
 
 class _Star {
+  const _Star(this.x, this.y, this.radius, this.phase);
+
+  /// Étoiles dans les 70 % hauts de l'écran (au-dessus de la mosquée).
+  static List<_Star> sky(math.Random random, int count) => [
+    for (var i = 0; i < count; i++)
+      _Star(
+        random.nextDouble(),
+        random.nextDouble() * 0.7,
+        random.nextDouble() * 1.4 + 0.6,
+        random.nextDouble(),
+      ),
+  ];
+
   final double x;
   final double y;
-  final double size;
-  final double blinkOffset;
-
-  _Star({
-    required this.x,
-    required this.y,
-    required this.size,
-    required this.blinkOffset,
-  });
+  final double radius;
+  final double phase;
 }
 
+/// Étoiles qui scintillent : repeint par l'animation, sans reconstruire les widgets.
 class _StarsPainter extends CustomPainter {
-  final List<_Star> stars;
-  final double animationValue;
+  _StarsPainter(this.stars, this.animation) : super(repaint: animation);
 
-  _StarsPainter(this.stars, this.animationValue);
+  final List<_Star> stars;
+  final Animation<double> animation;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = AppColors.white;
-
-    for (var star in stars) {
-      // Calculate individual blink using offset
+    final paint = Paint();
+    for (final star in stars) {
       final blink =
-          (math.sin((animationValue + star.blinkOffset) * math.pi * 2) + 1) / 2;
-      paint.color = AppColors.white.withValues(alpha: 0.3 + (blink * 0.7));
-
+          (math.sin((animation.value * 2 + star.phase) * math.pi * 2) + 1) / 2;
+      paint.color = AppColors.white.withValues(alpha: 0.2 + blink * 0.6);
       canvas.drawCircle(
         Offset(star.x * size.width, star.y * size.height),
-        star.size,
+        star.radius,
         paint,
       );
     }
   }
 
   @override
-  bool shouldRepaint(_StarsPainter oldDelegate) =>
-      animationValue != oldDelegate.animationValue;
+  bool shouldRepaint(_StarsPainter oldDelegate) => stars != oldDelegate.stars;
 }
