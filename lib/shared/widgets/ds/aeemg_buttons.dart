@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_gradients.dart';
 import '../../../core/theme/app_radius.dart';
+import '../../../core/theme/app_shadows.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_typography.dart';
+import 'aeemg_motion.dart';
 
 class AeemgPrimaryButton extends StatelessWidget {
   const AeemgPrimaryButton({
@@ -44,15 +47,34 @@ class AeemgPrimaryButton extends StatelessWidget {
             ],
           );
 
-    final button = FilledButton(
-      onPressed: isLoading ? null : onPressed,
-      child: child,
+    // v3 : dégradé émeraude et halo quand le bouton est actif. FilledButton est conservé
+    // (focus, sémantique, état désactivé) avec un fond transparent.
+    final enabled = onPressed != null && !isLoading;
+    final button = DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: enabled ? AppGradients.primary : null,
+        color: enabled ? null : AppColors.cardSurfaceLight,
+        borderRadius: AppRadius.inputBorder,
+        boxShadow: enabled ? AppShadows.glow : null,
+      ),
+      child: FilledButton(
+        onPressed: isLoading ? null : onPressed,
+        style: FilledButton.styleFrom(
+          backgroundColor: AppColors.transparent,
+          disabledBackgroundColor: AppColors.transparent,
+          shadowColor: AppColors.transparent,
+        ),
+        child: child,
+      ),
     );
 
     if (expand) {
-      return SizedBox(width: double.infinity, child: button);
+      return SizedBox(
+        width: double.infinity,
+        child: AeemgPressable(child: button),
+      );
     }
-    return button;
+    return AeemgPressable(child: button);
   }
 }
 

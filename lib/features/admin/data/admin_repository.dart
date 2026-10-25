@@ -1,4 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../social/data/social_media.dart';
 
 /// Action d'administration refusée par le serveur (droits insuffisants, règle métier).
 class AdminActionDenied implements Exception {
@@ -262,6 +263,23 @@ class AdminRepository {
   }
 
   Future<void> deletePost(String postId) async {
+    final post = await _client
+        ?.from('posts')
+        .select('image_url')
+        .eq('id', postId)
+        .maybeSingle();
+
+    if (post != null && post['image_url'] != null) {
+      final imagePath = extractSocialImagePath(post['image_url'] as String);
+      if (imagePath != null) {
+        try {
+          await _client?.storage.from(socialImagesBucket).remove([imagePath]);
+        } catch (_) {
+          // Continuer la suppression du post même si l'image est déjà absente.
+        }
+      }
+    }
+
     await _client?.from('posts').delete().eq('id', postId);
   }
 
