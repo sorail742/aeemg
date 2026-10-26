@@ -209,6 +209,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.7"
+  cupertino_icons:
+    dependency: "direct main"
+    description:
+      name: cupertino_icons
+      sha256: b7cc2390aac296c083bea762859413eb1cf5b630c70e0c7e4d831018f762a8b2
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   cupertino_ui:
     dependency: transitive
     description:
@@ -483,10 +491,10 @@ packages:
     dependency: "direct main"
     description:
       name: geolocator
-      sha256: "4e41ad6bc072364ff01822531dac47936c065e5bf8f928f240a25bb51256ada0"
+      sha256: "2b3bc0f7320d5a5fa02f8209ffcf1aaa7c2cabb7b2bedbc0cfeb5ff2778b8b09"
       url: "https://pub.dev"
     source: hosted
-    version: "14.1.1"
+    version: "14.1.2"
   geolocator_android:
     dependency: transitive
     description:
@@ -539,10 +547,10 @@ packages:
     dependency: "direct main"
     description:
       name: go_router
-      sha256: "530dcbb298dc7c319aea9e3b7c580a61effb2abee2c93825d2dd8d5af0e230f1"
+      sha256: "07089be6dc124eb9596a51b5e359c657f30a59929287f11b126c2cd13eaaece0"
       url: "https://pub.dev"
     source: hosted
-    version: "18.0.2"
+    version: "18.1.1"
   google_fonts:
     dependency: "direct main"
     description:
