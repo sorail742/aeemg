@@ -173,12 +173,13 @@ Idem `payment_sessions` : insertion directe par le client avec n'importe quel `s
 ### SEC-009 — Réserver la validation des paiements au trésorier / service role
 **Type** : Sécurité · **Priorité** : P1 · **Estimation** : XS · **Composant** : supabase/db
 **Dépendances** : SEC-008
+**Statut** : ✅ Livré — migration `20261015100000_sec009_validation_paiements.sql` (policy `FOR UPDATE` restreinte à `is_treasurer()`, policy `FOR SELECT` pour permettre la lecture préalable, `service_role` par bypass RLS natif), tests pgTAP `008_sec009_validation_paiements.test.sql`
 
 **Contexte** — Policy `"Staff gere paiements"` (`phase4`) : tout `is_staff()` (modérateur, responsable de section) peut passer une session de paiement à `completed`.
 
 **Critères d'acceptation**
-- [ ] Seuls `is_treasurer()` (hors modérateur/section_lead) et le service role peuvent modifier `payment_sessions`
-- [ ] Test pgTAP pour modérateur (refus) et trésorier (succès)
+- [x] Seuls `is_treasurer()` (hors modérateur/section_lead) et le service role peuvent modifier `payment_sessions`
+- [x] Test pgTAP pour modérateur (refus) et trésorier (succès)
 
 ---
 
