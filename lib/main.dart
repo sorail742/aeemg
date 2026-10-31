@@ -12,6 +12,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   GoogleFonts.config.allowRuntimeFetching = false;
+  // Fix rapide pour la CI: autoriser le téléchargement des polices Google au runtime.
+  // Le correctif durable est d'empaqueter les fontes localement dans assets/fonts.
+  GoogleFonts.config.allowRuntimeFetching = true;
 
   await initializeDateFormatting('fr');
   await SupabaseConfig.initialize();
