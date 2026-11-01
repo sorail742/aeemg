@@ -301,6 +301,7 @@ de protection des données (loi guinéenne L/2016/037, principes RGPD retenus pa
 
 ### SEC-017 — Restreindre la modification des messages
 **Type** : Sécurité · **Priorité** : P1 · **Estimation** : S · **Composant** : supabase/db
+**État** : Livré (migration `20261101190000_sec017_restreindre_modification_messages.sql`, test pgTAP `011_sec017_modification_messages.test.sql`)
 **Dépendances** : SEC-003
 
 **Contexte** — Policy `"Modifier ses propres messages"` (`phase7`) : l'expéditeur peut modifier
@@ -308,9 +309,10 @@ de protection des données (loi guinéenne L/2016/037, principes RGPD retenus pa
 membre), `is_pinned` (épinglage réservé aux modérateurs selon le CDC §3.1), `created_at`.
 
 **Critères d'acceptation**
-- [ ] L'expéditeur ne peut modifier que `content` (fenêtre de 15 min) et `is_deleted`
-- [ ] `is_pinned` modifiable uniquement par modérateur/admin du groupe
-- [ ] Test pgTAP pour chaque colonne protégée
+- [x] L'expéditeur ne peut modifier que `content` (fenêtre de 15 min) et `is_deleted`
+- [x] `is_pinned` modifiable uniquement par modérateur/admin du groupe
+- [x] Test pgTAP pour chaque colonne protégée
+
 
 ---
 
