@@ -28,8 +28,7 @@ select is(
   'Aucune policy d''écriture with check (true) dans public'
 );
 
--- 3. Toute fonction SECURITY DEFINER fixe son search_path.
-select todo('SEC-013 : fonctions de compteurs sociales sans search_path', 1);
+-- 3. Toute fonction SECURITY DEFINER fixe son search_path (SEC-013).
 select is(
   (select count(*)::int
      from pg_proc p

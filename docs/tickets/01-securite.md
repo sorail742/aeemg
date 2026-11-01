@@ -244,9 +244,9 @@ dès que `SMS_API_KEY` existe **sans rien envoyer** (TODO). Les membres et le st
 (signalé par le linter Supabase `function_search_path_mutable`).
 
 **Critères d'acceptation**
-- [ ] Toutes les fonctions `SECURITY DEFINER` ont `set search_path = ''` et des noms qualifiés
-- [ ] `supabase db lint` ne remonte plus `function_search_path_mutable`
-- [ ] Un test pgTAP liste les fonctions `prosecdef` sans `proconfig` et attend 0 ligne
+- [x] Toutes les fonctions `SECURITY DEFINER` ont `set search_path = ''` et des noms qualifiés
+- [x] `supabase db lint` ne remonte plus `function_search_path_mutable`
+- [x] Un test pgTAP liste les fonctions `prosecdef` sans `proconfig` et attend 0 ligne
 
 ---
 
