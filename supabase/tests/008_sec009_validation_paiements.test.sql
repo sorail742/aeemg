@@ -97,12 +97,13 @@ select is(
   'La session de paiement est bien validée par le service_role'
 );
 reset role;
-select set_config('request.jwt.claims', '', true);
 
--- Nettoyage explicite final de la session
-reset role;
-select set_config('request.jwt.claims', null, true);
+-- Réinitialiser le rôle et les variables de session Supabase
+RESET ROLE;
+SET request.jwt.claim.sub TO '';
+SET request.jwt.claims TO '';
 
-select * from finish();
-rollback;
+SELECT * FROM finish();
+ROLLBACK;
+
 
