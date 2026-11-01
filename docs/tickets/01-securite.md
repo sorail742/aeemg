@@ -252,6 +252,7 @@ dès que `SMS_API_KEY` existe **sans rien envoyer** (TODO). Les membres et le st
 
 ### SEC-014 — Protéger les données personnelles des profils
 **Type** : Sécurité · **Priorité** : P1 · **Estimation** : M · **Composant** : supabase/db, flutter
+**Statut** : ✅ Livré — migration `20261014120000_sec014_donnees_personnelles_profils.sql` (nettoyage emails dans phone, contrainte profiles_phone_not_email, is_profile_public par défaut à false, RLS restrictive sur profiles, vue public.member_directory avec masquage téléphone pour les tiers), tests pgTAP `009_sec014_donnees_personnelles.test.sql`
 
 **Contexte** — `handle_new_user` (`email_auth.sql`) copie l'**email dans la colonne `phone`** ;
 `is_profile_public` vaut `true` par défaut ; la policy de lecture expose **toutes** les colonnes
@@ -264,9 +265,9 @@ de protection des données (loi guinéenne L/2016/037, principes RGPD retenus pa
 - Paramètres de visibilité par champ (cf. FEAT-022), `is_profile_public` par défaut à `false` pour les nouveaux comptes, consentement explicite à l'inscription.
 
 **Critères d'acceptation**
-- [ ] Test pgTAP : `anon` ne lit aucun profil ; un membre ne lit pas le téléphone d'un autre membre
-- [ ] Aucune adresse email dans `profiles.phone` après migration
-- [ ] L'annuaire de l'app fonctionne via la vue
+- [x] Test pgTAP : `anon` ne lit aucun profil ; un membre ne lit pas le téléphone d'un autre membre
+- [x] Aucune adresse email dans `profiles.phone` après migration
+- [x] L'annuaire de l'app fonctionne via la vue
 
 ---
 
