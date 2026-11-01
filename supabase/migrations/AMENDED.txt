@@ -5,3 +5,5 @@
 20260611202500_phase6_advanced_messaging.sql REL-003
 20260613210000_phase7_messaging_fixes.sql REL-003
 20260614000100_phase9_admin_fixes.sql REL-002
+20261014120000_sec014_donnees_personnelles_profils.sql SEC-014
+
