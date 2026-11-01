@@ -31,6 +31,7 @@ done
 if [[ -n "$base" ]] && git rev-parse --verify --quiet "$base" >/dev/null; then
   while IFS=$'\t' read -r status file newfile; do
     [[ -z "$status" ]] && continue
+    [[ "$file" != *.sql ]] && continue
     case "$status" in
       A) ;; # nouvelle migration : OK
       R100)

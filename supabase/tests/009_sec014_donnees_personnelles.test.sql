@@ -56,10 +56,10 @@ select is(
   'Un visiteur anonyme (anon) ne lit aucun profil dans profiles'
 );
 
-select is(
-  (select count(*)::int from public.member_directory),
-  0,
-  'Un visiteur anonyme (anon) ne lit aucun profil dans member_directory'
+select throws_ok(
+  $$select count(*)::int from public.member_directory$$,
+  '42501', null,
+  'Un visiteur anonyme (anon) n''a aucun droit sur member_directory (permission denied)'
 );
 
 reset role;

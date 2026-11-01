@@ -93,6 +93,9 @@ where (p.is_profile_public = true or auth.uid() = p.id or public.is_staff())
 comment on view public.member_directory is
   'Annuaire des membres : réservé aux connectés, téléphone masqué pour les tiers (SEC-014).';
 
+-- Aucun accès implicite : seuls les membres connectés et le service_role peuvent lire la vue
+revoke all on public.member_directory from public;
+revoke all on public.member_directory from anon;
 grant select on public.member_directory to authenticated;
-grant select on public.member_directory to anon;
+grant select on public.member_directory to service_role;
 
