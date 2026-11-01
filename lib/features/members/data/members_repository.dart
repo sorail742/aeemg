@@ -11,7 +11,7 @@ class MembersRepository {
     final client = _client;
     if (client == null) return [];
 
-    var query = client.from('profiles').select().eq('is_profile_public', true);
+    var query = client.from('member_directory').select();
     if (sectionQuery != null && sectionQuery.isNotEmpty) {
       query = query.ilike('section', '%$sectionQuery%');
     }
@@ -25,7 +25,11 @@ class MembersRepository {
     final client = _client;
     if (client == null) return null;
 
-    final row = await client.from('profiles').select().eq('id', userId).maybeSingle();
+    final row = await client
+        .from('member_directory')
+        .select()
+        .eq('id', userId)
+        .maybeSingle();
     if (row == null) return null;
     return MemberProfile.fromJson(row);
   }

@@ -30,7 +30,7 @@ class MemberProfile {
       specialty: json['specialty'] as String?,
       avatarUrl: json['avatar_url'] as String?,
       role: json['role'] as String? ?? 'member',
-      isProfilePublic: json['is_profile_public'] as bool? ?? true,
+      isProfilePublic: json['is_profile_public'] as bool? ?? false,
       createdAt: DateTime.parse(json['created_at'] as String),
     );
   }
