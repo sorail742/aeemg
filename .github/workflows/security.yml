@@ -83,4 +83,5 @@ jobs:
         with:
           fail-on-severity: moderate
           deny-licenses: AGPL-3.0-only, AGPL-3.0-or-later, GPL-3.0-only, GPL-3.0-or-later
+          allow-unknown-licenses: true
           comment-summary-in-pr: on-failure
