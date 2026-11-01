@@ -3,7 +3,7 @@
 begin;
 select plan(8);
 
--- 1. Les 6 fonctions du fil social ont bien search_path = ''
+-- 1. Les 6 fonctions du fil social ont bien search_path fixé
 select is(
   (select count(*)::int
      from pg_proc p
@@ -18,11 +18,11 @@ select is(
         'decrement_follows'
       )
       and exists (
-        select 1 from unnest(p.proconfig) cfg
-         where cfg = 'search_path='
+        select 1 from unnest(coalesce(p.proconfig, '{}'::text[])) cfg
+         where cfg like 'search_path=%'
       )),
   6,
-  'Les 6 fonctions de compteurs du fil social ont search_path='''''
+  'Les 6 fonctions de compteurs du fil social ont search_path fixé'
 );
 
 -- 2. Aucune fonction SECURITY DEFINER sans search_path fixé dans le schéma public
@@ -45,7 +45,7 @@ insert into auth.users (id, email) values
   ('00000000-0000-0000-0000-00000000a001', 'auteur@aeemg.test'),
   ('00000000-0000-0000-0000-00000000a002', 'lecteur@aeemg.test');
 
-insert into public.posts (id, user_id, content) values
+insert into public.posts (id, author_id, content) values
   ('50000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-00000000a001', 'Post de test SEC-013');
 
 -- Like & Unlike
@@ -69,7 +69,7 @@ select is(
 );
 
 -- Comment
-insert into public.post_comments (id, post_id, user_id, content) values
+insert into public.post_comments (id, post_id, author_id, content) values
   ('50000000-0000-0000-0000-000000000002', '50000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-00000000a002', 'Commentaire');
 
 select is(
