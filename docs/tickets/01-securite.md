@@ -174,12 +174,15 @@ Idem `payment_sessions` : insertion directe par le client avec n'importe quel `s
 ### SEC-009 — Réserver la validation des paiements au trésorier / service role
 **Type** : Sécurité · **Priorité** : P1 · **Estimation** : XS · **Composant** : supabase/db
 **Dépendances** : SEC-008
+**Statut** : ✅ Livré — migration `20261015100000_sec009_validation_paiements.sql` (suppression de la policy legacy `Ses sessions paiement`, SELECT restreint au propriétaire ou `is_treasurer()`, policy `FOR UPDATE` restreinte à `is_treasurer()`, `service_role` par bypass RLS natif), tests pgTAP `008_sec009_validation_paiements.test.sql`
 
-**Contexte** — Policy `"Staff gere paiements"` (`phase4`) : tout `is_staff()` (modérateur, responsable de section) peut passer une session de paiement à `completed`.
+**Contexte** — Policies legacy (`phase4`) : `"Staff gere paiements"` et `"Ses sessions paiement"` permettaient à tout membre du staff (`is_staff()` : modérateur, responsable de section) de lire et de passer une session de paiement à `completed`.
 
 **Critères d'acceptation**
-- [ ] Seuls `is_treasurer()` (hors modérateur/section_lead) et le service role peuvent modifier `payment_sessions`
-- [ ] Test pgTAP pour modérateur (refus) et trésorier (succès)
+- [x] Seuls le propriétaire (`user_id = auth.uid()`) et `is_treasurer()` peuvent lire `payment_sessions` (exclusion des modérateurs / section_lead)
+- [x] Seuls `is_treasurer()` (hors modérateur/section_lead) et le service role peuvent modifier `payment_sessions`
+- [x] Tests pgTAP pour propriétaire (succès lecture, refus modification), modérateur (refus lecture & modification), trésorier (succès lecture & modification) et service role (succès modification)
+
 
 ---
 

@@ -94,4 +94,5 @@ comment on view public.member_directory is
   'Annuaire des membres : réservé aux connectés, téléphone masqué pour les tiers (SEC-014).';
 
 grant select on public.member_directory to authenticated;
-revoke all on public.member_directory from anon;
+grant select on public.member_directory to anon;
+
