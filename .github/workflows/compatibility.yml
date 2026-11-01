@@ -148,6 +148,9 @@ jobs:
           target: ${{ matrix.api-level >= 30 && 'google_apis' || 'default' }}
           # Émulateur allégé : sans fenêtre, audio, caméra, animation de démarrage ni snapshot.
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none -camera-front none
-          # Démarrage limité à 7 min (10 par défaut) : un boot bloqué échoue plus tôt.
-          emulator-boot-timeout: 420
+          # API 34 sur Ubuntu GitHub Actions est parfois plus lent à démarrer : on laisse plus de marge
+          # pour éviter le faux négatif « Emulator did not boot ». Les animations sont désactivées pour
+          # réduire la latence de la suite d’intégration.
+          disable-animations: true
+          emulator-boot-timeout: 600
           script: flutter test integration_test --dart-define-from-file=config/example.json
