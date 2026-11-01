@@ -273,12 +273,14 @@ de protection des données (loi guinéenne L/2016/037, principes RGPD retenus pa
 
 ### SEC-015 — Masquer les participants aux événements pour les visiteurs anonymes
 **Type** : Sécurité · **Priorité** : P2 · **Estimation** : XS · **Composant** : supabase/db
+**État** : Livré (migration `20261014130000_sec015_masquer_participants_evenements.sql`, test pgTAP `010_sec015_participants_evenements.test.sql`)
 
 **Contexte** — `event_rsvps` : `SELECT using (true)` → `anon` voit qui participe à quoi.
 
 **Critères d'acceptation**
-- [ ] Lecture réservée aux connectés ; le compteur public passe par une vue/RPC agrégée
-- [ ] Test pgTAP `anon` → 0 ligne
+- [x] Lecture réservée aux connectés ; le compteur public passe par une vue/RPC agrégée
+- [x] Test pgTAP `anon` → 0 ligne
+
 
 ---
 
