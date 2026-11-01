@@ -139,13 +139,14 @@ Aucune limite de taille ni de type MIME, aucune policy de suppression.
 
 ### SEC-007 — Encadrer les uploads du bucket `social_images`
 **Type** : Sécurité · **Priorité** : P2 · **Estimation** : S · **Composant** : supabase/storage
+**Statut** : ✅ Livré — migration `20261014110000_sec007_social_images.sql` (bucket 5 Mo, mime types images, upload sous `<auth.uid()>/...` via `storage.foldername`, suppression autorisée au propriétaire et au staff, validation et extraction dans `social_media.dart` et suppression dans `deletePost`), tests pgTAP `008_sec007_social_images.test.sql`, tests Dart `test/social_media_test.dart`
 
 **Contexte** — `phase5_social.sql` : tout connecté peut téléverser **n'importe quel fichier, à n'importe quel chemin** dans un bucket public (hébergement de contenu arbitraire).
 
 **Critères d'acceptation**
-- [ ] Upload uniquement sous `<auth.uid()>/...` (policy sur `storage.foldername`)
-- [ ] `allowed_mime_types` = `image/jpeg, image/png, image/webp` ; `file_size_limit` = 5 Mo
-- [ ] Suppression d'un post → suppression de l'image associée (trigger ou Edge Function)
+- [x] Upload uniquement sous `<auth.uid()>/...` (policy sur `storage.foldername`)
+- [x] `allowed_mime_types` = `image/jpeg, image/png, image/webp` ; `file_size_limit` = 5 Mo
+- [x] Suppression d'un post → suppression de l'image associée (trigger ou Edge Function)
 
 ---
 

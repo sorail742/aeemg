@@ -8,9 +8,11 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/utils/supabase_errors.dart';
 import '../../../../shared/widgets/ds/aeemg_buttons.dart';
 import '../../../../shared/widgets/ds/aeemg_card.dart';
 import '../../../../shared/widgets/ds/islamic_background.dart';
+import '../data/social_media.dart';
 import 'providers/social_providers.dart';
 
 class CreatePostScreen extends ConsumerStatefulWidget {
@@ -29,9 +31,23 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      setState(() {
-        _selectedImage = File(pickedFile.path);
-      });
+      final file = File(pickedFile.path);
+      try {
+        final length = await file.length();
+        checkSocialImage(pickedFile.name, length);
+        setState(() {
+          _selectedImage = file;
+        });
+      } on SocialMediaRejected catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(e.message),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        }
+      }
     }
   }
 
@@ -46,13 +62,19 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
       if (mounted) {
         context.pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Publication créée avec succès !'), backgroundColor: AppColors.emerald),
+          const SnackBar(
+            content: Text('Publication créée avec succès !'),
+            backgroundColor: AppColors.emerald,
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
+        final message = e is SocialMediaRejected
+            ? e.message
+            : friendlySupabaseError(e);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur : $e'), backgroundColor: AppColors.error),
+          SnackBar(content: Text(message), backgroundColor: AppColors.error),
         );
       }
     } finally {
@@ -75,18 +97,37 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
         backgroundColor: AppColors.background.withValues(alpha: 0.9),
         elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.white),
-        title: Text('Créer une publication', style: AppTypography.h2.copyWith(color: AppColors.white)),
+        title: Text(
+          'Créer une publication',
+          style: AppTypography.h2.copyWith(color: AppColors.white),
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: _isLoading
-                ? const Center(child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: AppColors.emerald, strokeWidth: 2)),
-                  ))
+                ? const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0),
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          color: AppColors.emerald,
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    ),
+                  )
                 : TextButton(
                     onPressed: _submitPost,
-                    child: const Text('Publier', style: TextStyle(color: AppColors.emerald, fontWeight: FontWeight.bold, fontSize: 16)),
+                    child: const Text(
+                      'Publier',
+                      style: TextStyle(
+                        color: AppColors.emerald,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                   ),
           ),
         ],
@@ -106,7 +147,11 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
                     controller: _contentController,
                     maxLines: 8,
                     minLines: 4,
-                    style: const TextStyle(color: AppColors.white, fontSize: 16, height: 1.5),
+                    style: const TextStyle(
+                      color: AppColors.white,
+                      fontSize: 16,
+                      height: 1.5,
+                    ),
                     decoration: InputDecoration(
                       hintText: 'Que voulez-vous partager avec la communauté ?',
                       hintStyle: TextStyle(color: AppColors.textTertiary),
@@ -122,8 +167,15 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: AppColors.emerald.withValues(alpha: 0.3)),
-                          boxShadow: [BoxShadow(color: AppColors.emerald.withValues(alpha: 0.1), blurRadius: 10)],
+                          border: Border.all(
+                            color: AppColors.emerald.withValues(alpha: 0.3),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.emerald.withValues(alpha: 0.1),
+                              blurRadius: 10,
+                            ),
+                          ],
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(16),
@@ -139,8 +191,13 @@ class _CreatePostScreenState extends ConsumerState<CreatePostScreen> {
                         right: 8,
                         child: IconButton(
                           icon: const Icon(Icons.close, color: AppColors.white),
-                          style: IconButton.styleFrom(backgroundColor: AppColors.black.withValues(alpha: 0.6)),
-                          onPressed: () => setState(() => _selectedImage = null),
+                          style: IconButton.styleFrom(
+                            backgroundColor: AppColors.black.withValues(
+                              alpha: 0.6,
+                            ),
+                          ),
+                          onPressed: () =>
+                              setState(() => _selectedImage = null),
                         ),
                       ),
                     ],
