@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'models/post_model.dart';
 import 'models/comment_model.dart';
+import 'social_media.dart';
 
 /// Erreur affichable telle quelle (`friendlySupabaseError` utilise `toString`).
 class SocialUnavailableException implements Exception {
@@ -56,10 +57,13 @@ class SocialRepository {
     String? imageUrl;
 
     if (imageFile != null) {
-      final fileExt = imageFile.path.split('.').last;
-      final fileName = '${DateTime.now().toIso8601String()}_$userId.$fileExt';
-      await _db.storage.from('social_images').upload(fileName, imageFile);
-      imageUrl = _db.storage.from('social_images').getPublicUrl(fileName);
+      final fileName = imageFile.path.split(Platform.pathSeparator).last;
+      final fileLength = await imageFile.length();
+      checkSocialImage(fileName, fileLength);
+
+      final storagePath = newSocialImagePath(userId, fileName);
+      await _db.storage.from(socialImagesBucket).upload(storagePath, imageFile);
+      imageUrl = _db.storage.from(socialImagesBucket).getPublicUrl(storagePath);
     }
 
     final response = await _db
@@ -115,6 +119,23 @@ class SocialRepository {
   }
 
   Future<void> deletePost(String postId) async {
+    final post = await _db
+        .from('posts')
+        .select('image_url')
+        .eq('id', postId)
+        .maybeSingle();
+
+    if (post != null && post['image_url'] != null) {
+      final imagePath = extractSocialImagePath(post['image_url'] as String);
+      if (imagePath != null) {
+        try {
+          await _db.storage.from(socialImagesBucket).remove([imagePath]);
+        } catch (_) {
+          // Continuer la suppression du post même si l'image est déjà absente.
+        }
+      }
+    }
+
     await _db.from('posts').delete().eq('id', postId);
   }
 

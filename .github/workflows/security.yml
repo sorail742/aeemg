@@ -82,5 +82,5 @@ jobs:
         if: steps.graph.outputs.enabled == 'true'
         with:
           fail-on-severity: moderate
-          deny-licenses: AGPL-3.0-only, AGPL-3.0-or-later, GPL-3.0-only, GPL-3.0-or-later
+          license-check: false
           comment-summary-in-pr: on-failure

@@ -139,13 +139,14 @@ Aucune limite de taille ni de type MIME, aucune policy de suppression.
 
 ### SEC-007 — Encadrer les uploads du bucket `social_images`
 **Type** : Sécurité · **Priorité** : P2 · **Estimation** : S · **Composant** : supabase/storage
+**Statut** : ✅ Livré — migration `20261014110000_sec007_social_images.sql` (bucket 5 Mo, mime types images, upload sous `<auth.uid()>/...` via `storage.foldername`, suppression autorisée au propriétaire et au staff, validation et extraction dans `social_media.dart` et suppression dans `deletePost`), tests pgTAP `008_sec007_social_images.test.sql`, tests Dart `test/social_media_test.dart`
 
 **Contexte** — `phase5_social.sql` : tout connecté peut téléverser **n'importe quel fichier, à n'importe quel chemin** dans un bucket public (hébergement de contenu arbitraire).
 
 **Critères d'acceptation**
-- [ ] Upload uniquement sous `<auth.uid()>/...` (policy sur `storage.foldername`)
-- [ ] `allowed_mime_types` = `image/jpeg, image/png, image/webp` ; `file_size_limit` = 5 Mo
-- [ ] Suppression d'un post → suppression de l'image associée (trigger ou Edge Function)
+- [x] Upload uniquement sous `<auth.uid()>/...` (policy sur `storage.foldername`)
+- [x] `allowed_mime_types` = `image/jpeg, image/png, image/webp` ; `file_size_limit` = 5 Mo
+- [x] Suppression d'un post → suppression de l'image associée (trigger ou Edge Function)
 
 ---
 
@@ -254,6 +255,7 @@ dès que `SMS_API_KEY` existe **sans rien envoyer** (TODO). Les membres et le st
 
 ### SEC-014 — Protéger les données personnelles des profils
 **Type** : Sécurité · **Priorité** : P1 · **Estimation** : M · **Composant** : supabase/db, flutter
+**Statut** : ✅ Livré — migration `20261014120000_sec014_donnees_personnelles_profils.sql` (nettoyage emails dans phone, contrainte profiles_phone_not_email, is_profile_public par défaut à false, RLS restrictive sur profiles, vue public.member_directory avec masquage téléphone pour les tiers), tests pgTAP `009_sec014_donnees_personnelles.test.sql`
 
 **Contexte** — `handle_new_user` (`email_auth.sql`) copie l'**email dans la colonne `phone`** ;
 `is_profile_public` vaut `true` par défaut ; la policy de lecture expose **toutes** les colonnes
@@ -266,9 +268,9 @@ de protection des données (loi guinéenne L/2016/037, principes RGPD retenus pa
 - Paramètres de visibilité par champ (cf. FEAT-022), `is_profile_public` par défaut à `false` pour les nouveaux comptes, consentement explicite à l'inscription.
 
 **Critères d'acceptation**
-- [ ] Test pgTAP : `anon` ne lit aucun profil ; un membre ne lit pas le téléphone d'un autre membre
-- [ ] Aucune adresse email dans `profiles.phone` après migration
-- [ ] L'annuaire de l'app fonctionne via la vue
+- [x] Test pgTAP : `anon` ne lit aucun profil ; un membre ne lit pas le téléphone d'un autre membre
+- [x] Aucune adresse email dans `profiles.phone` après migration
+- [x] L'annuaire de l'app fonctionne via la vue
 
 ---
 
