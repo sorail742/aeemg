@@ -43,6 +43,7 @@ select is(
   'Le propriétaire ne peut pas modifier le statut de sa session de paiement'
 );
 reset role;
+select set_config('request.jwt.claims', '', true);
 
 -- 2. Le modérateur (is_staff = true, is_treasurer = false) ne peut ni lire ni modifier
 select pg_temp.login('00000000-0000-0000-0000-00000000d002');
@@ -56,6 +57,7 @@ update public.payment_sessions
    set status = 'completed'
  where id = '60000000-0000-0000-0000-000000000001';
 reset role;
+select set_config('request.jwt.claims', '', true);
 select is(
   (select status::text from public.payment_sessions where id = '60000000-0000-0000-0000-000000000001'),
   'pending',
@@ -80,6 +82,7 @@ select is(
   'La session de paiement est bien validée par le trésorier'
 );
 reset role;
+select set_config('request.jwt.claims', '', true);
 
 -- 4. Le webhook service role valide une session -> SUCCÈS
 select set_config('request.jwt.claims', '{"role":"service_role"}', true);
@@ -94,6 +97,11 @@ select is(
   'La session de paiement est bien validée par le service_role'
 );
 reset role;
+select set_config('request.jwt.claims', '', true);
+
+-- Nettoyage explicite final de la session
+reset role;
+select set_config('request.jwt.claims', null, true);
 
 select * from finish();
 rollback;
