@@ -53,11 +53,12 @@ la source de vérité ; un humain qui édite le JSON verra ses changements écra
 
 ### DEL-005 — Supprimer le widget inutilisé `PlaceholderSection`
 **Type** : Suppression · **Priorité** : P3 · **Estimation** : XS · **Composant** : flutter
+**Statut** : ✅ Livré
 
 **Contexte** — `lib/shared/widgets/placeholder_section.dart` n'est référencé nulle part.
 
 **Critères d'acceptation**
-- [ ] Fichier supprimé ; analyse verte
+- [x] Fichier supprimé ; analyse verte
 
 ---
 

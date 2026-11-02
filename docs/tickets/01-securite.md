@@ -174,12 +174,15 @@ Idem `payment_sessions` : insertion directe par le client avec n'importe quel `s
 ### SEC-009 — Réserver la validation des paiements au trésorier / service role
 **Type** : Sécurité · **Priorité** : P1 · **Estimation** : XS · **Composant** : supabase/db
 **Dépendances** : SEC-008
+**Statut** : ✅ Livré — migration `20261015100000_sec009_validation_paiements.sql` (suppression de la policy legacy `Ses sessions paiement`, SELECT restreint au propriétaire ou `is_treasurer()`, policy `FOR UPDATE` restreinte à `is_treasurer()`, `service_role` par bypass RLS natif), tests pgTAP `008_sec009_validation_paiements.test.sql`
 
-**Contexte** — Policy `"Staff gere paiements"` (`phase4`) : tout `is_staff()` (modérateur, responsable de section) peut passer une session de paiement à `completed`.
+**Contexte** — Policies legacy (`phase4`) : `"Staff gere paiements"` et `"Ses sessions paiement"` permettaient à tout membre du staff (`is_staff()` : modérateur, responsable de section) de lire et de passer une session de paiement à `completed`.
 
 **Critères d'acceptation**
-- [ ] Seuls `is_treasurer()` (hors modérateur/section_lead) et le service role peuvent modifier `payment_sessions`
-- [ ] Test pgTAP pour modérateur (refus) et trésorier (succès)
+- [x] Seuls le propriétaire (`user_id = auth.uid()`) et `is_treasurer()` peuvent lire `payment_sessions` (exclusion des modérateurs / section_lead)
+- [x] Seuls `is_treasurer()` (hors modérateur/section_lead) et le service role peuvent modifier `payment_sessions`
+- [x] Tests pgTAP pour propriétaire (succès lecture, refus modification), modérateur (refus lecture & modification), trésorier (succès lecture & modification) et service role (succès modification)
+
 
 ---
 
@@ -244,9 +247,9 @@ dès que `SMS_API_KEY` existe **sans rien envoyer** (TODO). Les membres et le st
 (signalé par le linter Supabase `function_search_path_mutable`).
 
 **Critères d'acceptation**
-- [ ] Toutes les fonctions `SECURITY DEFINER` ont `set search_path = ''` et des noms qualifiés
-- [ ] `supabase db lint` ne remonte plus `function_search_path_mutable`
-- [ ] Un test pgTAP liste les fonctions `prosecdef` sans `proconfig` et attend 0 ligne
+- [x] Toutes les fonctions `SECURITY DEFINER` ont `set search_path = ''` et des noms qualifiés
+- [x] `supabase db lint` ne remonte plus `function_search_path_mutable`
+- [x] Un test pgTAP liste les fonctions `prosecdef` sans `proconfig` et attend 0 ligne
 
 ---
 
@@ -273,12 +276,14 @@ de protection des données (loi guinéenne L/2016/037, principes RGPD retenus pa
 
 ### SEC-015 — Masquer les participants aux événements pour les visiteurs anonymes
 **Type** : Sécurité · **Priorité** : P2 · **Estimation** : XS · **Composant** : supabase/db
+**État** : Livré (migration `20261014130000_sec015_masquer_participants_evenements.sql`, test pgTAP `010_sec015_participants_evenements.test.sql`)
 
 **Contexte** — `event_rsvps` : `SELECT using (true)` → `anon` voit qui participe à quoi.
 
 **Critères d'acceptation**
-- [ ] Lecture réservée aux connectés ; le compteur public passe par une vue/RPC agrégée
-- [ ] Test pgTAP `anon` → 0 ligne
+- [x] Lecture réservée aux connectés ; le compteur public passe par une vue/RPC agrégée
+- [x] Test pgTAP `anon` → 0 ligne
+
 
 ---
 
@@ -296,6 +301,7 @@ de protection des données (loi guinéenne L/2016/037, principes RGPD retenus pa
 
 ### SEC-017 — Restreindre la modification des messages
 **Type** : Sécurité · **Priorité** : P1 · **Estimation** : S · **Composant** : supabase/db
+**État** : Livré (migration `20261101190000_sec017_restreindre_modification_messages.sql`, test pgTAP `011_sec017_modification_messages.test.sql`)
 **Dépendances** : SEC-003
 
 **Contexte** — Policy `"Modifier ses propres messages"` (`phase7`) : l'expéditeur peut modifier
@@ -303,9 +309,10 @@ de protection des données (loi guinéenne L/2016/037, principes RGPD retenus pa
 membre), `is_pinned` (épinglage réservé aux modérateurs selon le CDC §3.1), `created_at`.
 
 **Critères d'acceptation**
-- [ ] L'expéditeur ne peut modifier que `content` (fenêtre de 15 min) et `is_deleted`
-- [ ] `is_pinned` modifiable uniquement par modérateur/admin du groupe
-- [ ] Test pgTAP pour chaque colonne protégée
+- [x] L'expéditeur ne peut modifier que `content` (fenêtre de 15 min) et `is_deleted`
+- [x] `is_pinned` modifiable uniquement par modérateur/admin du groupe
+- [x] Test pgTAP pour chaque colonne protégée
+
 
 ---
 
