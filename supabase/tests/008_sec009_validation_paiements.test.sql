@@ -98,12 +98,9 @@ select is(
 );
 reset role;
 
--- Réinitialiser le rôle et les variables de session Supabase
-RESET ROLE;
-SET request.jwt.claim.sub TO '';
-SET request.jwt.claims TO '';
+select set_config('request.jwt.claims', '', true);
 
-SELECT * FROM finish();
-ROLLBACK;
+select * from finish();
+rollback;
 
 
